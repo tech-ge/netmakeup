@@ -9,6 +9,24 @@
 </head>
 <body>
 
+  <!-- Public Header (home, login, join) -->
+  <header class="header" id="publicHeader">
+    <div class="header-content">
+      <a href="#home" class="logo nav-trigger" data-section="home">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M6 6L4 4M18 18l2 2M6 18l-2 2M18 6l2-2"/>
+          <circle cx="12" cy="12" r="4"/>
+        </svg>
+        <span>TechGeo</span>
+      </a>
+      <nav class="nav-menu">
+        <a href="#home" class="nav-link nav-trigger" data-section="home">Home</a>
+        <a href="#login" class="nav-link nav-trigger" data-section="login">Login</a>
+        <a href="#join" class="btn btn-primary nav-trigger" data-section="join">Join Now</a>
+      </nav>
+    </div>
+  </header>
+
   <!-- Dashboard Header (shown for logged-in users) -->
   <header class="header" id="mainHeader" style="display:none;">
     <div class="header-content">
@@ -35,22 +53,6 @@
     <!-- ==================== HOME ==================== -->
     <!-- ==================== HOME ==================== -->
 <section id="home" class="page-section">
-  <header class="header">
-    <div class="header-content">
-      <a href="#home" class="logo">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M6 6L4 4M18 18l2 2M6 18l-2 2M18 6l2-2"/>
-          <circle cx="12" cy="12" r="4"/>
-        </svg>
-        <span>TechGeo</span>
-      </a>
-      <nav class="nav-menu">
-        <a href="#home" class="nav-link active">Home</a>
-        <a href="#login" class="nav-link nav-trigger" data-section="login">Login</a>
-        <a href="#join" class="btn btn-primary nav-trigger" data-section="join">Join Now</a>
-      </nav>
-    </div>
-  </header>
 
   <section style="background:linear-gradient(135deg,#16a34a,#15803d);color:white;padding:4rem 0;">
     <div class="container" style="text-align:center;">
@@ -1550,10 +1552,18 @@ function showSection(name) {
   var token = localStorage.getItem('token');
   var allProtected = ['dashboard','activation'].concat(ACTIVE_ONLY);
 
+  // Helper to set which header is visible
+  function setHeaders(showPublic, showMain) {
+    var pub = document.getElementById('publicHeader');
+    var main = document.getElementById('mainHeader');
+    if (pub)  pub.style.display  = showPublic ? 'block' : 'none';
+    if (main) main.style.display = showMain   ? 'block' : 'none';
+  }
+
   // No token → send to login
   if (allProtected.indexOf(sectionName) !== -1 && !token) {
     _renderSection('login');
-    document.getElementById('mainHeader').style.display = 'none';
+    setHeaders(true, false);
     window.history.pushState({}, '', '#login');
     return;
   }
@@ -1561,10 +1571,10 @@ function showSection(name) {
   // Inactive account → force activation page
   var storedUser = _getStoredUser();
   if (token && storedUser && storedUser.packageType === 'not_active') {
-    if (ACTIVE_ONLY.indexOf(sectionName) !== -1) {
+    if (ACTIVE_ONLY.indexOf(sectionName) !== -1 || sectionName === 'dashboard') {
       _renderSection('activation');
       window.history.pushState({}, '', '#activation');
-      document.getElementById('mainHeader').style.display = 'none';
+      setHeaders(false, false);
       loadActivationPage();
       return;
     }
@@ -1574,22 +1584,21 @@ function showSection(name) {
   window.history.pushState({}, '', '#' + name);
 
   if (sectionName === 'dashboard' || ACTIVE_ONLY.indexOf(sectionName) !== -1) {
-    // Logged-in protected pages — show header
-    document.getElementById('mainHeader').style.display = 'block';
-    if      (sectionName === 'dashboard')  loadDashboard();
-    else if (sectionName === 'referrals')  loadReferrals();
-    else if (sectionName === 'withdraw')   loadWithdraw();
-    else if (sectionName === 'profile')    loadProfile();
-    else if (sectionName === 'blogs')      loadBlogs();
-    else if (sectionName === 'surveys')    loadSurveys();
+    setHeaders(false, true);
+    if      (sectionName === 'dashboard') loadDashboard();
+    else if (sectionName === 'referrals') loadReferrals();
+    else if (sectionName === 'withdraw')  loadWithdraw();
+    else if (sectionName === 'profile')   loadProfile();
+    else if (sectionName === 'blogs')     loadBlogs();
+    else if (sectionName === 'surveys')   loadSurveys();
   } else if (sectionName === 'activation') {
-    document.getElementById('mainHeader').style.display = 'none';
+    setHeaders(false, false);
     loadActivationPage();
   } else if (sectionName === 'adminDashboard') {
-    document.getElementById('mainHeader').style.display = 'none';
+    setHeaders(false, false);
   } else {
-    // Public pages: home, login, join
-    document.getElementById('mainHeader').style.display = 'none';
+    // Public: home, login, join
+    setHeaders(true, false);
     if (sectionName === 'join') {
       var params = new URLSearchParams(parts[1] || '');
       var ref = params.get('ref');
@@ -1742,12 +1751,12 @@ async function loadActivationPage() {
 
     // Load upline info
     try {
-      const chain = await apiFetch('/api/referrals/chain');
-      const father = chain.chain && chain.chain[1]; // index 0=self, 1=father
-      if (father && father.user) {
-        document.getElementById('uplineName').textContent = father.user.username || 'Your referrer';
-        document.getElementById('uplinePhone').textContent = father.user.phone || '';
-        document.getElementById('uplineEmail').textContent = father.user.email || '';
+      const chainData = await apiFetch('/api/referrals/chain');
+      const father = chainData.chain && chainData.chain[0]; // index 0 = direct referrer (level 1)
+      if (father) {
+        document.getElementById('uplineName').textContent = father.username || 'Your referrer';
+        document.getElementById('uplinePhone').textContent = father.phone || '';
+        document.getElementById('uplineEmail').textContent = father.email || '';
       } else {
         document.getElementById('uplineName').textContent = 'Contact admin if unknown';
       }
@@ -2108,24 +2117,33 @@ async function loadWithdraw() {
 
     document.getElementById('withdrawBalance').textContent = `KES ${user.primaryWallet.balance}`;
     document.getElementById('withdrawPoints').textContent = user.pointsWallet.points;
-    const pointsKES = Math.floor(user.pointsWallet.points / 300) * 10;
+    const pointsKES = Math.floor(user.pointsWallet.points / 100) * 10;
     document.getElementById('withdrawPointsKES').textContent = `KES ${pointsKES}`;
 
-    if (user.canConvertPoints) {
-      document.getElementById('pointsConvertHint').textContent = '✅ You can convert points on the Dashboard!';
+    if (user.canWithdrawPoints) {
+      document.getElementById('pointsConvertHint').textContent = '✅ You are eligible to withdraw points (Tuesdays)!';
       document.getElementById('pointsConvertHint').style.color = '#16a34a';
+    } else {
+      document.getElementById('pointsConvertHint').textContent = 'Need 4 new referrals + 2,000 points to withdraw points (Tuesdays). KES wallet withdraws on Thursdays.';
+      document.getElementById('pointsConvertHint').style.color = '#713f12';
     }
 
-    // Thursday check
+    // Day check — KES on Thursday, Points on Tuesday
     const today = new Date();
-    const dayName = today.toLocaleDateString('en-KE', { weekday: 'long' });
-    const isThursday = today.getDay() === 4;
+    const eatTime = new Date(today.getTime() + 3 * 60 * 60000);
+    const dayIndex = eatTime.getUTCDay();
+    const dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayIndex];
+    const isTuesday = dayIndex === 2;
+    const isThursday = dayIndex === 4;
     const thurMsg = document.getElementById('thursdayMsg');
-    if (isThursday) {
-      thurMsg.textContent = `✅ Today is ${dayName} — withdrawals are OPEN!`;
+    if (isTuesday) {
+      thurMsg.textContent = `✅ Today is ${dayName} — POINTS withdrawals are OPEN!`;
+      thurMsg.style.color = '#16a34a';
+    } else if (isThursday) {
+      thurMsg.textContent = `✅ Today is ${dayName} — KES wallet withdrawals are OPEN!`;
       thurMsg.style.color = '#16a34a';
     } else {
-      thurMsg.textContent = `⏰ Today is ${dayName}. Withdrawals only on Thursdays.`;
+      thurMsg.textContent = `⏰ Today is ${dayName}. Points withdraw: Tuesdays | KES wallet: Thursdays.`;
       thurMsg.style.color = '#1e40af';
     }
 
@@ -2137,7 +2155,9 @@ async function loadWithdraw() {
         <div style="padding:0.75rem;border-bottom:1px solid #e5e7eb;">
           <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
             <div>
-              <p style="margin:0;font-weight:bold;">KES ${w.amount}</p>
+              <p style="margin:0;font-weight:bold;">${w.type === 'points' ? `${w.pointsRedeemed} pts → ` : ''}KES ${w.amount}
+                <span style="font-size:0.75rem;background:${w.type==='kes'?'#dbeafe':'#fef9c3'};color:${w.type==='kes'?'#1d4ed8':'#854d0e'};padding:0.1rem 0.4rem;border-radius:4px;margin-left:0.4rem;">${w.type?.toUpperCase()}</span>
+              </p>
               <p style="margin:0.25rem 0;font-size:0.85rem;color:var(--gray-500);">${new Date(w.requestedAt).toLocaleDateString()} | ${w.paymentMethod?.toUpperCase()}</p>
               ${w.adminNotes ? `<p style="margin:0;font-size:0.8rem;color:var(--gray-500);">Note: ${w.adminNotes}</p>` : ''}
             </div>
@@ -2181,8 +2201,8 @@ document.getElementById('withdrawalForm').addEventListener('submit', async e => 
       };
     }
 
-    await apiFetch('/api/withdrawals', { method: 'POST', body: JSON.stringify({ amount, paymentMethod, paymentDetails }) });
-    alert('✅ Withdrawal request submitted! Admin will process it today.');
+    await apiFetch('/api/withdrawals/kes', { method: 'POST', body: JSON.stringify({ amount, paymentMethod, paymentDetails }) });
+    alert('✅ KES withdrawal request submitted! Admin will process it on Thursday.');
     e.target.reset();
     document.getElementById('mpesaSection').style.display = 'none';
     document.getElementById('bankSection').style.display = 'none';
