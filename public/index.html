@@ -1954,15 +1954,23 @@ let activeBlogId = null;
 let questionCount = 0;
 
 // ==================== NAVIGATION ====================
-document.querySelectorAll('.nav-trigger').forEach(el => {
-  el.addEventListener('click', e => {
-    const section = el.getAttribute('data-section') || el.getAttribute('href')?.replace('#','');
-    if (section) { e.preventDefault(); showSection(section); window.scrollTo(0,0); }
-  });
+// Event delegation for ALL nav-triggers — works for dynamic content too
+document.addEventListener('click', e => {
+  const el = e.target.closest('.nav-trigger');
+  if (!el) return;
+  const section = el.getAttribute('data-section') || el.getAttribute('href')?.replace('#','');
+  if (section) {
+    e.preventDefault();
+    showSection(section);
+    window.scrollTo(0, 0);
+  }
 });
 
 // Pages only ACTIVE accounts can access
-const ACTIVE_ONLY = ['blogs','surveys','referrals','withdraw','profile'];
+const ACTIVE_ONLY = ['tasks','blogs','surveys','referrals','withdraw','profile'];
+
+// Public pages (no token needed, no main header)
+const PUBLIC_PAGES = ['home','login','join'];
 
 function _getStoredUser() {
   try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch(e) { return null; }
@@ -1980,10 +1988,15 @@ function showSection(name) {
   const token = localStorage.getItem('token');
   const allProtected = ['dashboard','activation',...ACTIVE_ONLY];
 
-  // No token -> send to login
-  if (allProtected.includes(sectionName) && !token) { _renderSection('login'); return; }
+  // No token → send to login
+  if (allProtected.includes(sectionName) && !token) {
+    _renderSection('login');
+    document.getElementById('mainHeader').style.display = 'none';
+    window.history.pushState({}, '', '#login');
+    return;
+  }
 
-  // Inactive account -> redirect to activation page for any protected page
+  // Inactive account → force activation page
   const storedUser = _getStoredUser();
   if (token && storedUser && storedUser.packageType === 'not_active') {
     if (ACTIVE_ONLY.includes(sectionName)) {
@@ -1995,29 +2008,55 @@ function showSection(name) {
     }
   }
 
+  // blogs/surveys are aliases → render tasks section with correct tab
+  if (sectionName === 'blogs') {
+    _renderSection('tasks');
+    document.getElementById('mainHeader').style.display = token ? 'block' : 'none';
+    window.history.pushState({}, '', '#tasks');
+    switchTaskTab('blogs');
+    loadBlogs();
+    return;
+  }
+  if (sectionName === 'surveys') {
+    _renderSection('tasks');
+    document.getElementById('mainHeader').style.display = token ? 'block' : 'none';
+    window.history.pushState({}, '', '#tasks');
+    switchTaskTab('surveys');
+    loadSurveys();
+    return;
+  }
+
   _renderSection(sectionName);
   window.history.pushState({}, '', '#' + name);
 
+  // ── Protected / logged-in sections ──────────────────────────────────────
   if (sectionName === 'dashboard' || ACTIVE_ONLY.includes(sectionName)) {
-    document.getElementById('mainHeader').style.display = token ? 'block' : 'none';
-    if (sectionName === 'dashboard') loadDashboard();
-    else if (sectionName === 'referrals') loadReferrals();
-    else if (sectionName === 'withdraw') loadWithdraw();
-    else if (sectionName === 'profile') loadProfile();
-    else if (sectionName === 'tasks') { loadBlogs(); loadSurveys(); loadTranscriptions(); loadWritingJobs(); loadDataentryJobs(); }
-    else if (sectionName === 'blogs') { _renderSection('tasks'); switchTaskTab('blogs'); loadBlogs(); return; }
-    else if (sectionName === 'surveys') { _renderSection('tasks'); switchTaskTab('surveys'); loadSurveys(); return; }
+    document.getElementById('mainHeader').style.display = 'block';
+    if      (sectionName === 'dashboard')  loadDashboard();
+    else if (sectionName === 'referrals')  loadReferrals();
+    else if (sectionName === 'withdraw')   loadWithdraw();
+    else if (sectionName === 'profile')    loadProfile();
+    else if (sectionName === 'tasks')      { loadBlogs(); loadSurveys(); loadTranscriptions(); loadWritingJobs(); loadDataentryJobs(); }
+
+  // ── Activation ───────────────────────────────────────────────────────────
   } else if (sectionName === 'activation') {
     document.getElementById('mainHeader').style.display = 'none';
     loadActivationPage();
+
+  // ── Admin dashboard ──────────────────────────────────────────────────────
   } else if (sectionName === 'adminDashboard') {
     document.getElementById('mainHeader').style.display = 'none';
+
+  // ── Public pages (home, login, join) ─────────────────────────────────────
   } else {
     document.getElementById('mainHeader').style.display = 'none';
     if (sectionName === 'join') {
       const params = new URLSearchParams(parts[1] || '');
       const ref = params.get('ref');
-      if (ref) document.getElementById('referrerCode').value = ref;
+      if (ref) {
+        const refEl = document.getElementById('referrerCode');
+        if (refEl) refEl.value = ref;
+      }
     }
   }
 }
@@ -2028,12 +2067,16 @@ window.addEventListener('load', () => {
   const sectionName = hash.split('?')[0];
   const token = localStorage.getItem('token');
   const storedUser = _getStoredUser();
+
+  // No token trying to access protected page → login
   if (!token && ['dashboard','activation',...ACTIVE_ONLY].includes(sectionName)) {
-    showSection('login'); return;
+    showSection('login');
+    return;
   }
-  // If logged in but inactive, force activation page
+  // Logged in but not activated → activation page
   if (token && storedUser && storedUser.packageType === 'not_active') {
-    showSection('activation'); return;
+    showSection('activation');
+    return;
   }
   showSection(hash);
 });
