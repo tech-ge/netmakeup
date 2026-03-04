@@ -2577,4 +2577,9 @@ async function adminRejectWithdrawal(id) {
   const notes = prompt('Reason for rejection:') || 'Rejected';
   try {
     await adminFetch(`/api/withdrawals/admin/${id}/reject`, { method: 'POST', body: JSON.stringify({ adminNotes: notes }) });
-    alert('
+    alert('Withdrawal rejected.');  loadAdminWithdrawals();
+  } catch(err) { alert('❌ ' + err.message); }
+}
+</script>
+</body>
+</html>
