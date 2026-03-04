@@ -1,7 +1,6 @@
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
-const connectDB = require('./config/db');
 
 const {
   globalLimiter,
@@ -16,9 +15,6 @@ const {
 const app = express();
 
 console.log('🚀 Starting TechGeo Network Platform...');
-connectDB().catch(err => {
-  console.error('⚠️  Database connection failed:', err.message);
-});
 
 // ─── Security headers ───────────────────────────────────────────────────────
 app.use((req, res, next) => {
