@@ -31,23 +31,22 @@ const UserSchema = new mongoose.Schema({
   },
   packageActivatedAt: { type: Date, default: null },
   activatedAt: { type: Date, default: null },
-  hasActivated: { type: Boolean, default: false },
+  hasActivated: { type: Boolean, default: false }, // one-time activation flag
 
   // Active Referrals (activated users directly referred)
   activeReferrals: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 
-  // Main Wallet (KES) — earned from referral commissions only
+  // Main Wallet (KES) — earned from referrals + converted points
   primaryWallet: {
     balance: { type: Number, default: 0, min: 0 },
     currency: { type: String, default: 'KES' },
     locked: { type: Boolean, default: false }
   },
 
-  // Points Wallet — earned from tasks (100 pts = KES 10, paid from profit pool on Thursdays)
+  // Points Wallet — earned from blogs & surveys (300 pts = 10 KES)
   pointsWallet: {
     points: { type: Number, default: 0, min: 0 },
     totalEarned: { type: Number, default: 0 },
-    // Track new referrals since last points withdrawal (need 4 to withdraw)
     referralsSinceLastWithdrawal: { type: Number, default: 0 },
     lastWithdrawalAt: { type: Date, default: null }
   },
@@ -59,6 +58,7 @@ const UserSchema = new mongoose.Schema({
     default: 'pending'
   },
 
+  // Admin Flag
   isAdmin: { type: Boolean, default: false },
 
   stats: {
@@ -66,12 +66,12 @@ const UserSchema = new mongoose.Schema({
     totalEarnings: { type: Number, default: 0 },
     blogsWritten: { type: Number, default: 0 },
     surveysCompleted: { type: Number, default: 0 },
-    activeDirectReferrals: { type: Number, default: 0 }
+    activeDirectReferrals: { type: Number, default: 0 } // for withdrawal unlock
   },
 
   // Daily task tracking
   dailyTasks: {
-    date: { type: String, default: null },
+    date: { type: String, default: null }, // YYYY-MM-DD
     blogsCompleted: { type: Number, default: 0 },
     surveysCompleted: { type: Number, default: 0 }
   },
@@ -106,27 +106,30 @@ UserSchema.methods.isLocked = function () {
   return !!(this.lockUntil && this.lockUntil > Date.now());
 };
 
-UserSchema.methods.incLoginAttempts = async function () {
+UserSchema.methods.incLoginAttempts = function () {
   if (this.lockUntil && this.lockUntil < Date.now()) {
-    return await this.updateOne({ $set: { loginAttempts: 1 }, $unset: { lockUntil: 1 } });
+    return this.updateOne({ $set: { loginAttempts: 1 }, $unset: { lockUntil: 1 } });
   }
   const updates = { $inc: { loginAttempts: 1 } };
   if (this.loginAttempts + 1 >= 5 && !this.isLocked()) {
     updates.$set = { lockUntil: Date.now() + 30 * 60 * 1000 };
   }
-  return await this.updateOne(updates);
+  return this.updateOne(updates);
 };
 
-// Check if user can withdraw points:
-// needs min 2000 pts AND 4 new referrals since last points withdrawal
+// Check if user can convert points to wallet
+// Legacy alias kept for any existing calls
+UserSchema.methods.canConvertPoints = function () {
+  return this.canWithdrawPoints();
+};
+
+// Points withdrawal: need 2000+ pts AND 4 new referrals since last withdrawal
 UserSchema.methods.canWithdrawPoints = function () {
-  return (
-    this.pointsWallet.referralsSinceLastWithdrawal >= 4 &&
-    this.pointsWallet.points >= 2000
-  );
+  const newReferrals = this.pointsWallet.referralsSinceLastWithdrawal || 0;
+  return this.pointsWallet.points >= 2000 && newReferrals >= 4;
 };
 
-// Check if new day for daily tasks
+// Check if it's a new day for daily tasks
 UserSchema.methods.resetDailyTasksIfNeeded = function () {
   const today = new Date().toISOString().slice(0, 10);
   if (this.dailyTasks.date !== today) {
