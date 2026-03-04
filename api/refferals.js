@@ -6,53 +6,19 @@ const { getReferralChain } = require('../utils/commissionHelper');
 
 const router = express.Router();
 
-// ==================== REFERRAL STATS WITH FULL USER DETAILS PER LEVEL ====================
+// Get referral stats
 router.get('/stats', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
 
-    // Fetch all 4 levels with full user details
-    const level1Users = await User.find({ referrerId: user._id })
-      .select('username email phone status packageType createdAt activatedAt');
+    const level1 = await User.find({ referrerId: user._id }).select('username email status packageType createdAt');
+    const level1Ids = level1.map(u => u._id);
+    const level2 = await User.find({ referrerId: { $in: level1Ids } }).select('username email status packageType referrerId createdAt');
+    const level2Ids = level2.map(u => u._id);
+    const level3 = await User.find({ referrerId: { $in: level2Ids } }).select('username email status packageType referrerId createdAt');
+    const level3Ids = level3.map(u => u._id);
+    const level4 = await User.find({ referrerId: { $in: level3Ids } }).select('username email status packageType referrerId createdAt');
 
-    const level1Ids = level1Users.map(u => u._id);
-    const level2Users = await User.find({ referrerId: { $in: level1Ids } })
-      .select('username email phone status packageType createdAt activatedAt referrerId');
-
-    const level2Ids = level2Users.map(u => u._id);
-    const level3Users = await User.find({ referrerId: { $in: level2Ids } })
-      .select('username email phone status packageType createdAt activatedAt referrerId');
-
-    const level3Ids = level3Users.map(u => u._id);
-    const level4Users = await User.find({ referrerId: { $in: level3Ids } })
-      .select('username email phone status packageType createdAt activatedAt referrerId');
-
-    // Format user for table display
-    const formatUser = (u) => ({
-      id: u._id,
-      username: u.username,
-      email: u.email,
-      phone: u.phone,
-      status: u.status,
-      packageType: u.packageType,
-      isActive: u.packageType === 'normal' && u.status === 'active',
-      joinedAt: u.createdAt,
-      activatedAt: u.activatedAt || null
-    });
-
-    // Split each level into active and inactive tables
-    const splitLevel = (users) => {
-      const formatted = users.map(formatUser);
-      return {
-        count: users.length,
-        activeCount: formatted.filter(u => u.isActive).length,
-        inactiveCount: formatted.filter(u => !u.isActive).length,
-        active: formatted.filter(u => u.isActive),
-        inactive: formatted.filter(u => !u.isActive)
-      };
-    };
-
-    // Commission earnings per level
     const commissions = await Commission.find({ toUserId: user._id, type: 'referral_commission' });
     const byLevel = {
       level1: commissions.filter(c => c.level === 1).reduce((s, c) => s + c.amount, 0),
@@ -61,25 +27,19 @@ router.get('/stats', authMiddleware, async (req, res) => {
       level4: commissions.filter(c => c.level === 4).reduce((s, c) => s + c.amount, 0)
     };
 
-    const l1 = splitLevel(level1Users);
-    const l2 = splitLevel(level2Users);
-    const l3 = splitLevel(level3Users);
-    const l4 = splitLevel(level4Users);
-
     res.json({
       summary: {
-        totalReferrals: l1.count + l2.count + l3.count + l4.count,
-        directReferrals: l1.count,
-        activeDirectReferrals: l1.activeCount,
-        newReferralsSinceLastWithdrawal: user.pointsWallet.referralsSinceLastWithdrawal || 0,
+        totalReferrals: level1.length + level2.length + level3.length + level4.length,
+        directReferrals: level1.length,
+        activeDirectReferrals: user.stats.activeDirectReferrals || 0,
         totalCommission: commissions.reduce((s, c) => s + c.amount, 0),
         commissionByLevel: byLevel
       },
       levels: {
-        level1: { commissionPerActivation: 200, ...l1 },
-        level2: { commissionPerActivation: 150, ...l2 },
-        level3: { commissionPerActivation: 75,  ...l3 },
-        level4: { commissionPerActivation: 25,  ...l4 }
+        level1: { count: level1.length, commission: 200, users: level1.map(u => ({ id: u._id, username: u.username, status: u.status, packageType: u.packageType, joinedAt: u.createdAt })) },
+        level2: { count: level2.length, commission: 150, users: level2.map(u => ({ id: u._id, username: u.username, status: u.status, packageType: u.packageType, joinedAt: u.createdAt })) },
+        level3: { count: level3.length, commission: 75, users: level3.map(u => ({ id: u._id, username: u.username, status: u.status, packageType: u.packageType, joinedAt: u.createdAt })) },
+        level4: { count: level4.length, commission: 25, users: level4.map(u => ({ id: u._id, username: u.username, status: u.status, packageType: u.packageType, joinedAt: u.createdAt })) }
       }
     });
   } catch (error) {
@@ -87,7 +47,7 @@ router.get('/stats', authMiddleware, async (req, res) => {
   }
 });
 
-// ==================== REFERRAL LINK ====================
+// Get referral link
 router.get('/link', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
@@ -110,7 +70,7 @@ router.get('/link', authMiddleware, async (req, res) => {
   }
 });
 
-// ==================== REFERRAL CHAIN ====================
+// Get referral chain
 router.get('/chain', authMiddleware, async (req, res) => {
   try {
     const chain = await getReferralChain(req.userId);
