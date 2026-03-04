@@ -4,7 +4,7 @@ const { authMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
 
-// ==================== PROFILE ====================
+// Get profile
 router.get('/profile', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select('-password');
@@ -22,18 +22,12 @@ router.get('/profile', authMiddleware, async (req, res) => {
         inviteCode: user.uniqueInviteCode,
         inviteLink: user.inviteLink,
         primaryWallet: user.primaryWallet,
-        pointsWallet: {
-          points: user.pointsWallet.points,
-          totalEarned: user.pointsWallet.totalEarned,
-          referralsSinceLastWithdrawal: user.pointsWallet.referralsSinceLastWithdrawal || 0,
-          lastWithdrawalAt: user.pointsWallet.lastWithdrawalAt,
-          kesEquivalent: Math.floor(user.pointsWallet.points / 100) * 10
-        },
+        pointsWallet: user.pointsWallet,
         stats: user.stats,
         dailyTasks: user.dailyTasks,
         createdAt: user.createdAt,
         lastLogin: user.lastLogin,
-        canWithdrawPoints: user.canWithdrawPoints()
+        canWithdrawPoints: user.canWithdrawPoints ? user.canWithdrawPoints() : false
       }
     });
   } catch (error) {
@@ -41,7 +35,7 @@ router.get('/profile', authMiddleware, async (req, res) => {
   }
 });
 
-// ==================== CHANGE PASSWORD ====================
+// Change password
 router.put('/change-password', authMiddleware, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -49,16 +43,21 @@ router.put('/change-password', authMiddleware, async (req, res) => {
     if (!currentPassword || !newPassword) {
       return res.status(400).json({ error: 'Current and new password required.' });
     }
+
     if (newPassword.length < 6) {
       return res.status(400).json({ error: 'New password must be at least 6 characters.' });
     }
+
     if (currentPassword === newPassword) {
       return res.status(400).json({ error: 'New password must be different from current password.' });
     }
 
     const user = await User.findById(req.userId);
     const isMatch = await user.comparePassword(currentPassword);
-    if (!isMatch) return res.status(401).json({ error: 'Current password is incorrect.' });
+
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Current password is incorrect.' });
+    }
 
     user.password = newPassword;
     await user.save();
@@ -69,7 +68,7 @@ router.put('/change-password', authMiddleware, async (req, res) => {
   }
 });
 
-// ==================== DASHBOARD ====================
+// Get user dashboard data
 router.get('/dashboard', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select('-password');
@@ -79,11 +78,10 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
     const dailyBlogsLeft = user.dailyTasks.date === today ? 2 - user.dailyTasks.blogsCompleted : 2;
     const dailySurveysLeft = user.dailyTasks.date === today ? 2 - user.dailyTasks.surveysCompleted : 2;
 
+    // Direct referrals
     const directReferrals = await User.find({ referrerId: user._id })
-      .select('username email phone status packageType createdAt activatedAt')
+      .select('username email phone status packageType createdAt')
       .lean();
-
-    const kesEquivalent = Math.floor(user.pointsWallet.points / 100) * 10;
 
     res.json({
       profile: {
@@ -96,11 +94,8 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
         points: {
           points: user.pointsWallet.points,
           totalEarned: user.pointsWallet.totalEarned,
-          kesEquivalent,
-          canWithdraw: user.canWithdrawPoints(),
-          newReferralsSinceLastWithdrawal: user.pointsWallet.referralsSinceLastWithdrawal || 0,
-          referralsNeededForWithdrawal: Math.max(0, 4 - (user.pointsWallet.referralsSinceLastWithdrawal || 0)),
-          lastWithdrawalAt: user.pointsWallet.lastWithdrawalAt
+          kesEquivalent: Math.floor(user.pointsWallet.points / 100) * 10,
+          canConvert: user.canWithdrawPoints ? user.canWithdrawPoints() : false
         }
       },
       stats: {
@@ -120,30 +115,17 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
       inviteLink: user.inviteLink?.includes('undefined') || !user.inviteLink
         ? `${req.headers['x-forwarded-proto'] || req.protocol || 'https'}://${req.headers['x-forwarded-host'] || req.headers.host || ''}/#join?ref=${user.uniqueInviteCode}`
         : user.inviteLink,
-      // Direct referrals split into active/inactive for dashboard
-      directReferrals: {
-        active: directReferrals
-          .filter(r => r.packageType === 'normal' && r.status === 'active')
-          .map(r => ({
-            id: r._id, username: r.username, email: r.email, phone: r.phone,
-            status: r.status, packageType: r.packageType,
-            joinedAt: r.createdAt, activatedAt: r.activatedAt
-          })),
-        inactive: directReferrals
-          .filter(r => !(r.packageType === 'normal' && r.status === 'active'))
-          .map(r => ({
-            id: r._id, username: r.username, email: r.email, phone: r.phone,
-            status: r.status, packageType: r.packageType,
-            joinedAt: r.createdAt
-          }))
-      }
+      directReferrals: directReferrals.map(r => ({
+        id: r._id, username: r.username, email: r.email, phone: r.phone,
+        status: r.status, packageType: r.packageType, joinedAt: r.createdAt
+      }))
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// ==================== INACTIVE REFERRALS ====================
+// Get inactive referrals (visible to parent/father only)
 router.get('/inactive-referrals', authMiddleware, async (req, res) => {
   try {
     const inactiveReferrals = await User.find({
@@ -154,7 +136,7 @@ router.get('/inactive-referrals', authMiddleware, async (req, res) => {
     res.json({
       inactiveReferrals: inactiveReferrals.map(u => ({
         id: u._id,
-        username: u.username,
+        name: u.username,
         email: u.email,
         phone: u.phone,
         walletBalance: u.primaryWallet.balance,
@@ -162,7 +144,7 @@ router.get('/inactive-referrals', authMiddleware, async (req, res) => {
         daysSinceJoined: Math.floor((Date.now() - u.createdAt) / 86400000)
       })),
       total: inactiveReferrals.length,
-      note: 'These users have not yet activated their package.'
+      note: 'These are users you invited who have not yet activated their package.'
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
