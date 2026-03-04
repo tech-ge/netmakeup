@@ -42,11 +42,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(globalLimiter);
 
 // ─── Auth routes — tightest limits ──────────────────────────────────────────
-// POST /api/auth/register  → registerLimiter (5/hr)  then authLimiter (10/15min)
+// POST /api/auth/signup    → registerLimiter (5/hr)  then authLimiter (10/15min)
 // POST /api/auth/login     → authLimiter (10/15min)
 // PUT  /api/auth/*/password→ sensitiveActionLimiter (3/hr)
 const authRouter = require('./api/auth');
-app.use('/api/auth/register', registerLimiter);           // registration cap first
+app.use('/api/auth/signup', registerLimiter);             // registration cap first
 app.use('/api/auth/change-password', sensitiveActionLimiter);
 app.use('/api/auth/reset-password',  sensitiveActionLimiter);
 app.use('/api/auth', authLimiter, authRouter);            // all auth: 10/15min
