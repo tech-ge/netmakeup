@@ -1,45 +1,63 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose'); // Added for Transactions
 const { v4: uuidv4 } = require('uuid');
 const User = require('../models/Users');
-const connectDB = require('../config/db'); 
-const { distributeReferralCommissions } = require('../utils/commissionHelper');
-const { authMiddleware } = require('../middleware/auth');
 const { validateSignup } = require('../middleware/validation');
+const { authMiddleware } = require('../middleware/auth');
+const { distributeReferralCommissions } = require('../utils/commissionHelper');
 
 const router = express.Router();
 
-// Helper to generate JWT
+const ACTIVATION_FEE = 700;
+
 function generateToken(userId) {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 }
 
-// ==================== SIGNUP ====================
+function userPayload(user) {
+  return {
+    id: user._id,
+    username: user.username,
+    email: user.email,
+    phone: user.phone,
+    status: user.status,
+    packageType: user.packageType,
+    hasActivated: user.hasActivated,
+    isAdmin: user.isAdmin,
+    inviteCode: user.uniqueInviteCode,
+    inviteLink: user.inviteLink,
+    primaryWallet: user.primaryWallet,
+    pointsWallet: {
+      points: user.pointsWallet.points,
+      totalEarned: user.pointsWallet.totalEarned
+    },
+    stats: user.stats
+  };
+}
+
+// ==================== REGISTER / SIGNUP ====================
 router.post('/signup', validateSignup, async (req, res) => {
   try {
-    await connectDB();
     const { username, email, phone, password, referrerCode } = req.body;
 
-    if (!referrerCode || !referrerCode.trim()) {
-      return res.status(400).json({ error: 'Referral code is required.' });
-    }
-
+    // Check referrer exists
     const referrer = await User.findOne({ uniqueInviteCode: referrerCode.trim() });
     if (!referrer) {
-      return res.status(400).json({ error: 'Invalid referral code.' });
+      return res.status(400).json({ error: 'Invalid referral code. Please check with your referrer.' });
     }
 
-    const [existingEmail, existingUsername, existingPhone] = await Promise.all([
-      User.findOne({ email: email.toLowerCase().trim() }),
-      User.findOne({ username: username.trim() }),
-      User.findOne({ phone: phone.trim() })
-    ]);
+    // Check duplicates
+    const existingEmail = await User.findOne({ email: email.toLowerCase().trim() });
+    if (existingEmail) return res.status(400).json({ error: 'Email already registered.' });
 
-    if (existingEmail) return res.status(400).json({ error: 'Email already registered' });
-    if (existingUsername) return res.status(400).json({ error: 'Username already taken' });
-    if (existingPhone) return res.status(400).json({ error: 'Phone number already registered' });
+    const existingPhone = await User.findOne({ phone: phone.trim() });
+    if (existingPhone) return res.status(400).json({ error: 'Phone number already registered.' });
 
+    const existingUsername = await User.findOne({ username: username.trim() });
+    if (existingUsername) return res.status(400).json({ error: 'Username already taken.' });
+
+    // Build invite link
     const inviteCode = uuidv4().replace(/-/g, '').slice(0, 12).toUpperCase();
     const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
     const host = req.headers['x-forwarded-host'] || req.headers.host || '';
@@ -55,19 +73,26 @@ router.post('/signup', validateSignup, async (req, res) => {
       registrationInviteCode: referrerCode.trim(),
       uniqueInviteCode: inviteCode,
       inviteLink,
-      packageType: 'not_active',
-      status: 'pending'
+      status: 'pending',
+      packageType: 'not_active'
     });
 
     await user.save();
+
     const token = generateToken(user._id);
 
+    console.log(`✅ NEW SIGNUP: ${user.username} referred by ${referrer.username}`);
+
     res.status(201).json({
-      message: 'Account created successfully.',
+      message: 'Account created! Please activate your package to start earning.',
       token,
-      user: { id: user._id, username: user.username, packageType: user.packageType }
+      user: userPayload(user)
     });
   } catch (error) {
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      return res.status(400).json({ error: `${field} already exists.` });
+    }
     res.status(500).json({ error: error.message });
   }
 });
@@ -75,84 +100,144 @@ router.post('/signup', validateSignup, async (req, res) => {
 // ==================== LOGIN ====================
 router.post('/login', async (req, res) => {
   try {
-    await connectDB();
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
 
-    if (!user || !(await user.comparePassword(password))) {
-      if (user) await user.incLoginAttempts();
-      return res.status(401).json({ error: 'Invalid credentials' });
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required.' });
     }
 
-    user.loginAttempts = 0;
-    user.lastLogin = new Date();
-    await user.save();
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
 
-    const token = generateToken(user._id);
-    res.json({ message: 'Login successful', token, user });
+    // Check account lock
+    if (user.isLocked()) {
+      return res.status(403).json({
+        error: 'Account temporarily locked due to too many failed attempts. Try again in 30 minutes.'
+      });
+    }
+
+    // Check suspended
+    if (user.status === 'suspended') {
+      return res.status(403).json({ error: 'Account suspended. Contact support.' });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      await user.incLoginAttempts();
+      const attemptsLeft = Math.max(0, 4 - user.loginAttempts);
+      return res.status(401).json({
+        error: `Invalid email or password.${attemptsLeft > 0 ? ` ${attemptsLeft} attempt(s) remaining before lockout.` : ''}`
+      });
+    }
+
+    // Successful login — reset attempts
+    await user.updateOne({
+      $set: { loginAttempts: 0, lastLogin: new Date() },
+      $unset: { lockUntil: 1 }
+    });
+
+    // Refresh user after update
+    const freshUser = await User.findById(user._id);
+    const token = generateToken(freshUser._id);
+
+    console.log(`🔐 LOGIN: ${freshUser.username} (${freshUser.email})`);
+
+    res.json({
+      message: 'Login successful.',
+      token,
+      user: userPayload(freshUser)
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// ==================== ACTIVATE PACKAGE (WITH FULL ROLLBACK) ====================
+// ==================== ACTIVATE PACKAGE ====================
+// User must have KES 700 in their wallet (deposited by admin) to activate
 router.post('/activate-package', authMiddleware, async (req, res) => {
-  await connectDB();
-  
-  // 1. Start the Session
   const session = await mongoose.startSession();
   session.startTransaction();
-
   try {
-    // 2. Fetch User within this session
     const user = await User.findById(req.userId).session(session);
 
-    if (!user) throw new Error('User not found');
-    if (user.hasActivated) throw new Error('Package already activated.');
-
-    const ACTIVATION_FEE = 700;
-    if (user.primaryWallet.balance < ACTIVATION_FEE) {
-      throw new Error(`Insufficient balance. KES ${ACTIVATION_FEE} required.`);
+    if (!user) {
+      await session.abortTransaction();
+      return res.status(404).json({ error: 'User not found.' });
     }
 
-    // 3. Deduct money and change status (State is "Pending" in DB)
+    if (user.packageType === 'normal') {
+      await session.abortTransaction();
+      return res.status(400).json({ error: 'Package already activated.' });
+    }
+
+    if (user.primaryWallet.balance < ACTIVATION_FEE) {
+      await session.abortTransaction();
+      return res.status(400).json({
+        error: `Insufficient balance. You need KES ${ACTIVATION_FEE} to activate. Current balance: KES ${user.primaryWallet.balance}.`,
+        required: ACTIVATION_FEE,
+        current: user.primaryWallet.balance
+      });
+    }
+
+    // Deduct activation fee
     user.primaryWallet.balance -= ACTIVATION_FEE;
     user.packageType = 'normal';
     user.status = 'active';
     user.hasActivated = true;
     user.activatedAt = new Date();
+    user.packageActivatedAt = new Date();
+
     await user.save({ session });
 
-    // 4. Distribute Commissions (Pass session to helper)
-    // If the helper fails, it throws an error and jumps to the catch block
-    await distributeReferralCommissions(user, 'user', session);
-
-    // 5. Update direct referral stats
+    // Update referrer's activeReferrals + stats
     if (user.referrerId) {
       await User.findByIdAndUpdate(
-        user.referrerId, 
-        { $inc: { 'stats.activeDirectReferrals': 1 } },
+        user.referrerId,
+        {
+          $addToSet: { activeReferrals: user._id },
+          $inc: {
+            'stats.totalReferrals': 1,
+            'stats.activeDirectReferrals': 1
+          }
+        },
         { session }
       );
     }
 
-    // 6. SUCCESS: Commit changes to DB permanently
+    // Distribute referral commissions up 4 levels
+    await distributeReferralCommissions(user, 'activation', session);
+
     await session.commitTransaction();
-    session.endSession();
+
+    const freshUser = await User.findById(user._id);
+    const token = generateToken(freshUser._id);
+
+    console.log(`🎉 ACTIVATION: ${freshUser.username} activated package | KES ${ACTIVATION_FEE} deducted`);
 
     res.json({
-      message: '✅ Package activated and commissions paid.',
-      balance: user.primaryWallet.balance
+      message: '🎉 Package activated! Welcome to TechGeo Network. Start earning now.',
+      token,
+      user: userPayload(freshUser)
     });
-
   } catch (error) {
-    // 7. FAILURE: Rollback (Undo everything)
-    // User gets their 700 KES back instantly
     await session.abortTransaction();
+    console.error('Activation error:', error.message);
+    res.status(500).json({ error: error.message });
+  } finally {
     session.endSession();
+  }
+});
 
-    console.error('❌ ACTIVATION FAILED - ROLLBACK EXECUTED:', error.message);
-    res.status(400).json({ error: `Activation failed: ${error.message}. Balance restored.` });
+// ==================== GET CURRENT USER ====================
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    res.json({ user: userPayload(user) });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
