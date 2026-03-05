@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechGeo — Admin Panel</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    :root{--primary:#16a34a;--primary-dark:#15803d;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-500:#6b7280;--gray-700:#374151;--radius:.65rem;--shadow:0 2px 12px rgba(0,0,0,.07)}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',system-ui,sans-serif;color:var(--gray-700);background:var(--gray-50);line-height:1.55;font-size:.9rem}
+    .topnav{background:#111827;padding:0 1.25rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .logo{color:#fff;font-weight:800;font-size:1.1rem;display:flex;align-items:center;gap:.4rem;text-decoration:none}
+    .logo svg{stroke:#4ade80}
+    /* TABS */
+    .tabs-wrap{background:#fff;border-bottom:2px solid var(--gray-200);padding:0 1.25rem;overflow-x:auto;white-space:nowrap;position:sticky;top:56px;z-index:90}
+    .tab-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.7rem 1rem;border:none;background:none;font-weight:600;font-size:.82rem;cursor:pointer;color:var(--gray-500);border-bottom:2.5px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:.15s}
+    .tab-btn:hover{color:var(--gray-700)}
+    .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
+    /* CONTENT */
+    .tab-content{display:none;padding:1.25rem;max-width:1200px;margin:0 auto}
+    .tab-content.active{display:block}
+    /* CARDS */
+    .card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:1.25rem}
+    .card-header{background:var(--gray-50);padding:.65rem 1rem;border-bottom:1px solid var(--gray-200);font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:space-between}
+    .card-body{padding:1rem}
+    /* USER BOXES */
+    .user-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+    .user-box{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow)}
+    .user-box-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.65rem}
+    .user-avatar{width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;flex-shrink:0}
+    .user-info{flex:1;margin:0 .75rem}
+    .user-name{font-weight:700;font-size:.88rem}
+    .user-sub{font-size:.75rem;color:var(--gray-500);margin:.1rem 0}
+    .user-stats{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.65rem;padding:.5rem;background:var(--gray-50);border-radius:.4rem}
+    .user-stat{text-align:center}<br>
+    .user-stat-v{font-weight:800;font-size:.9rem;color:var(--gray-700)}
+    .user-stat-l{font-size:.65rem;color:var(--gray-500);text-transform:uppercase}
+    .user-actions{display:flex;gap:.4rem;flex-wrap:wrap}
+    /* WITHDRAWAL BOXES */
+    .wd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
+    .wd-box{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow);border-left:4px solid #f59e0b}
+    .wd-box.completed{border-left-color:#16a34a}
+    .wd-box.rejected{border-left-color:#ef4444}
+    /* TASK BOXES (pending reviews) */
+    .review-box{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;margin-bottom:.75rem;border-left:4px solid #8b5cf6}
+    /* STATS GRID */
+    .stats-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.85rem;margin-bottom:1.25rem}
+    .stat-box{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;text-align:center;box-shadow:var(--shadow)}
+    .stat-box-v{font-size:1.6rem;font-weight:800;color:var(--primary)}
+    .stat-box-l{font-size:.72rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.04em;margin-top:.15rem}
+    /* BADGES */
+    .badge{display:inline-block;padding:.15rem .55rem;border-radius:999px;font-size:.72rem;font-weight:700}
+    .badge-green{background:#dcfce7;color:#16a34a}
+    .badge-yellow{background:#fef3c7;color:#b45309}
+    .badge-red{background:#fee2e2;color:#dc2626}
+    .badge-blue{background:#dbeafe;color:#1e40af}
+    .badge-gray{background:var(--gray-100);color:var(--gray-500)}
+    /* FORMS */
+    .form-group{margin-bottom:.85rem}
+    .form-label{display:block;font-weight:600;font-size:.8rem;margin-bottom:.3rem;color:var(--gray-700)}
+    .form-control{width:100%;padding:.5rem .75rem;border:1.5px solid var(--gray-200);border-radius:.45rem;font-size:.88rem;outline:none;transition:.15s}
+    .form-control:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(22,163,74,.1)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.3rem;padding:.4rem .9rem;border-radius:.4rem;font-weight:600;font-size:.8rem;cursor:pointer;border:none;transition:.15s;text-decoration:none}
+    .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
+    .btn-danger{background:#ef4444;color:#fff}.btn-danger:hover{background:#dc2626}
+    .btn-warning{background:#f59e0b;color:#fff}.btn-warning:hover{background:#d97706}
+    .btn-ghost{background:none;border:1px solid var(--gray-200);color:var(--gray-700)}.btn-ghost:hover{background:var(--gray-100)}
+    .btn-sm{padding:.28rem .65rem;font-size:.75rem}
+    .w-full{width:100%}
+    .mt-1{margin-top:.85rem}
+    /* MSG */
+    .msg{padding:.55rem .85rem;border-radius:.4rem;font-size:.82rem;margin-bottom:.75rem}
+    .msg-ok{background:#dcfce7;color:#16a34a;border:1px solid #86efac}
+    .msg-err{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5}
+    /* SEARCH */
+    .search-input{padding:.45rem .75rem;border:1.5px solid var(--gray-200);border-radius:.45rem;font-size:.85rem;width:100%;max-width:260px;outline:none}
+    .search-input:focus{border-color:var(--primary)}
+    /* DEPOSIT DROPDOWN */
+    .search-results{border:1px solid var(--gray-200);border-radius:.4rem;background:#fff;margin-top:.25rem;max-height:200px;overflow-y:auto}
+    .search-result-item{padding:.5rem .75rem;cursor:pointer;font-size:.82rem;border-bottom:1px solid var(--gray-100)}
+    .search-result-item:hover{background:var(--gray-50)}
+    @media(max-width:640px){.form-row{grid-template-columns:1fr}.form-row-3{grid-template-columns:1fr 1fr}.user-grid{grid-template-columns:1fr}.wd-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="/admin.html" class="logo">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M6 6L4 4M18 18l2 2M6 18l-2 2M18 6l2-2"/><circle cx="12" cy="12" r="4"/></svg>
+    TechGeo Admin
+  </a>
+  <div style="display:flex;align-items:center;gap:.75rem">
+    <span id="adminName" style="color:#9ca3af;font-size:.82rem"></span>
+    <button class="btn btn-danger btn-sm" onclick="adminLogout()">Logout</button>
+  </div>
+</nav>
+
+<!-- TABS -->
+<div class="tabs-wrap">
+  <button class="tab-btn active" data-tab="overview">📊 Overview</button>
+  <button class="tab-btn" data-tab="deposits">💰 Deposits</button>
+  <button class="tab-btn" data-tab="users">👥 Users</button>
+  <button class="tab-btn" data-tab="blogs">📝 Blogs</button>
+  <button class="tab-btn" data-tab="surveys">📋 Surveys</button>
+  <button class="tab-btn" data-tab="writing">✍️ Writing</button>
+  <button class="tab-btn" data-tab="transcription">🎙️ Transcription</button>
+  <button class="tab-btn" data-tab="dataentry">📂 Data Entry</button>
+  <button class="tab-btn" data-tab="withdrawals">💸 Withdrawals</button>
+</div>
+
+<!-- ============ OVERVIEW ============ -->
+<div class="tab-content active" id="tab-overview">
+  <div class="stats-g">
+    <div class="stat-box"><div class="stat-box-v" id="ovTotalUsers">—</div><div class="stat-box-l">Total Users</div></div>
+    <div class="stat-box"><div class="stat-box-v" id="ovActiveUsers">—</div><div class="stat-box-l">Active Users</div></div>
+    <div class="stat-box"><div class="stat-box-v" id="ovNotActivated">—</div><div class="stat-box-l">Not Activated</div></div>
+    <div class="stat-box"><div class="stat-box-v" id="ovPendingWithdrawals">—</div><div class="stat-box-l">Pending Withdrawals</div></div>
+  </div>
+  <h3 style="margin-bottom:.75rem">Pending Reviews</h3>
+  <div class="stats-g">
+    <div class="stat-box" style="cursor:pointer" onclick="switchTab('blogs')"><div class="stat-box-v" id="ovBlogs">0</div><div class="stat-box-l">📝 Blog Reviews</div></div>
+    <div class="stat-box" style="cursor:pointer" onclick="switchTab('surveys')"><div class="stat-box-v" id="ovSurveys">0</div><div class="stat-box-l">📋 Survey Reviews</div></div>
+    <div class="stat-box" style="cursor:pointer" onclick="switchTab('writing')"><div class="stat-box-v" id="ovWriting">0</div><div class="stat-box-l">✍️ Writing</div></div>
+    <div class="stat-box" style="cursor:pointer" onclick="switchTab('transcription')"><div class="stat-box-v" id="ovTranscription">0</div><div class="stat-box-l">🎙️ Transcription</div></div>
+    <div class="stat-box" style="cursor:pointer" onclick="switchTab('dataentry')"><div class="stat-box-v" id="ovDataentry">0</div><div class="stat-box-l">📂 Data Entry</div></div>
+  </div>
+</div>
+
+<!-- ============ DEPOSITS ============ -->
+<div class="tab-content" id="tab-deposits">
+  <div class="card" style="max-width:500px">
+    <div class="card-header">💰 Deposit Balance to User</div>
+    <div class="card-body">
+      <div id="depositMsg" class="msg" style="display:none"></div>
+      <div class="form-group">
+        <label class="form-label">Search User (username or email)</label>
+        <input type="text" id="depositSearch" class="form-control" placeholder="Type to search...">
+        <div id="depositSearchResults" class="search-results" style="display:none"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Selected User</label>
+        <input type="text" id="depositUserDisplay" class="form-control" readonly placeholder="Will fill on selection" style="background:var(--gray-50)">
+        <input type="hidden" id="depositUserId">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Amount (KES)</label>
+          <input type="number" id="depositAmount" class="form-control" placeholder="700" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Reference (M-Pesa ID)</label>
+          <input type="text" id="depositReference" class="form-control" placeholder="Optional">
+        </div>
+      </div>
+      <button onclick="doDeposit()" class="btn btn-primary w-full">Deposit to User Wallet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ USERS ============ -->
+<div class="tab-content" id="tab-users">
+  <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
+    <h3>User Management</h3>
+    <select id="userFilterStatus" class="form-control" style="width:auto">
+      <option value="all">All Status</option><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option>
+    </select>
+    <select id="userFilterPackage" class="form-control" style="width:auto">
+      <option value="all">All Packages</option><option value="not_active">Not Activated</option><option value="normal">Activated</option>
+    </select>
+    <button onclick="loadAdminUsers()" class="btn btn-ghost btn-sm">Filter</button>
+  </div>
+  <div id="adminUsersList"></div>
+</div>
+
+<!-- ============ BLOGS ============ -->
+<div class="tab-content" id="tab-blogs">
+  <div class="card">
+    <div class="card-header">Create New Blog Task</div>
+    <div class="card-body">
+      <div id="createBlogMsg" class="msg" style="display:none"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Title</label><input type="text" id="blogTitle" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Category</label><input type="text" id="blogCategory" class="form-control" placeholder="general"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description (shown to users)</label><input type="text" id="blogDescription" class="form-control" required></div>
+      <div class="form-group"><label class="form-label">Full Instructions / Content</label><textarea id="blogContent" class="form-control" rows="5" required></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Points Reward</label><input type="number" id="blogReward" class="form-control" value="100" min="1"></div>
+        <div class="form-group"><label class="form-label">Max Writers (slots)</label><input type="number" id="blogMaxBidders" class="form-control" value="50" min="1"></div>
+      </div>
+      <button onclick="createBlog()" class="btn btn-primary">Create Blog Task</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">All Blog Tasks <button onclick="loadAdminBlogs()" class="btn btn-ghost btn-sm">Refresh</button></div>
+    <div id="adminBlogsList" class="card-body">Loading...</div>
+  </div>
+  <div class="card">
+    <div class="card-header">Pending Blog Submissions</div>
+    <div id="adminBlogSubmissions" class="card-body">Select a blog task above to review submissions.</div>
+  </div>
+</div>
+
+<!-- ============ SURVEYS ============ -->
+<div class="tab-content" id="tab-surveys">
+  <div class="card">
+    <div class="card-header">Create New Survey</div>
+    <div class="card-body">
+      <div id="createSurveyMsg" class="msg" style="display:none"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Title</label><input type="text" id="surveyTitle" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Max Responses</label><input type="number" id="surveyMaxResponses" class="form-control" value="100" min="1"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><input type="text" id="surveyDescription" class="form-control" required></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Points Reward</label><input type="number" id="surveyReward" class="form-control" value="100" min="1"></div>
+      </div>
+      <div id="questionsBuilder">
+        <label class="form-label">Questions</label>
+        <div id="questionsList"></div>
+        <button type="button" onclick="addQuestion()" class="btn btn-ghost btn-sm mt-1">+ Add Question</button>
+      </div>
+      <button onclick="createSurvey()" class="btn btn-primary mt-1">Create Survey</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">All Surveys <button onclick="loadAdminSurveys()" class="btn btn-ghost btn-sm">Refresh</button></div>
+    <div id="adminSurveysList" class="card-body">Loading...</div>
+  </div>
+  <div class="card">
+    <div class="card-header">Pending Survey Submissions</div>
+    <div id="adminSurveySubmissions" class="card-body">Select a survey above to review submissions.</div>
+  </div>
+</div>
+
+<!-- ============ WRITING ============ -->
+<div class="tab-content" id="tab-writing">
+  <div class="card">
+    <div class="card-header">Create Writing Job</div>
+    <div class="card-body">
+      <div id="createWritingMsg" class="msg" style="display:none"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Title</label><input type="text" id="writingJobTitle" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Word Count (e.g. 500-800)</label><input type="text" id="writingJobWordCount" class="form-control" placeholder="optional"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><input type="text" id="writingJobDesc" class="form-control" required></div>
+      <div class="form-group"><label class="form-label">Full Instructions</label><textarea id="writingJobInstructions" class="form-control" rows="4" required></textarea></div>
+      <div class="form-row-3">
+        <div class="form-group"><label class="form-label">Points Reward</label><input type="number" id="writingJobReward" class="form-control" value="100" min="1"></div>
+        <div class="form-group"><label class="form-label">Max Workers (slots)</label><input type="number" id="writingJobMaxWorkers" class="form-control" value="50" min="1"></div>
+        <div class="form-group"><label class="form-label">Deadline (optional)</label><input type="date" id="writingJobDeadline" class="form-control"></div>
+      </div>
+      <button onclick="createWritingJob()" class="btn btn-primary">Create Writing Job</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">All Writing Jobs <button onclick="loadAdminWritingJobs()" class="btn btn-ghost btn-sm">Refresh</button></div>
+    <div id="adminWritingJobsList" class="card-body">Loading...</div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="writingReviewHeader">Pending Writing Reviews</div>
+    <div id="adminWritingSubmissions" class="card-body">Click "Review" on a job above.</div>
+  </div>
+</div>
+
+<!-- ============ TRANSCRIPTION ============ -->
+<div class="tab-content" id="tab-transcription">
+  <div class="card">
+    <div class="card-header">Create Transcription Job (Upload Audio)</div>
+    <div class="card-body">
+      <div id="createTranscriptionMsg" class="msg" style="display:none"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Title</label><input type="text" id="transcriptionJobTitle" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Description</label><input type="text" id="transcriptionJobDesc" class="form-control" required></div>
+      </div>
+      <div class="form-group"><label class="form-label">Instructions for transcribers</label><textarea id="transcriptionJobInstructions" class="form-control" rows="3" required></textarea></div>
+      <div class="form-group"><label class="form-label">Audio File (MP3, WAV, M4A — max 50MB)</label><input type="file" id="transcriptionJobAudio" class="form-control" accept=".mp3,.wav,.m4a,.ogg,.webm" required></div>
+      <div class="form-row-3">
+        <div class="form-group"><label class="form-label">Points Reward</label><input type="number" id="transcriptionJobReward" class="form-control" value="50" min="1"></div>
+        <div class="form-group"><label class="form-label">Max Workers</label><input type="number" id="transcriptionJobMaxWorkers" class="form-control" value="50" min="1"></div>
+        <div class="form-group"><label class="form-label">Deadline (optional)</label><input type="date" id="transcriptionJobDeadline" class="form-control"></div>
+      </div>
+      <button onclick="createTranscriptionJob()" class="btn btn-primary">Upload & Create</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">All Transcription Jobs <button onclick="loadAdminTranscriptionJobs()" class="btn btn-ghost btn-sm">Refresh</button></div>
+    <div id="adminTranscriptionJobsList" class="card-body">Loading...</div>
+  </div>
+  <div class="card">
+    <div class="card-header">Pending Transcription Reviews</div>
+    <div id="adminTranscriptionSubmissions" class="card-body">Click "Review" on a job above.</div>
+  </div>
+</div>
+
+<!-- ============ DATA ENTRY ============ -->
+<div class="tab-content" id="tab-dataentry">
+  <div class="card">
+    <div class="card-header">Create Data Entry Job</div>
+    <div class="card-body">
+      <div id="createDataentryMsg" class="msg" style="display:none"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Title</label><input type="text" id="dataentryJobTitle" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Description</label><input type="text" id="dataentryJobDesc" class="form-control" required></div>
+      </div>
+      <div class="form-group"><label class="form-label">Instructions</label><textarea id="dataentryJobInstructions" class="form-control" rows="3" required></textarea></div>
+      <div class="form-group"><label class="form-label">Template File (optional — PDF/Excel/Word)</label><input type="file" id="dataentryJobTemplate" class="form-control" accept=".pdf,.doc,.docx,.xlsx,.csv"></div>
+      <div class="form-row-3">
+        <div class="form-group"><label class="form-label">Points Reward</label><input type="number" id="dataentryJobReward" class="form-control" value="75" min="1"></div>
+        <div class="form-group"><label class="form-label">Max Workers</label><input type="number" id="dataentryJobMaxWorkers" class="form-control" value="50" min="1"></div>
+        <div class="form-group"><label class="form-label">Deadline (optional)</label><input type="date" id="dataentryJobDeadline" class="form-control"></div>
+      </div>
+      <button onclick="createDataentryJob()" class="btn btn-primary">Create Data Entry Job</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">All Data Entry Jobs <button onclick="loadAdminDataentryJobs()" class="btn btn-ghost btn-sm">Refresh</button></div>
+    <div id="adminDataentryJobsList" class="card-body">Loading...</div>
+  </div>
+  <div class="card">
+    <div class="card-header">Pending Data Entry Reviews</div>
+    <div id="adminDataentrySubmissions" class="card-body">Click "Review" on a job above.</div>
+  </div>
+</div>
+
+<!-- ============ WITHDRAWALS ============ -->
+<div class="tab-content" id="tab-withdrawals">
+  <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
+    <h3>Withdrawal Requests</h3>
+    <select id="withdrawFilterStatus" class="form-control" style="width:auto">
+      <option value="pending">Pending</option><option value="completed">Completed</option><option value="rejected">Rejected</option>
+    </select>
+    <button onclick="loadAdminWithdrawals()" class="btn btn-ghost btn-sm">Load</button>
+  </div>
+  <div id="adminWithdrawalsList"></div>
+</div>
+
+<script>
+// ============ AUTH GUARD ============
+const _adminToken = localStorage.getItem('adminToken') || localStorage.getItem('token');
+const _adminUser = (() => { try { return JSON.parse(localStorage.getItem('user')||'null'); } catch(e){return null;} })();
+if (!_adminToken || !_adminUser || !_adminUser.isAdmin) { window.location.href = '/index.html'; }
+document.getElementById('adminName').textContent = _adminUser ? '@'+_adminUser.username : '';
+
+function adminLogout() { localStorage.clear(); window.location.href = '/index.html'; }
+function aHeaders() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_adminToken}` }; }
+async function aFetch(url, opts={}) {
+  const res = await fetch(url, { ...opts, headers: aHeaders() });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Admin request failed');
+  return data;
+}
+function showMsg(id, text, ok=true) {
+  const el = document.getElementById(id);
+  el.textContent = text; el.className = 'msg ' + (ok ? 'msg-ok' : 'msg-err'); el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+// ============ TABS ============
+let questionCount = 0;
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === name));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + name));
+  const loaders = { overview: loadAdminDashboard, users: loadAdminUsers, blogs: loadAdminBlogs, surveys: loadAdminSurveys, writing: loadAdminWritingJobs, transcription: loadAdminTranscriptionJobs, dataentry: loadAdminDataentryJobs, withdrawals: loadAdminWithdrawals };
+  if (loaders[name]) loaders[name]();
+}
+document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
+
+// ============ OVERVIEW ============
+async function loadAdminDashboard() {
+  try {
+    const data = await aFetch('/api/admin/dashboard/stats');
+    document.getElementById('ovTotalUsers').textContent = data.users?.total || 0;
+    document.getElementById('ovActiveUsers').textContent = data.users?.active || 0;
+    document.getElementById('ovNotActivated').textContent = data.packages?.notActivated || 0;
+    document.getElementById('ovPendingWithdrawals').textContent = data.pendingWithdrawals || 0;
+    document.getElementById('ovBlogs').textContent = data.pendingReviews?.blogs || 0;
+    document.getElementById('ovSurveys').textContent = data.pendingReviews?.surveys || 0;
+    document.getElementById('ovWriting').textContent = data.pendingReviews?.writing || 0;
+    document.getElementById('ovTranscription').textContent = data.pendingReviews?.transcription || 0;
+    document.getElementById('ovDataentry').textContent = data.pendingReviews?.dataEntry || 0;
+  } catch(err) { console.error('Overview:', err); }
+}
+
+// ============ DEPOSITS ============
+let depositSearchTimer;
+document.getElementById('depositSearch').addEventListener('input', function() {
+  clearTimeout(depositSearchTimer);
+  const q = this.value.trim();
+  const res = document.getElementById('depositSearchResults');
+  if (q.length < 2) { res.style.display = 'none'; return; }
+  depositSearchTimer = setTimeout(async () => {
+    try {
+      const data = await aFetch(`/api/admin/users/all?status=all&limit=8`);
+      const filtered = data.users.filter(u => u.username.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase())).slice(0,6);
+      if (!filtered.length) { res.style.display = 'none'; return; }
+      res.style.display = 'block';
+      res.innerHTML = filtered.map(u => `<div class="search-result-item" onclick="selectDepUser('${u.id}','${u.username}','${u.email}')"><strong>${u.username}</strong> — ${u.email} | KES ${u.walletBalance}</div>`).join('');
+    } catch(e) {}
+  }, 300);
+});
+function selectDepUser(id, username, email) {
+  document.getElementById('depositUserId').value = id;
+  document.getElementById('depositUserDisplay').value = `${username} (${email})`;
+  document.getElementById('depositSearch').value = '';
+  document.getElementById('depositSearchResults').style.display = 'none';
+}
+async function doDeposit() {
+  const userId = document.getElementById('depositUserId').value;
+  const amount = parseFloat(document.getElementById('depositAmount').value);
+  const reference = document.getElementById('depositReference').value;
+  if (!userId) { showMsg('depositMsg', '❌ Select a user first.', false); return; }
+  if (!amount || amount < 1) { showMsg('depositMsg', '❌ Enter a valid amount.', false); return; }
+  try {
+    const data = await aFetch('/api/admin/deposit-balance', { method: 'POST', body: JSON.stringify({ userId, amount, reason: 'activation_deposit', reference }) });
+    showMsg('depositMsg', `✅ Deposited KES ${amount} to ${data.user?.username}. New balance: KES ${data.transaction?.newBalance}`, true);
+    document.getElementById('depositAmount').value = ''; document.getElementById('depositReference').value = '';
+  } catch(err) { showMsg('depositMsg', '❌ ' + err.message, false); }
+}
+
+// ============ USERS ============
+async function loadAdminUsers() {
+  const status = document.getElementById('userFilterStatus')?.value || 'all';
+  const pkg = document.getElementById('userFilterPackage')?.value || 'all';
+  const el = document.getElementById('adminUsersList');
+  el.innerHTML = 'Loading...';
+  try {
+    const data = await aFetch(`/api/admin/users/all?status=${status}&packageType=${pkg}`);
+    if (!data.users.length) { el.innerHTML = '<p style="color:var(--gray-500)">No users found.</p>'; return; }
+    el.innerHTML = `<p style="font-size:.8rem;color:var(--gray-500);margin-bottom:.75rem">Showing ${data.users.length} of ${data.total} users</p>
+    <div class="user-grid">` +
+    data.users.map(u => {
+      const initials = u.username.slice(0,2).toUpperCase();
+      const pkgBadge = u.packageType === 'not_active' ? '<span class="badge badge-yellow">Not Activated</span>' : '<span class="badge badge-green">Active</span>';
+      const statusBadge = u.status === 'active' ? '<span class="badge badge-green">Active</span>' : u.status === 'suspended' ? '<span class="badge badge-red">Suspended</span>' : '<span class="badge badge-gray">Pending</span>';
+      return `<div class="user-box">
+        <div class="user-box-top">
+          <div class="user-avatar">${initials}</div>
+          <div class="user-info">
+            <div class="user-name">${u.username}</div>
+            <div class="user-sub">${u.email}</div>
+            <div class="user-sub">${u.phone || '—'}</div>
+          </div>
+          <div>${statusBadge}</div>
+        </div>
+        <div class="user-stats">
+          <div class="user-stat"><div class="user-stat-v">KES ${u.walletBalance}</div><div class="user-stat-l">Wallet</div></div>
+          <div class="user-stat"><div class="user-stat-v">${u.pointsBalance} pts</div><div class="user-stat-l">Points</div></div>
+        </div>
+        <div style="margin-bottom:.5rem">${pkgBadge} ${u.referredBy ? `<span style="font-size:.72rem;color:var(--gray-500)">via ${u.referredBy.username}</span>` : ''}</div>
+        <div class="user-actions">
+          <button onclick="quickDeposit('${u.id}','${u.username}')" class="btn btn-primary btn-sm">💰 Deposit</button>
+          ${u.status !== 'suspended' ? `<button onclick="suspendUser('${u.id}','${u.username}')" class="btn btn-warning btn-sm">⚠️ Suspend</button>` : `<button onclick="unsuspendUser('${u.id}','${u.username}')" class="btn btn-ghost btn-sm">✅ Unsuspend</button>`}
+          ${u.packageType === 'not_active' ? `<button onclick="deleteUser('${u.id}','${u.username}')" class="btn btn-danger btn-sm">🗑️ Delete</button>` : ''}
+        </div>
+      </div>`;
+    }).join('') + '</div>';
+  } catch(err) { el.innerHTML = `<p style="color:#dc2626">${err.message}</p>`; }
+}
+
+function quickDeposit(userId, username) {
+  const amount = prompt(`Deposit amount (KES) to ${username}:`);
+  if (!amount || isNaN(amount)) return;
+  const ref = prompt('M-Pesa reference (optional):') || '';
+  aFetch('/api/admin/deposit-balance', { method: 'POST', body: JSON.stringify({ userId, amount: parseFloat(amount), reason: 'activation_deposit', reference: ref }) })
+    .then(data => { alert(`✅ Deposited KES ${amount} to ${username}.`); loadAdminUsers(); })
+    .catch(err => alert('❌ ' + err.message));
+}
+function suspendUser(id, username) {
+  if (!confirm(`Suspend ${username}?`)) return;
+  aFetch(`/api/admin/users/${id}/suspend`, { method: 'POST' }).then(() => { alert('User suspended.'); loadAdminUsers(); }).catch(err => alert('❌ ' + err.message));
+}
+function unsuspendUser(id, username) {
+  if (!confirm(`Unsuspend ${username}?`)) return;
+  aFetch(`/api/admin/users/${id}/unsuspend`, { method: 'POST' }).then(() => { alert('User unsuspended.'); loadAdminUsers(); }).catch(err => alert('❌ ' + err.message));
+}
+function deleteUser(id, username) {
+  if (!confirm(`DELETE user ${username}? This cannot be undone.`)) return;
+  aFetch(`/api/admin/users/${id}`, { method: 'DELETE' }).then(() => { alert('User deleted.'); loadAdminUsers(); }).catch(err => alert('❌ ' + err.message));
+}
+
+// ============ BLOGS ============
+async function createBlog() {
+  try {
+    await aFetch('/api/admin/blogs/create', { method: 'POST', body: JSON.stringify({
+      title: document.getElementById('blogTitle').value,
+      description: document.getElementById('blogDescription').value,
+      content: document.getElementById('blogContent').value,
+      category: document.getElementById('blogCategory').value || 'general',
+      maxBidders: parseInt(document.getElementById('blogMaxBidders').value),
+      reward: parseInt(document.getElementById('blogReward').value)
+    })});
+    showMsg('createBlogMsg', '✅ Blog task created!', true);
+    ['blogTitle','blogDescription','blogContent'].forEach(id => document.getElementById(id).value = '');
+    loadAdminBlogs();
+  } catch(err) { showMsg('createBlogMsg', '❌ ' + err.message, false); }
+}
+
+async function loadAdminBlogs() {
+  const el = document.getElementById('adminBlogsList');
+  try {
+    const data = await aFetch('/api/admin/blogs/all');
+    const blogs = data.blogs || [];
+    if (!blogs.length) { el.innerHTML = '<p style="color:var(--gray-500)">No blogs yet.</p>'; return; }
+    el.innerHTML = blogs.map(b => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:.4rem">
+        <div><strong>${b.title}</strong> <span class="badge ${b.status==='open'?'badge-green':'badge-gray'}">${b.status}</span>
+          <div style="font-size:.75rem;color:var(--gray-500);margin-top:.1rem">${b.currentBidders}/${b.maxBidders} writers · ${b.pendingReview||0} pending · ${b.reward}pts</div>
+        </div>
+        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
+          ${(b.pendingReview||0)>0?`<button onclick="loadBlogSubmissions('${b.id}','${b.title}')" class="btn btn-primary btn-sm">Review (${b.pendingReview})</button>`:''}
+          <button onclick="editBlog('${b.id}')" class="btn btn-ghost btn-sm">✏️ Edit</button>
+          <button onclick="deleteBlog('${b.id}')" class="btn btn-danger btn-sm">🗑️</button>
+        </div>
+      </div>`).join('');
+    // Auto-load pending
+    const pending = blogs.filter(b => (b.pendingReview||0)>0);
+    if (pending.length) loadBlogSubmissions(pending[0].id, pending[0].title);
+    else document.getElementById('adminBlogSubmissions').innerHTML = '<p style="color:var(--gray-500)">No pending blog reviews.</p>';
+  } catch(err) { el.innerHTML = `<p style="color:#dc2626">${err.message}</p>`; }
+}
+
+async function loadBlogSubmissions(blogId, title) {
+  const el = document.getElementById('adminBlogSubmissions');
+  el.innerHTML = 'Loading...';
+  try {
+    const data = await aFetch(`/api/admin/blogs/${blogId}/submissions`);
+    const pending = (data.submissions||[]).filter(s => s.status==='submitted');
+    if (!pending.length) { el.innerHTML = `<p style="color:var(--gray-500)">No pending submissions for "${title||''}".</p>`; return; }
+    el.innerHTML = `<p style="font-weight:700;margin-bottom:.75rem">📝 ${title||'Blog'} — ${pending.length} pending</p>` + pending.map(s => `
+      <div class="review-box" style="border-left-color:#f59e0b">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem">
+          <div><strong>${s.username}</strong> <span style="font-size:.75rem;color:var(--gray-500)">(${s.email})</span></div>
+          <span style="font-size:.72rem;color:var(--gray-500)">${new Date(s.submittedAt).toLocaleString()}</span>
+        </div>
+        <details style="margin:.4rem 0"><summary style="cursor:pointer;font-size:.82rem;color:#f59e0b;font-weight:600">View Submission</summary>
+          <p style="margin:.4rem 0;font-size:.82rem;background:var(--gray-50);padding:.65rem;border-radius:.35rem;white-space:pre-wrap">${s.content||'(no content)'}</p>
+        </details>
+        <div style="display:flex;gap:.4rem;margin-top:.5rem">
+          <button onclick="adminApproveBlog('${blogId}','${s.userId}')" class="btn btn-primary btn-sm">✅ Approve</button>
+          <button onclick="adminRejectBlog('${blogId}','${s.userId}')" class="btn btn-danger btn-sm">❌ Reject</button>
+        </div>
+      </div>`).join('');
+  } catch(err) { el.innerHTML = `<p style="color:#dc2626">${err.message}</p>`; }
+}
+
+async function adminApproveBlog(blogId, userId) {
+  try { await aFetch(`/api/admin/blogs/${blogId}/approve/${userId}`, {method:'POST'}); alert('✅ Approved!'); loadAdminBlogs(); } catch(err) { alert('❌ '+err.message); }
+}
+async function adminRejectBlog(blogId, userId) {
+  const notes = prompt('Reason for rejection:') || 'Rejected';
+  try { await aFetch(`/api/admin/blogs/${blogId}/reject/${userId}`, {method:'POST', body:JSON.stringify({reviewNotes:notes})}); alert('Rejected.'); loadAdminBlogs(); } catch(err) { alert('❌ '+err.message); }
+}
+function editBlog(id) { alert('Edit functionality — POST to /api/admin/blogs/'+id+'/edit'); }
+async function deleteBlog(id) {
+  if (!confirm('Delete this blog?')) return;
+  try { await aFetch(`/api/admin/blogs/${id}`, {method:'DELETE'}); loadAdminBlogs(); } catch(err) { alert('❌ '+err.message); }
+}
+
+// ============ SURVEYS ============
+function addQuestion() {
+  const i = questionCount++;
+  const div = document.createElement('div');
+  div.id = `question_${i}`;
+  div.style.cssText = 'border:1px solid var(--gray-200);padding:.75rem;border-radius:.45rem;margin-bottom:.5rem';
+  div.innerHTML = `<div style="display:flex;justify-content:space-between;margin-bottom:.5rem"><strong style="font-size:.82rem">Question ${i+1}</strong><button type="button" onclick="removeQuestion(${i})" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:.8rem">Remove</button></div>
+  <div class="form-group"><input type="text" name="qtext_${i}" class="form-control" placeholder="Question text" required></div>
+  <div class="form-group"><select name="qtype_${i}" class="form-control" onchange="toggleOptions(${i},this.value)"><option value="text">Text Answer</option><option value="multiple_choice">Multiple Choice</option><option value="rating">Rating 1-5</option><option value="yes_no">Yes/No</option></select></div>
+  <div id="qoptions_${i}" style="display:none"><label class="form-label">Options (one per line)</label><textarea name="qoptions_${i}" class="form-control" rows="3" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea></div>`;
+  document.getElementById('questionsList').appendChild(div);
+}
+function removeQuestion(i) { const el = document.getElementById(`question_${i}`); if(el) el.remove(); }
+function toggleOptions(i, type) { document.getElementById(`qoptions_${i}`).style.display = type==='multiple_choice'?'block':'none'; }
+
+async function createSurvey() {
+  const questions = [];
+  document.querySelectorAll('[id^="question_"]').forEach(div => {
+    const i = div.id.split('_')[1];
+    const text = div.querySelector(`[name="qtext_${i}"]`)?.value.trim();
+    const type = div.querySelector(`[name="qtype_${i}"]`)?.value;
+    const optRaw = div.querySelector(`[name="qoptions_${i}"]`)?.value||'';
+    const options = optRaw.split('\n').map(s=>s.trim()).filter(Boolean);
+    if (text) questions.push({question:text,type,options,required:true});
+  });
+  if (!questions.length) { showMsg('createSurveyMsg','❌ Add at least one question.',false); return; }
+  try {
+    await aFetch('/api/admin/surveys/create', {method:'POST', body:JSON.stringify({
+      title: document.getElementById('surveyTitle').value,
+      description: document.getElementById('surveyDescription').value,
+      questions,
+      maxResponses: parseInt(document.getElementById('surveyMaxResponses').value),
+      reward: parseInt(document.getElementById('surveyReward').value||'100')
+    })});
+    showMsg('createSurveyMsg','✅ Survey created!',true);
+    document.getElementById('surveyTitle').value=''; document.getElementById('surveyDescription').value='';
+    document.getElementById('questionsList').innerHTML=''; questionCount=0;
+    loadAdminSurveys();
+  } catch(err) { showMsg('createSurveyMsg','❌ '+err.message,false); }
+}
+
+async function loadAdminSurveys() {
+  const el = document.getElementById('adminSurveysList');
+  try {
+    const data = await aFetch('/api/admin/surveys/all');
+    const surveys = data.surveys||[];
+    if (!surveys.length) { el.innerHTML='<p style="color:var(--gray-500)">No surveys yet.</p>'; return; }
+    el.innerHTML = surveys.map(s => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:.4rem">
+        <div><strong>${s.title}</strong> <span class="badge ${s.status==='open'?'badge-green':'badge-gray'}">${s.status}</span>
+          <div style="font-size:.75rem;color:var(--gray-500)">${s.currentResponses}/${s.maxResponses} responses · ${s.pendingReview||0} pending · ${s.reward}pts</div>
+        </div>
+        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
+          ${(s.pendingReview||0)>0?`<button onclick="loadSurveySubmissions('${s.id}','${s.title}')" class="btn btn-primary btn-sm">Review (${s.pendingReview})</button>`:''}
+          <button onclick="deleteSurvey('${s.id}')" class="btn btn-danger btn-sm">🗑️</button>
+        </div>
+      </div>`).join('');
+    const pending = surveys.filter(s=>(s.pendingReview||0)>0);
+    if (pending.length) loadSurveySubmissions(pending[0].id, pending[0].title);
+    else document.getElementById('adminSurveySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending reviews.</p>';
+  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
+}
+
+async function loadSurveySubmissions(surveyId, title) {
+  const el = document.getElementById('adminSurveySubmissions');
+  el.innerHTML = 'Loading...';
+  try {
+    const data = await aFetch(`/api/admin/surveys/${surveyId}/submissions`);
+    const pending = (data.submissions||[]).filter(s=>s.status==='submitted');
+    if (!pending.length) { el.innerHTML=`<p style="color:var(--gray-500)">No pending submissions for "${title||''}".</p>`; return; }
+    el.innerHTML = `<p style="font-weight:700;margin-bottom:.75rem">📋 ${title||'Survey'} — ${pending.length} pending</p>` + pending.map(s => `
+      <div class="review-box" style="border-left-color:#3b82f6">
+        <strong>${s.username}</strong> <span style="font-size:.75rem;color:var(--gray-500)">(${s.email})</span>
+        <details style="margin:.4rem 0"><summary style="cursor:pointer;font-size:.82rem;color:#3b82f6;font-weight:600">View Responses</summary>
+          <div style="margin:.4rem 0;font-size:.82rem;background:var(--gray-50);padding:.65rem;border-radius:.35rem">
+            ${Array.isArray(s.responses)?s.responses.map((r,i)=>`<p style="margin:.2rem 0"><strong>Q${i+1}:</strong> ${r||'—'}</p>`).join(''):'No responses'}
+          </div>
+        </details>
+        <div style="display:flex;gap:.4rem;margin-top:.5rem">
+          <button onclick="adminApproveSurvey('${surveyId}','${s.userId}')" class="btn btn-primary btn-sm">✅ Approve</button>
+          <button onclick="adminRejectSurvey('${surveyId}','${s.userId}')" class="btn btn-danger btn-sm">❌ Reject</button>
+        </div>
+      </div>`).join('');
+  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
+}
+
+async function adminApproveSurvey(surveyId, userId) {
+  try { await aFetch(`/api/admin/surveys/${surveyId}/approve/${userId}`,{method:'POST'}); alert('✅ Approved!'); loadAdminSurveys(); } catch(err) { alert('❌ '+err.message); }
+}
+async function adminRejectSurvey(surveyId, userId) {
+  const notes = prompt('Reason:') || 'Rejected';
+  try { await aFetch(`/api/admin/surveys/${surveyId}/reject/${userId}`,{method:'POST',body:JSON.stringify({reviewNotes:notes})}); alert('Rejected.'); loadAdminSurveys(); } catch(err) { alert('❌ '+err.message); }
+}
+async function deleteSurvey(id) {
+  if (!confirm('Delete survey?')) return;
+  try { await aFetch(`/api/admin/surveys/${id}`,{method:'DELETE'}); loadAdminSurveys(); } catch(err) { alert('❌ '+err.message); }
+}
+
+// ============ WRITING JOBS ============
+async function createWritingJob() {
+  try {
+    await aFetch('/api/admin/writing/create', {method:'POST', body:JSON.stringify({
+      title: document.getElementById('writingJobTitle').value,
+      description: document.getElementById('writingJobDesc').value,
+      instructions: document.getElementById('writingJobInstructions').value,
+      wordCount: document.getElementById('writingJobWordCount').value||null,
+      maxWorkers: parseInt(document.getElementById('writingJobMaxWorkers').value),
+      reward: parseInt(document.getElementById('writingJobReward').value),
+      deadline: document.getElementById('writingJobDeadline').value||null
+    })});
+    showMsg('createWritingMsg','✅ Writing job created!',true);
+    ['writingJobTitle','writingJobDesc','writingJobInstructions','writingJobWordCount'].forEach(id=>document.getElementById(id).value='');
+    loadAdminWritingJobs();
+  } catch(err) { showMsg('createWritingMsg','❌ '+err.message,false); }
+}
+
+async function loadAdminWritingJobs() {
+  const el = document.getElementById('adminWritingJobsList');
+  try {
+    const data = await aFetch('/api/admin/writing/all');
+    const jobs = data.jobs||[];
+    if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No writing jobs yet.</p>'; document.getElementById('adminWritingSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending reviews.</p>'; return; }
+    el.innerHTML = jobs.map(job => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:.4rem">
+        <div><strong>${job.title}</strong> <span class="badge ${job.status==='open'?'badge-green':'badge-gray'}">${job.status}</span>
+          ${job.wordCount?`<span style="font-size:.72rem;color:#1e40af"> | ${job.wordCount}</span>`:''}
+          ${job.deadline?`<span style="font-size:.72rem;color:#b45309"> | Due: ${new Date(job.deadline).toLocaleDateString()}</span>`:''}
+          <div style="font-size:.75rem;color:var(--gray-500)">${job.currentWorkers}/${job.maxWorkers} slots · ${job.pending||0} pending · ${job.reward}pts</div>
+        </div>
+        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
+          ${(job.pending||0)>0?`<button onclick="loadWritingSubmissions('${job.id}','${job.title}')" class="btn btn-primary btn-sm">Review (${job.pending})</button>`:''}
+          <button onclick="editWritingJob('${job.id}')" class="btn btn-ghost btn-sm">✏️</button>
+          <button onclick="markWritingComplete('${job.id}')" class="btn btn-warning btn-sm">✅ Complete</button>
+          <button onclick="deleteWritingJob('${job.id}')" class="btn btn-danger btn-sm">🗑️</button>
+        </div>
+      </div>`).join('');
+    const pending = jobs.filter(j=>(j.pending||0)>0);
+    if (pending.length) loadWritingSubmissions(pending[0].id, pending[0].title);
+    else document.getElementById('adminWritingSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending writing reviews.</p>';
+  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
+}
+
+async function loadWritingSubmissions(jobId, title) {
+  const el = document.getElementById('adminWritingSubmissions');
+  el.innerHTML = 'Loading...';
+  try {
+    const data = await aFetch(`/api/admin/writing/${jobId}/submissions`);
+    const pending = (data.submissions||[]).filter(s=>s.status==='submitted');
+    if (!pending.length) { el.innerHTML=`<p style="color:var(--gray-500)">No pending for "${title||''}".</p>`; return; }
+    el.innerHTML = `<p style="font-weight:700;margin-bottom:.75rem">✍️ ${title||'Writing'} — ${pending.length} pending</p>` + pending.map(s=>`
+      <div class="review-box">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:.3rem;margin-bottom:.4rem">
+          <div><strong>${s.username}</strong> <span style="font-size:.75rem;color:var(--gray-500)">(${s.email})</span></div>
+          <span style="font-size:.72rem;color:var(--gray-500)">${new Date(s.submittedAt).toLocaleString()}</span>
+        </div>
+        <p style="font-size:.82rem;margin:.2rem 0">📎 <a href="${s.fileUrl}" target="_blank" style="color:var(--primary)">View File — ${s.fileName||'download'}</a></p>
+        <div style="display:flex;gap:.4rem;margin-top:.5rem">
+          <button onclick="approveWriting('${jobId}','${s.userId}')" class="btn btn-primary btn-sm">✅ Approve</button>
+          <button onclick="rejectWriting('${jobId}','${s.userId}')" class="btn btn-danger btn-sm">❌ Reject</button>
+        </div>
+      </div>`).join('');
+  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
+}
+
+async function approveWriting(jobId, userId) {
+  const notes = prompt('Notes (optional):') || '';
+  try { await aFetch(`/api/admin/writing/${jobId}/approve/${userId}`,{method:'POST',body:JSON.stringify({notes})}); alert('✅ Approved!'); loadAdminWritingJobs(); } catch(err) { alert('❌ '+err.message); }
+}
+async function rejectWriting(jobId, userId) {
+  const reason = prompt('Reason:') || 'Did not meet requirements';
+  try { await aFetch(`/api/admin/writing/${jobId}/reject/${userId}`,{method:'POST',body:JSON.stringify({reason})}); alert('Rejected.'); loadAdminWritingJobs(); } catch(err) { alert('❌ '+err.message); }
+}
+function editWritingJob(id) { const r = parseInt(prompt('New reward (points):')||'0'); if(!r) return; aFetch(`/api/admin/writing/${id}`,{method:'PUT',body:JSON.stringify({reward:r})}).then(()=>loadAdminWritingJobs()).catch(e=>alert('❌ '+e.message)); }
+async function markWritingComplete(id) { try { await aFetch(`/api/admin/writing/${id}/close`,{method:'POST'}); loadAdminWritingJobs(); } catch(err) { alert('❌ '+err.message); } }
+async function deleteWritingJob(id) { if(!confirm('Delete this writing job?')) return; try { await aFetch(`/api/admin/writing/${id}`,{method:'DELETE'}); loadAdminWritingJobs(); } catch(err) { alert('❌ '+err.message); } }
+
+// ============ TRANSCRIPTION JOBS ============
+async function createTranscriptionJob() {
+  const audioFile = document.getElementById('transcriptionJobAudio').files[0];
+  if (!audioFile) { showMsg('createTranscriptionMsg','❌ Audio file required.',false); return; }
+  const msgEl = document.getElementById('createTranscriptionMsg');
+  msgEl.textContent = 'Uploading audio...'; msgEl.className = 'msg msg-ok'; msgEl.style.display = 'block';
+  try {
+    const fd = new FormData();
+    fd.append('audio', audioFile);
+    fd.append('title', document.getElementById('transcriptionJobTitle').value);
+    fd.append('description', document.getElementById('transcriptionJobDesc').value);
+    fd.append('instructions', document.getElementById('transcriptionJobInstructions').value);
+    fd.append('reward', document.getElementById('transcriptionJobReward').value);
+    fd.append('maxWorkers', document.getElementById('transcriptionJobMaxWorkers').value);
+    const deadline = document.getElementById('transcriptionJobDeadline').value;
+    if (deadline) fd.append('deadline', deadline);
+    const res = await fetch('/api/admin/transcription/create', { method: 'POST', headers: { 'Authorization': `Bearer ${_adminToken}` }, body: fd });
+    const data = await res.json(); if (!res.ok) throw new Error(data.error||'Failed');
+    showMsg('createTranscriptionMsg','✅ Transcription job created!',true);
+    ['transcriptionJobTitle','transcriptionJobDesc','transcriptionJobInstructions'].forEach(id=>document.getElementById(id).value='');
+    loadAdminTranscriptionJobs();
+  } catch(err) { showMsg('createTranscriptionMsg','❌ '+err.message,false); }
+}
+
+async function loadAdminTranscriptionJobs() {
+  const el = document.getElementById('adminTranscriptionJobsList');
+  try {
+    const data = await aFetch('/api/admin/transcription/all');
+    const jobs = data.jobs||[];
+    if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No transcription jobs yet.</p>'; document.getElementById('adminTranscriptionSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
+    el.innerHTML = jobs.map(job => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:.4rem">
+        <div><strong>${job.title}</strong> <span class="badge ${job.status==='open'?'badge-green':'badge-gray'}">${job.status}</span>
+          <div style="font-size:.75rem;color:var(--gray-500)">${job.currentWorkers}/${job.maxWorkers} · ${job.pending||0} pending · ${job.reward}pts</div>
+          <audio src="${job.audioUrl}" controls style="height:26px;margin-top:.2rem"></audio>
+        </div>
+        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
+          ${(job.pending||0)>0?`<button onclick="loadTranscriptionSubmissions('${job.id}','${job.title}')" class="btn btn-primary btn-sm">Review (${job.pending})</button>`:''}
+          <button onclick="markTranscriptionComplete('${job.id}')" class="btn btn-warning btn-sm">✅ Close</button>
+          <button onclick="deleteTranscriptionJob('${job.id}')" class="btn btn-danger btn-sm">🗑️</button>
+        </div>
+      </div>`).join('');
+    const pending = jobs.filter(j=>(j.pending||0)>0);
+    if (pending.length) loadTranscriptionSubmissions(pending[0].id, pending[0].title);
+    else document.getElementById('adminTranscriptionSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>';
+  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
+}
+
+async function loadTranscriptionSubmissions(jobId, title) {
+  const el = document.getElementById('adminTranscriptionSubmissions');
+  el.innerHTML='Loading...';
+  try {
+    const data = await aFetch(`/api/admin/transcription/${jobId}/submissions`);
+    const pending = (data.submissions||[]).filter(s=>s.status==='submitted');
+    if (!pending.length) { el.innerHTML=`<p style="color:var(--gray-500)">No pending for "${title||''}".</p>`; return; }
+    el.innerHTML = `<p style="font-weight:700;margin-bottom:.75rem">🎙️ ${title||'Transcription'} — ${pending.length} pending</p>` + pending.map(s=>`
+      <div class="review-box" style="border-left-color:#6366f1">
+        <strong>${s.username}</strong> <span style="font-size:.75rem;color:var(--gray-500)">(${s.email})</span>
+        <details style="margin:.4rem 0"><summary style="cursor:pointer;font-size:.82rem;color:#6366f1;font-weight:600">View Transcription</summary>
+          <p style="margin:.4rem 0;font-size:.82rem;background:var(--gray-50);padding:.65rem;border-radius:.35rem;white-space:pre-wrap">${s.content||'(empty)'}</p>
+        </details>
+        <div style="display:flex;gap:.4rem;margin-top:.5rem">
+          <button onclick="approveTranscription('${jobId}','${s.userId}')" class="btn btn-primary btn-sm">✅ Approve</button>
+          <button onclick="rejectTranscription('${jobId}','${s.userId}')" class="btn btn-danger btn-sm">❌ Reject</button>
+        </div>
+      </div>`).join('');
+  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
+}
+
+async function approveTranscription(jobId, userId) { try { await aFetch(`/api/admin/transcription/${jobId}/approve/${userId}`,{method:'POST',body:JSON.stringify({notes:''})}); alert('✅'); loadAdminTranscriptionJobs(); } catch(err) { alert('❌ '+err.message); } }
+async function rejectTranscription(jobId, userId) { const r=prompt('Reason:')||''; try { await aFetch(`/api/admin/transcription/${jobId}/reject/${userId}`,{method:'POST',body:JSON.stringify({reason:r})}); loadAdminTranscriptionJobs(); } catch(err) { alert('❌ '+err.message); } }
+async function markTranscriptionComplete(id) { try { await aFetch(`/api/admin/transcription/${id}/close`,{method:'POST'}); loadAdminTranscriptionJobs(); } catch(err) { alert('❌ '+err.message); } }
+async function deleteTranscriptionJob(id) { if(!confirm('Delete?')) return; try { await aFetch(`/api/admin/transcription/${id}`,{method:'DELETE'}); loadAdminTranscriptionJobs(); } catch(err) { alert('❌ '+err.message); } }
+
+// ============ DATA ENTRY JOBS ============
+async function createDataentryJob() {
+  const fd = new FormData();
+  fd.append('title', document.getElementById('dataentryJobTitle').value);
+  fd.append('description', document.getElementById('dataentryJobDesc').value);
+  fd.append('instructions', document.getElementById('dataentryJobInstructions').value);
+  fd.append('reward', document.getElementById('dataentryJobReward').value);
+  fd.append('maxWorkers', document.getElementById('dataentryJobMaxWorkers').value);
+  const deadline = document.getElementById('dataentryJobDeadline').value;
+  if (deadline) fd.append('deadline', deadline);
+  const tplFile = document.getElementById('dataentryJobTemplate').files[0];
+  if (tplFile) fd.append('template', tplFile);
+  try {
+    const res = await fetch('/api/admin/dataentry/create', { method:'POST', headers:{'Authorization':`Bearer ${_adminToken}`}, body:fd });
+    const data = await res.json(); if (!res.ok) throw new Error(data.error||'Failed');
+    showMsg('createDataentryMsg','✅ Data entry job created!',true);
+    ['dataentryJobTitle','dataentryJobDesc','dataentryJobInstructions'].forEach(id=>document.getElementById(id).value='');
+    loadAdminDataentryJobs();
+  } catch(err) { showMsg('createDataentryMsg','❌ '+err.message,false); }
+}
+
+async function loadAdminDataentryJobs() {
+  const el = document.getElementById('adminDataentryJobsList');
+  try {
+    const data = await aFetch('/api/admin/dataentry/all');
+    const jobs = data.jobs||[];
+    if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No data entry jobs yet.</p>'; document.getElementById('adminDataentrySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
+    el.innerHTML = jobs.map(job=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:.4rem">
+        <div><strong>${job.title}</strong> <span class="badge ${job.status==='open'?'badge-green':'badge-gray'}">${job.status}</span>
+          ${job.templateUrl?`<a href="${job.templateUrl}" target="_blank" style="font-size:.72rem;color:var(--primary);margin-left:.3rem">📥 Template</a>`:''}
+          <div style="font-size:.75rem;color:var(--gray-500)">${job.currentWorkers}/${job.maxWorkers} · ${job.pending||0} pending · ${job.reward}pts</div>
+        </div>
+        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
+          ${(job.pending||0)>0?`<button onclick="loadDataentrySubmissions('${job.id}','${job.title}')" class="btn btn-primary btn-sm">Review (${job.pending})</button>`:''}
+          <button onclick="markDataentryComplete('${job.id}')" class="btn btn-warning btn-sm">✅ Close</button>
+          <button onclick="deleteDataentryJob('${job.id}')" class="btn btn-danger btn-sm">🗑️</button>
+        </div>
+      </div>`).join('');
+    const pending = jobs.filter(j=>(j.pending||0)>0);
+    if (pending.length) loadDataentrySubmissions(pending[0].id, pending[0].title);
+    else document.getElementById('adminDataentrySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>';
+  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
+}
+
+async function loadDataentrySubmissions(jobId, title) {
+  const el = document.getElementById('adminDataentrySubmissions');
+  el.innerHTML='Loading...';
+  try {
+    const data = await aFetch(`/api/admin/dataentry/${jobId}/submissions`);
+    const pending = (data.submissions||[]).filter(s=>s.status==='submitted');
+    if (!pending.length) { el.innerHTML=`<p style="color:var(--gray-500)">No pending for "${title||''}".</p>`; return; }
+    el.innerHTML = `<p style="font-weight:700;margin-bottom:.75rem">📂 ${title||'Data Entry'} — ${pending.length} pending</p>` + pending.map(s=>`
+      <div class="review-box" style="border-left-color:#f59e0b">
+        <strong>${s.username}</strong> <span style="font-size:.75rem;color:var(--gray-500)">(${s.email})</span>
+        <p style="font-size:.82rem;margin:.25rem 0">📎 <a href="${s.fileUrl}" target="_blank" style="color:var(--primary)">View File — ${s.fileName||'download'}</a></p>
+        <div style="display:flex;gap:.4rem;margin-top:.5rem">
+          <button onclick="approveDataentry('${jobId}','${s.userId}')" class="btn btn-primary btn-sm">✅ Approve</button>
+          <button onclick="rejectDataentry('${jobId}','${s.userId}')" class="btn btn-danger btn-sm">❌ Reject</button>
+        </div>
+      </div>`).join('');
+  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
+}
+
+async function approveDataentry(jobId, userId) { const n=prompt('Notes:')||''; try { await aFetch(`/api/admin/dataentry/${jobId}/approve/${userId}`,{method:'POST',body:JSON.stringify({notes:n})}); alert('✅'); loadAdminDataentryJobs(); } catch(err) { alert('❌ '+err.message); } }
+async function rejectDataentry(jobId, userId) { const r=prompt('Reason:')||''; try { await aFetch(`/api/admin/dataentry/${jobId}/reject/${userId}`,{method:'POST',body:JSON.stringify({reason:r})}); loadAdminDataentryJobs(); } catch(err) { alert('❌ '+err.message); } }
+async function markDataentryComplete(id) { try { await aFetch(`/api/admin/dataentry/${id}/close`,{method:'POST'}); loadAdminDataentryJobs(); } catch(err) { alert('❌ '+err.message); } }
+async function deleteDataentryJob(id) { if(!confirm('Delete?')) return; try { await aFetch(`/api/admin/dataentry/${id}`,{method:'DELETE'}); loadAdminDataentryJobs(); } catch(err) { alert('❌ '+err.message); } }
+
+// ============ WITHDRAWALS ============
+async function loadAdminWithdrawals() {
+  const status = document.getElementById('withdrawFilterStatus')?.value||'pending';
+  const el = document.getElementById('adminWithdrawalsList');
+  el.innerHTML = 'Loading...';
+  try {
+    const data = await aFetch(`/api/withdrawals/admin/all?status=${status}`);
+    const wds = data.withdrawals||[];
+    if (!wds.length) { el.innerHTML=`<p style="color:var(--gray-500)">No ${status} withdrawals.</p>`; return; }
+    el.innerHTML = `<p style="font-size:.8rem;color:var(--gray-500);margin-bottom:.75rem">${wds.length} ${status} withdrawal(s)</p><div class="wd-grid">` +
+    wds.map(w=>`
+      <div class="wd-box ${w.status}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
+          <div><strong>${w.username}</strong> <span style="font-size:1.1rem;font-weight:800;color:var(--primary)">KES ${w.amount}</span>
+            ${w.type?`<span class="badge badge-blue" style="margin-left:.25rem">${w.type.toUpperCase()}</span>`:''}
+          </div>
+          <span class="badge ${w.status==='completed'?'badge-green':w.status==='pending'?'badge-yellow':'badge-red'}">${w.status}</span>
+        </div>
+        <p style="font-size:.78rem;color:var(--gray-500);margin:.2rem 0">${w.email} | ${w.phone}</p>
+        <p style="font-size:.78rem;margin:.2rem 0"><strong>Method:</strong> ${(w.paymentMethod||'').toUpperCase()}
+          ${w.paymentDetails?.mpesaPhone?` | 📱 ${w.paymentDetails.mpesaPhone}`:''}
+          ${w.paymentDetails?.accountNumber?` | 🏦 ${w.paymentDetails.accountNumber} (${w.paymentDetails.accountName})`:''}</p>
+        <p style="font-size:.72rem;color:var(--gray-500);margin:.2rem 0">${new Date(w.requestedAt).toLocaleString()}</p>
+        ${w.adminNotes?`<p style="font-size:.75rem;color:var(--gray-700);margin:.2rem 0">📝 ${w.adminNotes}</p>`:''}
+        ${w.status==='pending'?`<div style="display:flex;gap:.4rem;margin-top:.6rem">
+          <button onclick="completeWithdrawal('${w.id}')" class="btn btn-primary btn-sm">✅ Mark Paid</button>
+          <button onclick="rejectWithdrawal('${w.id}')" class="btn btn-danger btn-sm">❌ Reject</button>
+        </div>`:''}
+      </div>`).join('') + '</div>';
+  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
+}
+
+async function completeWithdrawal(id) {
+  const notes = prompt('Notes (e.g. M-Pesa ID):') || 'Paid';
+  try { await aFetch(`/api/withdrawals/admin/${id}/complete`,{method:'POST',body:JSON.stringify({adminNotes:notes})}); alert('✅ Marked complete.'); loadAdminWithdrawals(); } catch(err) { alert('❌ '+err.message); }
+}
+async function rejectWithdrawal(id) {
+  const notes = prompt('Reason:') || 'Rejected';
+  try { await aFetch(`/api/withdrawals/admin/${id}/reject`,{method:'POST',body:JSON.stringify({adminNotes:notes})}); loadAdminWithdrawals(); } catch(err) { alert('❌ '+err.message); }
+}
+
+// ============ INIT ============
+loadAdminDashboard();
+</script>
+</body>
+</html>
