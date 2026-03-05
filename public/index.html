@@ -41,6 +41,9 @@
         <a href="#dashboard" class="nav-link nav-trigger" data-section="dashboard">Dashboard</a>
         <a href="#blogs" class="nav-link nav-trigger" data-section="blogs">Blogs</a>
         <a href="#surveys" class="nav-link nav-trigger" data-section="surveys">Surveys</a>
+        <a href="#writing" class="nav-link nav-trigger" data-section="writing">✍️ Writing</a>
+        <a href="#transcription" class="nav-link nav-trigger" data-section="transcription">🎙️ Transcription</a>
+        <a href="#dataentry" class="nav-link nav-trigger" data-section="dataentry">📋 Data Entry</a>
         <a href="#referrals" class="nav-link nav-trigger" data-section="referrals">Referrals</a>
         <a href="#withdraw" class="nav-link nav-trigger" data-section="withdraw">Withdraw</a>
         <a href="#profile" class="nav-link nav-trigger" data-section="profile">Profile</a>
@@ -829,16 +832,31 @@
         <!-- Daily Progress -->
         <div class="card" style="margin-bottom:2rem;">
           <div class="card-header">📅 Today's Tasks</div>
-          <div style="padding:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+          <div style="padding:1.5rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1rem;">
             <div style="text-align:center;">
               <div style="font-size:2rem;font-weight:bold;color:var(--primary-color);" id="blogsLeft">2</div>
-              <p style="color:var(--gray-500);margin:0.25rem 0 0;">Blogs left today</p>
-              <a href="#blogs" class="btn btn-primary nav-trigger" data-section="blogs" style="margin-top:1rem;display:inline-block;">Write Blog</a>
+              <p style="color:var(--gray-500);margin:0.25rem 0 0;font-size:0.85rem;">Blogs left today</p>
+              <a href="#blogs" class="btn btn-primary nav-trigger" data-section="blogs" style="margin-top:0.75rem;display:inline-block;padding:0.35rem 0.75rem;font-size:0.85rem;">Write Blog</a>
             </div>
             <div style="text-align:center;">
               <div style="font-size:2rem;font-weight:bold;color:var(--primary-color);" id="surveysLeft">2</div>
-              <p style="color:var(--gray-500);margin:0.25rem 0 0;">Surveys left today</p>
-              <a href="#surveys" class="btn btn-primary nav-trigger" data-section="surveys" style="margin-top:1rem;display:inline-block;">Take Survey</a>
+              <p style="color:var(--gray-500);margin:0.25rem 0 0;font-size:0.85rem;">Surveys left today</p>
+              <a href="#surveys" class="btn btn-primary nav-trigger" data-section="surveys" style="margin-top:0.75rem;display:inline-block;padding:0.35rem 0.75rem;font-size:0.85rem;">Take Survey</a>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:2rem;">✍️</div>
+              <p style="color:var(--gray-500);margin:0.25rem 0 0;font-size:0.85rem;">Writing Jobs</p>
+              <a href="#writing" class="btn btn-primary nav-trigger" data-section="writing" style="margin-top:0.75rem;display:inline-block;padding:0.35rem 0.75rem;font-size:0.85rem;">Browse</a>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:2rem;">🎙️</div>
+              <p style="color:var(--gray-500);margin:0.25rem 0 0;font-size:0.85rem;">Transcription</p>
+              <a href="#transcription" class="btn btn-primary nav-trigger" data-section="transcription" style="margin-top:0.75rem;display:inline-block;padding:0.35rem 0.75rem;font-size:0.85rem;">Browse</a>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:2rem;">📋</div>
+              <p style="color:var(--gray-500);margin:0.25rem 0 0;font-size:0.85rem;">Data Entry</p>
+              <a href="#dataentry" class="btn btn-primary nav-trigger" data-section="dataentry" style="margin-top:0.75rem;display:inline-block;padding:0.35rem 0.75rem;font-size:0.85rem;">Browse</a>
             </div>
           </div>
         </div>
@@ -1230,6 +1248,109 @@
       </div>
     </section>
 
+    <!-- ==================== WRITING JOBS ==================== -->
+    <section id="writing" class="page-section" style="display:none;">
+      <div class="container" style="padding-top:2rem;padding-bottom:2rem;">
+        <a href="#dashboard" class="nav-trigger" data-section="dashboard" style="color:var(--primary-color);display:inline-block;margin-bottom:1rem;">← Dashboard</a>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:1rem;">
+          <h1>✍️ Writing Jobs</h1>
+          <div style="background:#f0fdf4;border:1px solid #16a34a;padding:0.75rem 1rem;border-radius:0.5rem;font-size:0.9rem;">
+            ⭐ Earn <strong>100 pts</strong> per approved submission
+          </div>
+        </div>
+        <div id="writingList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;"></div>
+      </div>
+    </section>
+
+    <div id="writingModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;overflow-y:auto;">
+      <div style="background:white;max-width:600px;margin:2rem auto;border-radius:1rem;padding:2rem;position:relative;">
+        <button onclick="closeWritingModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;cursor:pointer;">✕</button>
+        <h2 id="writingModalTitle" style="margin:0 0 0.5rem;"></h2>
+        <p id="writingModalDesc" style="color:var(--gray-500);margin:0 0 1rem;"></p>
+        <div style="background:#f9fafb;padding:1rem;border-radius:0.5rem;margin-bottom:1.5rem;">
+          <strong>Instructions:</strong>
+          <div id="writingModalInstructions" style="margin-top:0.5rem;font-size:0.9rem;white-space:pre-wrap;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Upload Your Work (PDF or Word document)</label>
+          <input type="file" id="writingFileInput" class="form-control" accept=".pdf,.doc,.docx">
+          <p style="color:var(--gray-500);font-size:0.8rem;margin-top:0.25rem;">Max 20MB. PDF or Word only.</p>
+        </div>
+        <button id="writingSubmitBtn" class="btn btn-primary w-full" style="margin-top:1rem;">Submit Writing Job</button>
+      </div>
+    </div>
+
+    <!-- ==================== TRANSCRIPTION ==================== -->
+    <section id="transcription" class="page-section" style="display:none;">
+      <div class="container" style="padding-top:2rem;padding-bottom:2rem;">
+        <a href="#dashboard" class="nav-trigger" data-section="dashboard" style="color:var(--primary-color);display:inline-block;margin-bottom:1rem;">← Dashboard</a>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:1rem;">
+          <h1>🎙️ Transcription Jobs</h1>
+          <div style="background:#f0fdf4;border:1px solid #16a34a;padding:0.75rem 1rem;border-radius:0.5rem;font-size:0.9rem;">
+            ⭐ Earn <strong>50 pts</strong> per approved transcription
+          </div>
+        </div>
+        <div id="transcriptionList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;"></div>
+      </div>
+    </section>
+
+    <div id="transcriptionModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;overflow-y:auto;">
+      <div style="background:white;max-width:650px;margin:2rem auto;border-radius:1rem;padding:2rem;position:relative;">
+        <button onclick="closeTranscriptionModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;cursor:pointer;">✕</button>
+        <h2 id="transcriptionModalTitle" style="margin:0 0 0.5rem;"></h2>
+        <p id="transcriptionModalDesc" style="color:var(--gray-500);margin:0 0 0.75rem;"></p>
+        <div style="background:#f9fafb;padding:1rem;border-radius:0.5rem;margin-bottom:1rem;">
+          <strong>Instructions:</strong>
+          <div id="transcriptionModalInstructions" style="margin-top:0.5rem;font-size:0.9rem;white-space:pre-wrap;"></div>
+        </div>
+        <div style="margin-bottom:1.5rem;">
+          <strong>Audio File:</strong>
+          <audio id="transcriptionAudio" controls style="width:100%;margin-top:0.5rem;border-radius:0.5rem;"></audio>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Transcription Text</label>
+          <textarea id="transcriptionText" class="form-control" rows="8" placeholder="Type your transcription here..."></textarea>
+          <p id="transcriptionCharCount" style="color:var(--gray-500);font-size:0.8rem;margin-top:0.25rem;">0 characters</p>
+        </div>
+        <button id="transcriptionSubmitBtn" class="btn btn-primary w-full" style="margin-top:1rem;">Submit Transcription</button>
+      </div>
+    </div>
+
+    <!-- ==================== DATA ENTRY ==================== -->
+    <section id="dataentry" class="page-section" style="display:none;">
+      <div class="container" style="padding-top:2rem;padding-bottom:2rem;">
+        <a href="#dashboard" class="nav-trigger" data-section="dashboard" style="color:var(--primary-color);display:inline-block;margin-bottom:1rem;">← Dashboard</a>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:1rem;">
+          <h1>📋 Data Entry Jobs</h1>
+          <div style="background:#f0fdf4;border:1px solid #16a34a;padding:0.75rem 1rem;border-radius:0.5rem;font-size:0.9rem;">
+            ⭐ Earn <strong>75 pts</strong> per approved submission
+          </div>
+        </div>
+        <div id="dataentryList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;"></div>
+      </div>
+    </section>
+
+    <div id="dataentryModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;overflow-y:auto;">
+      <div style="background:white;max-width:600px;margin:2rem auto;border-radius:1rem;padding:2rem;position:relative;">
+        <button onclick="closeDataentryModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;cursor:pointer;">✕</button>
+        <h2 id="dataentryModalTitle" style="margin:0 0 0.5rem;"></h2>
+        <p id="dataentryModalDesc" style="color:var(--gray-500);margin:0 0 0.75rem;"></p>
+        <div style="background:#f9fafb;padding:1rem;border-radius:0.5rem;margin-bottom:1rem;">
+          <strong>Instructions:</strong>
+          <div id="dataentryModalInstructions" style="margin-top:0.5rem;font-size:0.9rem;white-space:pre-wrap;"></div>
+        </div>
+        <div id="dataentryTemplateSection" style="display:none;margin-bottom:1rem;">
+          <a id="dataentryTemplateLink" href="#" target="_blank" class="btn btn-outline" style="border-color:#16a34a;color:#16a34a;">📥 Download Template</a>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Upload Completed File (PDF, Word, Excel or CSV)</label>
+          <input type="file" id="dataentryFileInput" class="form-control" accept=".pdf,.doc,.docx,.xlsx,.csv">
+          <p style="color:var(--gray-500);font-size:0.8rem;margin-top:0.25rem;">Max 20MB.</p>
+        </div>
+        <button id="dataentrySubmitBtn" class="btn btn-primary w-full" style="margin-top:1rem;">Submit Data Entry</button>
+      </div>
+    </div>
+
     <!-- ==================== ADMIN DASHBOARD ==================== -->
     <section id="adminDashboard" class="page-section" style="display:none;">
       <div class="container" style="padding-top:2rem;padding-bottom:2rem;">
@@ -1245,7 +1366,10 @@
           <button class="admin-tab-btn" data-tab="users" style="padding:0.75rem 1.25rem;border:none;background:none;font-weight:bold;cursor:pointer;color:#6b7280;white-space:nowrap;">Users</button>
           <button class="admin-tab-btn" data-tab="blogs" style="padding:0.75rem 1.25rem;border:none;background:none;font-weight:bold;cursor:pointer;color:#6b7280;white-space:nowrap;">Blogs</button>
           <button class="admin-tab-btn" data-tab="surveys" style="padding:0.75rem 1.25rem;border:none;background:none;font-weight:bold;cursor:pointer;color:#6b7280;white-space:nowrap;">Surveys</button>
-          <button class="admin-tab-btn" data-tab="withdrawals" style="padding:0.75rem 1.25rem;border:none;background:none;font-weight:bold;cursor:pointer;color:#6b7280;white-space:nowrap;">Withdrawals</button>
+          <button class="admin-tab-btn" data-tab="writing" style="padding:0.75rem 1.25rem;border:none;background:none;font-weight:bold;cursor:pointer;color:#6b7280;white-space:nowrap;">✍️ Writing</button>
+          <button class="admin-tab-btn" data-tab="transcription" style="padding:0.75rem 1.25rem;border:none;background:none;font-weight:bold;cursor:pointer;color:#6b7280;white-space:nowrap;">🎙️ Transcription</button>
+          <button class="admin-tab-btn" data-tab="dataentry" style="padding:0.75rem 1.25rem;border:none;background:none;font-weight:bold;cursor:pointer;color:#6b7280;white-space:nowrap;">📋 Data Entry</button>
+          <button class="admin-tab-btn" data-tab="withdrawals" style="padding:0.75rem 1.25rem;border:none;background:none;font-weight:bold;cursor:pointer;color:#6b7280;white-space:nowrap;">💸 Withdrawals</button>
         </div>
 
         <!-- Overview Tab -->
@@ -1256,14 +1380,26 @@
             <div class="stat-card"><div class="stat-icon info">✅</div><div class="stat-content"><div class="stat-label">Active Users</div><div class="stat-value" id="adminActiveUsers">0</div></div></div>
             <div class="stat-card"><div class="stat-icon primary">💸</div><div class="stat-content"><div class="stat-label">Pending Withdrawals</div><div class="stat-value" id="adminPendingWithdrawals">0</div></div></div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;">
             <div class="card" style="padding:1.5rem;">
-              <p style="color:var(--gray-500);margin:0;">Blog Reviews Pending</p>
+              <p style="color:var(--gray-500);margin:0;font-size:0.85rem;">📝 Blog Reviews</p>
               <p style="font-size:1.75rem;font-weight:bold;margin:0.25rem 0 0;" id="adminBlogsPending">0</p>
             </div>
             <div class="card" style="padding:1.5rem;">
-              <p style="color:var(--gray-500);margin:0;">Survey Reviews Pending</p>
+              <p style="color:var(--gray-500);margin:0;font-size:0.85rem;">📊 Survey Reviews</p>
               <p style="font-size:1.75rem;font-weight:bold;margin:0.25rem 0 0;" id="adminSurveysPending">0</p>
+            </div>
+            <div class="card" style="padding:1.5rem;">
+              <p style="color:var(--gray-500);margin:0;font-size:0.85rem;">✍️ Writing Reviews</p>
+              <p style="font-size:1.75rem;font-weight:bold;margin:0.25rem 0 0;" id="adminWritingPending">0</p>
+            </div>
+            <div class="card" style="padding:1.5rem;">
+              <p style="color:var(--gray-500);margin:0;font-size:0.85rem;">🎙️ Transcription Reviews</p>
+              <p style="font-size:1.75rem;font-weight:bold;margin:0.25rem 0 0;" id="adminTranscriptionPending">0</p>
+            </div>
+            <div class="card" style="padding:1.5rem;">
+              <p style="color:var(--gray-500);margin:0;font-size:0.85rem;">📋 Data Entry Reviews</p>
+              <p style="font-size:1.75rem;font-weight:bold;margin:0.25rem 0 0;" id="adminDataentryPending">0</p>
             </div>
           </div>
         </div>
@@ -1392,6 +1528,158 @@
           <div class="card">
             <div class="card-header">Pending Survey Reviews</div>
             <div id="adminSurveySubmissions" style="padding:1.5rem;">Loading...</div>
+          </div>
+        </div>
+
+        <!-- Writing Tab -->
+        <div id="admin-writing" class="admin-tab-content" style="display:none;">
+          <h2 style="margin-bottom:1.5rem;">✍️ Writing Job Management</h2>
+          <div class="card" style="margin-bottom:2rem;">
+            <div class="card-header">Create New Writing Job</div>
+            <form id="createWritingForm" style="padding:1.5rem;">
+              <div id="createWritingMsg" style="display:none;margin-bottom:1rem;padding:0.75rem;border-radius:0.5rem;"></div>
+              <div class="form-group">
+                <label class="form-label">Title</label>
+                <input type="text" id="writingJobTitle" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Description (shown to users)</label>
+                <input type="text" id="writingJobDesc" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Full Instructions</label>
+                <textarea id="writingJobInstructions" class="form-control" rows="5" required></textarea>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="form-group">
+                  <label class="form-label">Word Count Requirement (optional)</label>
+                  <input type="text" id="writingJobWordCount" class="form-control" placeholder="e.g. 500-800 words">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Max Workers</label>
+                  <input type="number" id="writingJobMaxWorkers" class="form-control" value="50" min="1">
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="form-group">
+                  <label class="form-label">Reward (points)</label>
+                  <input type="number" id="writingJobReward" class="form-control" value="100" min="1">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Deadline (optional)</label>
+                  <input type="date" id="writingJobDeadline" class="form-control">
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-full">Create Writing Job</button>
+            </form>
+          </div>
+          <div class="card" style="margin-bottom:2rem;">
+            <div class="card-header">All Writing Jobs</div>
+            <div id="adminWritingJobsList" style="padding:1.5rem;">Loading...</div>
+          </div>
+          <div class="card">
+            <div class="card-header">Pending Writing Reviews</div>
+            <div id="adminWritingSubmissions" style="padding:1.5rem;">Click a job above to view submissions, or they appear here.</div>
+          </div>
+        </div>
+
+        <!-- Transcription Tab -->
+        <div id="admin-transcription" class="admin-tab-content" style="display:none;">
+          <h2 style="margin-bottom:1.5rem;">🎙️ Transcription Job Management</h2>
+          <div class="card" style="margin-bottom:2rem;">
+            <div class="card-header">Create New Transcription Job (Upload Audio)</div>
+            <form id="createTranscriptionForm" style="padding:1.5rem;" enctype="multipart/form-data">
+              <div id="createTranscriptionMsg" style="display:none;margin-bottom:1rem;padding:0.75rem;border-radius:0.5rem;"></div>
+              <div class="form-group">
+                <label class="form-label">Title</label>
+                <input type="text" id="transcriptionJobTitle" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <input type="text" id="transcriptionJobDesc" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Instructions for transcribers</label>
+                <textarea id="transcriptionJobInstructions" class="form-control" rows="4" required></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Audio File (MP3, WAV, M4A — max 50MB)</label>
+                <input type="file" id="transcriptionJobAudio" class="form-control" accept=".mp3,.wav,.m4a,.ogg,.webm" required>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                <div class="form-group">
+                  <label class="form-label">Reward (points)</label>
+                  <input type="number" id="transcriptionJobReward" class="form-control" value="50" min="1">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Max Workers</label>
+                  <input type="number" id="transcriptionJobMaxWorkers" class="form-control" value="50" min="1">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Deadline (optional)</label>
+                  <input type="date" id="transcriptionJobDeadline" class="form-control">
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-full">Upload & Create Transcription Job</button>
+            </form>
+          </div>
+          <div class="card" style="margin-bottom:2rem;">
+            <div class="card-header">All Transcription Jobs</div>
+            <div id="adminTranscriptionJobsList" style="padding:1.5rem;">Loading...</div>
+          </div>
+          <div class="card">
+            <div class="card-header">Pending Transcription Reviews</div>
+            <div id="adminTranscriptionSubmissions" style="padding:1.5rem;">Select a job above to view submissions.</div>
+          </div>
+        </div>
+
+        <!-- Data Entry Tab -->
+        <div id="admin-dataentry" class="admin-tab-content" style="display:none;">
+          <h2 style="margin-bottom:1.5rem;">📋 Data Entry Job Management</h2>
+          <div class="card" style="margin-bottom:2rem;">
+            <div class="card-header">Create New Data Entry Job</div>
+            <form id="createDataentryForm" style="padding:1.5rem;" enctype="multipart/form-data">
+              <div id="createDataentryMsg" style="display:none;margin-bottom:1rem;padding:0.75rem;border-radius:0.5rem;"></div>
+              <div class="form-group">
+                <label class="form-label">Title</label>
+                <input type="text" id="dataentryJobTitle" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <input type="text" id="dataentryJobDesc" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Instructions</label>
+                <textarea id="dataentryJobInstructions" class="form-control" rows="4" required></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Template File (optional — PDF/Excel/Word for users to download)</label>
+                <input type="file" id="dataentryJobTemplate" class="form-control" accept=".pdf,.doc,.docx,.xlsx,.csv">
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                <div class="form-group">
+                  <label class="form-label">Reward (points)</label>
+                  <input type="number" id="dataentryJobReward" class="form-control" value="75" min="1">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Max Workers</label>
+                  <input type="number" id="dataentryJobMaxWorkers" class="form-control" value="50" min="1">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Deadline (optional)</label>
+                  <input type="date" id="dataentryJobDeadline" class="form-control">
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-full">Create Data Entry Job</button>
+            </form>
+          </div>
+          <div class="card" style="margin-bottom:2rem;">
+            <div class="card-header">All Data Entry Jobs</div>
+            <div id="adminDataentryJobsList" style="padding:1.5rem;">Loading...</div>
+          </div>
+          <div class="card">
+            <div class="card-header">Pending Data Entry Reviews</div>
+            <div id="adminDataentrySubmissions" style="padding:1.5rem;">Select a job above to view submissions.</div>
           </div>
         </div>
 
@@ -1534,7 +1822,7 @@ let questionCount = 0;
 // ==================== NAVIGATION ====================
 
 // Pages only active accounts can access
-var ACTIVE_ONLY = ['blogs','surveys','referrals','withdraw','profile'];
+var ACTIVE_ONLY = ['blogs','surveys','writing','transcription','dataentry','referrals','withdraw','profile'];
 
 function _getStoredUser() {
   try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch(e) { return null; }
@@ -1589,8 +1877,11 @@ function showSection(name) {
     else if (sectionName === 'referrals') loadReferrals();
     else if (sectionName === 'withdraw')  loadWithdraw();
     else if (sectionName === 'profile')   loadProfile();
-    else if (sectionName === 'blogs')     loadBlogs();
-    else if (sectionName === 'surveys')   loadSurveys();
+    else if (sectionName === 'blogs')          loadBlogs();
+    else if (sectionName === 'surveys')        loadSurveys();
+    else if (sectionName === 'writing')        loadWriting();
+    else if (sectionName === 'transcription')  loadTranscription();
+    else if (sectionName === 'dataentry')      loadDataentry();
   } else if (sectionName === 'activation') {
     setHeaders(false, false);
     loadActivationPage();
@@ -2276,11 +2567,14 @@ document.querySelectorAll('.admin-tab-btn').forEach(btn => {
     const tab = e.target.getAttribute('data-tab');
     const el = document.getElementById(`admin-${tab}`);
     if (el) el.style.display = 'block';
-    if (tab === 'overview') loadAdminDashboard();
-    else if (tab === 'users') loadAdminUsers();
-    else if (tab === 'blogs') loadAdminBlogs();
-    else if (tab === 'surveys') loadAdminSurveys();
-    else if (tab === 'withdrawals') loadAdminWithdrawals();
+    if (tab === 'overview')       loadAdminDashboard();
+    else if (tab === 'users')         loadAdminUsers();
+    else if (tab === 'blogs')         loadAdminBlogs();
+    else if (tab === 'surveys')       loadAdminSurveys();
+    else if (tab === 'writing')       loadAdminWritingJobs();
+    else if (tab === 'transcription') loadAdminTranscriptionJobs();
+    else if (tab === 'dataentry')     loadAdminDataentryJobs();
+    else if (tab === 'withdrawals')   loadAdminWithdrawals();
   });
 });
 
@@ -2293,6 +2587,9 @@ async function loadAdminDashboard() {
     document.getElementById('adminPendingWithdrawals').textContent = data.pendingWithdrawals;
     document.getElementById('adminBlogsPending').textContent = data.pendingReviews.blogs;
     document.getElementById('adminSurveysPending').textContent = data.pendingReviews.surveys;
+    document.getElementById('adminWritingPending').textContent = data.pendingReviews.writing || 0;
+    document.getElementById('adminTranscriptionPending').textContent = data.pendingReviews.transcription || 0;
+    document.getElementById('adminDataentryPending').textContent = data.pendingReviews.dataEntry || 0;
   } catch(err) { console.error('Admin dashboard error:', err); }
 }
 
@@ -2375,7 +2672,7 @@ document.getElementById('createBlogForm')?.addEventListener('submit', async e =>
   const btn = e.target.querySelector('button');
   btn.disabled = true; btn.textContent = 'Creating...';
   try {
-    await adminFetch('/api/blogs/admin/create', {
+    await adminFetch('/api/admin/blogs/create', {
       method: 'POST',
       body: JSON.stringify({
         title: document.getElementById('blogTitle').value,
@@ -2394,14 +2691,28 @@ document.getElementById('createBlogForm')?.addEventListener('submit', async e =>
 
 async function loadAdminBlogs() {
   try {
-    const data = await adminFetch('/api/blogs/admin/pending-submissions');
+    const data = await adminFetch('/api/admin/blogs/all');
     const el = document.getElementById('adminBlogSubmissions');
-    if (!data.pending.length) { el.innerHTML = '<p style="color:var(--gray-500);">No pending blog reviews.</p>'; return; }
-    el.innerHTML = data.pending.map(s => `
+    const allBlogs = data.blogs || [];
+    const pending = [];
+    for (const blog of allBlogs) {
+      if (blog.pendingReview > 0) {
+        try {
+          const subs = await adminFetch(`/api/admin/blogs/${blog.id}/submissions`);
+          subs.submissions.filter(s => s.status === 'submitted').forEach(s => {
+            pending.push({ blogId: blog.id, blogTitle: blog.title, userId: s.userId, username: s.username, email: s.email, content: s.content });
+          });
+        } catch(e) {}
+      }
+    }
+    if (!pending.length) { el.innerHTML = '<p style="color:var(--gray-500);">No pending blog reviews.</p>'; return; }
+    el.innerHTML = pending.map(s => `
       <div class="card" style="padding:1rem;margin-bottom:1rem;border-left:4px solid #f59e0b;">
         <p style="margin:0;font-weight:bold;">${s.blogTitle}</p>
         <p style="margin:0.25rem 0;color:var(--gray-500);font-size:0.9rem;">By: ${s.username} (${s.email})</p>
-        <p style="margin:0.5rem 0;font-size:0.85rem;background:#f9fafb;padding:0.75rem;border-radius:0.5rem;">${s.content}</p>
+        <details style="margin:0.5rem 0;"><summary style="cursor:pointer;font-size:0.9rem;color:#f59e0b;">View Submission</summary>
+          <p style="margin:0.5rem 0;font-size:0.85rem;background:#f9fafb;padding:0.75rem;border-radius:0.5rem;white-space:pre-wrap;">${s.content || '(no content)'}</p>
+        </details>
         <div style="display:flex;gap:0.75rem;margin-top:0.75rem;flex-wrap:wrap;">
           <button onclick="adminApproveBlog('${s.blogId}','${s.userId}')" class="btn btn-primary" style="padding:0.4rem 1rem;font-size:0.85rem;">✅ Approve (+100 pts)</button>
           <button onclick="adminRejectBlog('${s.blogId}','${s.userId}')" class="btn btn-danger" style="padding:0.4rem 1rem;font-size:0.85rem;">❌ Reject</button>
@@ -2413,7 +2724,7 @@ async function loadAdminBlogs() {
 
 async function adminApproveBlog(blogId, userId) {
   try {
-    await adminFetch(`/api/blogs/admin/${blogId}/approve/${userId}`, { method: 'POST' });
+    await adminFetch(`/api/admin/blogs/${blogId}/approve/${userId}`, { method: 'POST' });
     alert('✅ Blog approved! 100 points awarded.'); loadAdminBlogs();
   } catch(err) { alert('❌ ' + err.message); }
 }
@@ -2421,7 +2732,7 @@ async function adminApproveBlog(blogId, userId) {
 async function adminRejectBlog(blogId, userId) {
   const notes = prompt('Reason for rejection (optional):') || 'Rejected';
   try {
-    await adminFetch(`/api/blogs/admin/${blogId}/reject/${userId}`, { method: 'POST', body: JSON.stringify({ reviewNotes: notes }) });
+    await adminFetch(`/api/admin/blogs/${blogId}/reject/${userId}`, { method: 'POST', body: JSON.stringify({ reviewNotes: notes }) });
     alert('Blog rejected.'); loadAdminBlogs();
   } catch(err) { alert('❌ ' + err.message); }
 }
@@ -2477,7 +2788,7 @@ document.getElementById('createSurveyForm')?.addEventListener('submit', async e 
   if (!questions.length) { msgEl.textContent = '❌ Add at least one question.'; msgEl.style.color='red'; msgEl.style.display='block'; btn.disabled=false; btn.textContent='Create Survey'; return; }
 
   try {
-    await adminFetch('/api/surveys/admin/create', {
+    await adminFetch('/api/admin/surveys/create', {
       method: 'POST',
       body: JSON.stringify({
         title: document.getElementById('surveyTitle').value,
@@ -2496,17 +2807,28 @@ document.getElementById('createSurveyForm')?.addEventListener('submit', async e 
 
 async function loadAdminSurveys() {
   try {
-    const data = await adminFetch('/api/surveys/admin/pending-submissions');
+    const data = await adminFetch('/api/admin/surveys/all');
     const el = document.getElementById('adminSurveySubmissions');
-    if (!data.pending.length) { el.innerHTML = '<p style="color:var(--gray-500);">No pending survey reviews.</p>'; return; }
-    el.innerHTML = data.pending.map(s => `
+    const allSurveys = data.surveys || [];
+    const pending = [];
+    for (const survey of allSurveys) {
+      if (survey.pendingReview > 0) {
+        try {
+          const subs = await adminFetch(`/api/admin/surveys/${survey.id}/submissions`);
+          subs.submissions.filter(s => s.status === 'submitted').forEach(s => {
+            pending.push({ surveyId: survey.id, surveyTitle: survey.title, questions: subs.questions, userId: s.userId, username: s.username, email: s.email, responses: s.responses });
+          });
+        } catch(e) {}
+      }
+    }
+    if (!pending.length) { el.innerHTML = '<p style="color:var(--gray-500);">No pending survey reviews.</p>'; return; }
+    el.innerHTML = pending.map(s => `
       <div class="card" style="padding:1rem;margin-bottom:1rem;border-left:4px solid #3b82f6;">
         <p style="margin:0;font-weight:bold;">${s.surveyTitle}</p>
         <p style="margin:0.25rem 0;color:var(--gray-500);font-size:0.9rem;">By: ${s.username} (${s.email})</p>
-        <details style="margin:0.5rem 0;">
-          <summary style="cursor:pointer;font-size:0.9rem;color:#3b82f6;">View Responses</summary>
+        <details style="margin:0.5rem 0;"><summary style="cursor:pointer;font-size:0.9rem;color:#3b82f6;">View Responses</summary>
           <div style="margin-top:0.5rem;font-size:0.85rem;background:#f9fafb;padding:0.75rem;border-radius:0.5rem;">
-            ${Array.isArray(s.responses) ? s.responses.map(r => `<p style="margin:0.25rem 0;"><strong>${r.question}:</strong> ${r.answer || '—'}</p>`).join('') : 'No responses'}
+            ${Array.isArray(s.responses) ? s.responses.map((r,i) => `<p style="margin:0.25rem 0;"><strong>Q${i+1}:</strong> ${r || '—'}</p>`).join('') : 'No responses recorded'}
           </div>
         </details>
         <div style="display:flex;gap:0.75rem;margin-top:0.75rem;flex-wrap:wrap;">
@@ -2520,7 +2842,7 @@ async function loadAdminSurveys() {
 
 async function adminApproveSurvey(surveyId, userId) {
   try {
-    await adminFetch(`/api/surveys/admin/${surveyId}/approve/${userId}`, { method: 'POST' });
+    await adminFetch(`/api/admin/surveys/${surveyId}/approve/${userId}`, { method: 'POST' });
     alert('✅ Survey approved! 100 points awarded.'); loadAdminSurveys();
   } catch(err) { alert('❌ ' + err.message); }
 }
@@ -2528,7 +2850,7 @@ async function adminApproveSurvey(surveyId, userId) {
 async function adminRejectSurvey(surveyId, userId) {
   const notes = prompt('Reason for rejection (optional):') || 'Rejected';
   try {
-    await adminFetch(`/api/surveys/admin/${surveyId}/reject/${userId}`, { method: 'POST', body: JSON.stringify({ reviewNotes: notes }) });
+    await adminFetch(`/api/admin/surveys/${surveyId}/reject/${userId}`, { method: 'POST', body: JSON.stringify({ reviewNotes: notes }) });
     alert('Survey rejected.'); loadAdminSurveys();
   } catch(err) { alert('❌ ' + err.message); }
 }
@@ -2580,6 +2902,518 @@ async function adminRejectWithdrawal(id) {
     alert('Withdrawal rejected.');  loadAdminWithdrawals();
   } catch(err) { alert('❌ ' + err.message); }
 }
+
+// ==================== USER: WRITING JOBS ====================
+let activeWritingJobId = null;
+
+async function loadWriting() {
+  try {
+    const data = await apiFetch('/api/writing');
+    const list = document.getElementById('writingList');
+    if (!data.jobs.length) {
+      list.innerHTML = '<p style="text-align:center;color:var(--gray-500);padding:3rem;grid-column:1/-1;">No writing jobs available right now.</p>';
+      return;
+    }
+    list.innerHTML = data.jobs.map(job => `
+      <div class="card" style="overflow:hidden;">
+        <div style="padding:1.25rem;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
+            <h3 style="margin:0;font-size:1.1rem;">${job.title}</h3>
+            <span style="background:#f0fdf4;color:#16a34a;padding:0.25rem 0.75rem;border-radius:999px;font-size:0.8rem;font-weight:bold;white-space:nowrap;margin-left:0.5rem;">⭐ ${job.reward} pts</span>
+          </div>
+          <p style="color:var(--gray-500);font-size:0.9rem;margin:0 0 0.5rem;">${job.description}</p>
+          ${job.wordCount ? `<p style="font-size:0.85rem;color:#1e40af;margin:0 0 0.5rem;">📝 Word count: ${job.wordCount}</p>` : ''}
+          <p style="font-size:0.85rem;color:var(--gray-500);margin:0 0 1rem;">👥 ${job.currentWorkers}/${job.maxWorkers} slots taken</p>
+          <div style="text-align:right;">
+            ${job.userSubmission
+              ? `<span style="background:#dbeafe;color:#1e40af;padding:0.25rem 0.75rem;border-radius:999px;font-size:0.8rem;">Status: ${job.userSubmission.status}${job.userSubmission.reviewNotes ? ' — '+job.userSubmission.reviewNotes : ''}</span>`
+              : job.slotsLeft > 0
+                ? `<button onclick="openWritingModal('${job.id}')" class="btn btn-primary" style="padding:0.4rem 1rem;font-size:0.9rem;">Apply & Submit</button>`
+                : `<span style="color:#ef4444;font-size:0.85rem;">No slots left</span>`
+            }
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch(err) {
+    document.getElementById('writingList').innerHTML = `<p style="color:red;grid-column:1/-1;">Error: ${err.message}</p>`;
+  }
+}
+
+async function openWritingModal(jobId) {
+  try {
+    const data = await apiFetch(`/api/writing/${jobId}`);
+    const job = data.job;
+    activeWritingJobId = jobId;
+    document.getElementById('writingModalTitle').textContent = job.title;
+    document.getElementById('writingModalDesc').textContent = job.description;
+    document.getElementById('writingModalInstructions').textContent = job.instructions;
+    document.getElementById('writingFileInput').value = '';
+    document.getElementById('writingModal').style.display = 'block';
+  } catch(err) { alert('Error: ' + err.message); }
+}
+function closeWritingModal() { document.getElementById('writingModal').style.display = 'none'; activeWritingJobId = null; }
+
+document.getElementById('writingSubmitBtn').addEventListener('click', async () => {
+  if (!activeWritingJobId) return;
+  const fileInput = document.getElementById('writingFileInput');
+  if (!fileInput.files[0]) { alert('Please select a file to upload.'); return; }
+  const btn = document.getElementById('writingSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Uploading...';
+  try {
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    const res = await fetch(`/api/writing/${activeWritingJobId}/submit`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+    alert('✅ ' + data.message);
+    closeWritingModal();
+    loadWriting();
+  } catch(err) { alert('❌ ' + err.message); }
+  finally { btn.disabled = false; btn.textContent = 'Submit Writing Job'; }
+});
+
+// ==================== USER: TRANSCRIPTION ====================
+let activeTranscriptionJobId = null;
+
+async function loadTranscription() {
+  try {
+    const data = await apiFetch('/api/transcriptions');
+    const list = document.getElementById('transcriptionList');
+    if (!data.jobs.length) {
+      list.innerHTML = '<p style="text-align:center;color:var(--gray-500);padding:3rem;grid-column:1/-1;">No transcription jobs available right now.</p>';
+      return;
+    }
+    list.innerHTML = data.jobs.map(job => `
+      <div class="card" style="overflow:hidden;">
+        <div style="padding:1.25rem;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
+            <h3 style="margin:0;font-size:1.1rem;">${job.title}</h3>
+            <span style="background:#f0fdf4;color:#16a34a;padding:0.25rem 0.75rem;border-radius:999px;font-size:0.8rem;font-weight:bold;white-space:nowrap;margin-left:0.5rem;">⭐ ${job.reward} pts</span>
+          </div>
+          <p style="color:var(--gray-500);font-size:0.9rem;margin:0 0 0.5rem;">${job.description}</p>
+          <p style="font-size:0.85rem;color:var(--gray-500);margin:0 0 1rem;">👥 ${job.currentWorkers}/${job.maxWorkers} slots taken</p>
+          <div style="text-align:right;">
+            ${job.userSubmission
+              ? `<span style="background:#dbeafe;color:#1e40af;padding:0.25rem 0.75rem;border-radius:999px;font-size:0.8rem;">Status: ${job.userSubmission.status}</span>`
+              : job.slotsLeft > 0
+                ? `<button onclick="openTranscriptionModal('${job.id}')" class="btn btn-primary" style="padding:0.4rem 1rem;font-size:0.9rem;">Transcribe</button>`
+                : `<span style="color:#ef4444;font-size:0.85rem;">No slots left</span>`
+            }
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch(err) {
+    document.getElementById('transcriptionList').innerHTML = `<p style="color:red;grid-column:1/-1;">Error: ${err.message}</p>`;
+  }
+}
+
+async function openTranscriptionModal(jobId) {
+  try {
+    const data = await apiFetch(`/api/transcriptions/${jobId}`);
+    const job = data.job;
+    activeTranscriptionJobId = jobId;
+    document.getElementById('transcriptionModalTitle').textContent = job.title;
+    document.getElementById('transcriptionModalDesc').textContent = job.description;
+    document.getElementById('transcriptionModalInstructions').textContent = job.instructions;
+    document.getElementById('transcriptionAudio').src = job.audioUrl;
+    document.getElementById('transcriptionText').value = '';
+    document.getElementById('transcriptionCharCount').textContent = '0 characters';
+    document.getElementById('transcriptionModal').style.display = 'block';
+  } catch(err) { alert('Error: ' + err.message); }
+}
+function closeTranscriptionModal() { document.getElementById('transcriptionModal').style.display = 'none'; activeTranscriptionJobId = null; }
+
+document.getElementById('transcriptionText').addEventListener('input', function() {
+  document.getElementById('transcriptionCharCount').textContent = `${this.value.length} characters`;
+});
+
+document.getElementById('transcriptionSubmitBtn').addEventListener('click', async () => {
+  if (!activeTranscriptionJobId) return;
+  const content = document.getElementById('transcriptionText').value.trim();
+  if (content.length < 20) { alert('Transcription is too short (minimum 20 characters).'); return; }
+  const btn = document.getElementById('transcriptionSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+  try {
+    await apiFetch(`/api/transcriptions/${activeTranscriptionJobId}/submit`, {
+      method: 'POST', body: JSON.stringify({ content })
+    });
+    alert('✅ Transcription submitted! Awaiting admin review.');
+    closeTranscriptionModal();
+    loadTranscription();
+  } catch(err) { alert('❌ ' + err.message); }
+  finally { btn.disabled = false; btn.textContent = 'Submit Transcription'; }
+});
+
+// ==================== USER: DATA ENTRY ====================
+let activeDataentryJobId = null;
+
+async function loadDataentry() {
+  try {
+    const data = await apiFetch('/api/dataentry');
+    const list = document.getElementById('dataentryList');
+    if (!data.jobs.length) {
+      list.innerHTML = '<p style="text-align:center;color:var(--gray-500);padding:3rem;grid-column:1/-1;">No data entry jobs available right now.</p>';
+      return;
+    }
+    list.innerHTML = data.jobs.map(job => `
+      <div class="card" style="overflow:hidden;">
+        <div style="padding:1.25rem;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
+            <h3 style="margin:0;font-size:1.1rem;">${job.title}</h3>
+            <span style="background:#f0fdf4;color:#16a34a;padding:0.25rem 0.75rem;border-radius:999px;font-size:0.8rem;font-weight:bold;white-space:nowrap;margin-left:0.5rem;">⭐ ${job.reward} pts</span>
+          </div>
+          <p style="color:var(--gray-500);font-size:0.9rem;margin:0 0 0.5rem;">${job.description}</p>
+          ${job.templateUrl ? `<p style="font-size:0.85rem;margin:0 0 0.5rem;"><a href="${job.templateUrl}" target="_blank" style="color:#16a34a;">📥 Download Template</a></p>` : ''}
+          <p style="font-size:0.85rem;color:var(--gray-500);margin:0 0 1rem;">👥 ${job.currentWorkers}/${job.maxWorkers} slots taken</p>
+          <div style="text-align:right;">
+            ${job.userSubmission
+              ? `<span style="background:#dbeafe;color:#1e40af;padding:0.25rem 0.75rem;border-radius:999px;font-size:0.8rem;">Status: ${job.userSubmission.status}</span>`
+              : job.slotsLeft > 0
+                ? `<button onclick="openDataentryModal('${job.id}')" class="btn btn-primary" style="padding:0.4rem 1rem;font-size:0.9rem;">Submit Work</button>`
+                : `<span style="color:#ef4444;font-size:0.85rem;">No slots left</span>`
+            }
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch(err) {
+    document.getElementById('dataentryList').innerHTML = `<p style="color:red;grid-column:1/-1;">Error: ${err.message}</p>`;
+  }
+}
+
+async function openDataentryModal(jobId) {
+  try {
+    const data = await apiFetch(`/api/dataentry/${jobId}`);
+    const job = data.job;
+    activeDataentryJobId = jobId;
+    document.getElementById('dataentryModalTitle').textContent = job.title;
+    document.getElementById('dataentryModalDesc').textContent = job.description;
+    document.getElementById('dataentryModalInstructions').textContent = job.instructions;
+    const tpl = document.getElementById('dataentryTemplateSection');
+    if (job.templateUrl) {
+      tpl.style.display = 'block';
+      document.getElementById('dataentryTemplateLink').href = job.templateUrl;
+    } else { tpl.style.display = 'none'; }
+    document.getElementById('dataentryFileInput').value = '';
+    document.getElementById('dataentryModal').style.display = 'block';
+  } catch(err) { alert('Error: ' + err.message); }
+}
+function closeDataentryModal() { document.getElementById('dataentryModal').style.display = 'none'; activeDataentryJobId = null; }
+
+document.getElementById('dataentrySubmitBtn').addEventListener('click', async () => {
+  if (!activeDataentryJobId) return;
+  const fileInput = document.getElementById('dataentryFileInput');
+  if (!fileInput.files[0]) { alert('Please select a file to upload.'); return; }
+  const btn = document.getElementById('dataentrySubmitBtn');
+  btn.disabled = true; btn.textContent = 'Uploading...';
+  try {
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    const res = await fetch(`/api/dataentry/${activeDataentryJobId}/submit`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+    alert('✅ ' + data.message);
+    closeDataentryModal();
+    loadDataentry();
+  } catch(err) { alert('❌ ' + err.message); }
+  finally { btn.disabled = false; btn.textContent = 'Submit Data Entry'; }
+});
+
+// ==================== ADMIN: WRITING JOBS ====================
+document.getElementById('createWritingForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msgEl = document.getElementById('createWritingMsg');
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled = true; btn.textContent = 'Creating...';
+  try {
+    await adminFetch('/api/admin/writing/create', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: document.getElementById('writingJobTitle').value,
+        description: document.getElementById('writingJobDesc').value,
+        instructions: document.getElementById('writingJobInstructions').value,
+        wordCount: document.getElementById('writingJobWordCount').value || null,
+        maxWorkers: parseInt(document.getElementById('writingJobMaxWorkers').value),
+        reward: parseInt(document.getElementById('writingJobReward').value),
+        deadline: document.getElementById('writingJobDeadline').value || null
+      })
+    });
+    msgEl.textContent = '✅ Writing job created!'; msgEl.style.background='#dcfce7'; msgEl.style.color='#16a34a'; msgEl.style.display='block';
+    e.target.reset(); loadAdminWritingJobs();
+  } catch(err) { msgEl.textContent = '❌ ' + err.message; msgEl.style.background='#fee2e2'; msgEl.style.color='#dc2626'; msgEl.style.display='block'; }
+  finally { btn.disabled = false; btn.textContent = 'Create Writing Job'; }
+});
+
+async function loadAdminWritingJobs() {
+  try {
+    const data = await adminFetch('/api/admin/writing/all');
+    const el = document.getElementById('adminWritingJobsList');
+    const subEl = document.getElementById('adminWritingSubmissions');
+    if (!data.jobs.length) { el.innerHTML = '<p style="color:var(--gray-500);">No writing jobs yet.</p>'; subEl.innerHTML = '<p style="color:var(--gray-500);">No pending reviews.</p>'; return; }
+    el.innerHTML = data.jobs.map(job => `
+      <div style="padding:0.75rem;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+        <div>
+          <strong>${job.title}</strong>
+          <span style="margin-left:0.5rem;font-size:0.8rem;background:${job.status==='open'?'#dcfce7':'#f3f4f6'};color:${job.status==='open'?'#16a34a':'#6b7280'};padding:0.1rem 0.4rem;border-radius:4px;">${job.status}</span>
+          <p style="margin:0.25rem 0 0;font-size:0.85rem;color:var(--gray-500);">${job.currentWorkers}/${job.maxWorkers} submitted | ${job.pending} pending review | ${job.reward} pts</p>
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          ${job.pending > 0 ? `<button onclick="loadAdminWritingSubmissions('${job.id}')" class="btn btn-primary" style="padding:0.3rem 0.75rem;font-size:0.8rem;">Review (${job.pending})</button>` : ''}
+          <button onclick="adminDeleteWritingJob('${job.id}')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:0.85rem;">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+    // Auto-load any pending
+    const pending = data.jobs.filter(j => j.pending > 0);
+    if (pending.length) loadAdminWritingSubmissions(pending[0].id);
+    else subEl.innerHTML = '<p style="color:var(--gray-500);">No pending writing reviews.</p>';
+  } catch(err) { document.getElementById('adminWritingJobsList').innerHTML = `<p style="color:red;">${err.message}</p>`; }
+}
+
+async function loadAdminWritingSubmissions(jobId) {
+  const el = document.getElementById('adminWritingSubmissions');
+  el.innerHTML = 'Loading...';
+  try {
+    const data = await adminFetch(`/api/admin/writing/${jobId}/submissions`);
+    const pending = data.submissions.filter(s => s.status === 'submitted');
+    if (!pending.length) { el.innerHTML = '<p style="color:var(--gray-500);">No pending submissions for this job.</p>'; return; }
+    el.innerHTML = `<h4 style="margin:0 0 1rem;">${data.jobTitle} — Pending Reviews</h4>` + pending.map(s => `
+      <div class="card" style="padding:1rem;margin-bottom:1rem;border-left:4px solid #8b5cf6;">
+        <p style="margin:0;font-weight:bold;">${s.username} <span style="font-weight:normal;font-size:0.85rem;color:var(--gray-500);">(${s.email})</span></p>
+        <p style="margin:0.25rem 0;font-size:0.85rem;">📎 <a href="${s.fileUrl}" target="_blank" style="color:#16a34a;">View Submitted File (${s.fileName || 'download'})</a></p>
+        <p style="margin:0;font-size:0.8rem;color:var(--gray-500);">Submitted: ${new Date(s.submittedAt).toLocaleString()}</p>
+        <div style="display:flex;gap:0.75rem;margin-top:0.75rem;flex-wrap:wrap;">
+          <button onclick="adminApproveWriting('${jobId}','${s.userId}')" class="btn btn-primary" style="padding:0.4rem 1rem;font-size:0.85rem;">✅ Approve</button>
+          <button onclick="adminRejectWriting('${jobId}','${s.userId}')" class="btn btn-danger" style="padding:0.4rem 1rem;font-size:0.85rem;">❌ Reject</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(err) { el.innerHTML = `<p style="color:red;">${err.message}</p>`; }
+}
+
+async function adminApproveWriting(jobId, userId) {
+  const notes = prompt('Approval notes (optional):') || '';
+  try {
+    await adminFetch(`/api/admin/writing/${jobId}/approve/${userId}`, { method: 'POST', body: JSON.stringify({ notes }) });
+    alert('✅ Writing approved! Points awarded.'); loadAdminWritingJobs();
+  } catch(err) { alert('❌ ' + err.message); }
+}
+async function adminRejectWriting(jobId, userId) {
+  const reason = prompt('Reason for rejection:') || 'Did not meet requirements';
+  try {
+    await adminFetch(`/api/admin/writing/${jobId}/reject/${userId}`, { method: 'POST', body: JSON.stringify({ reason }) });
+    alert('Submission rejected.'); loadAdminWritingJobs();
+  } catch(err) { alert('❌ ' + err.message); }
+}
+async function adminDeleteWritingJob(jobId) {
+  if (!confirm('Delete this writing job?')) return;
+  try { await adminFetch(`/api/admin/writing/${jobId}`, { method: 'DELETE' }); loadAdminWritingJobs(); }
+  catch(err) { alert('❌ ' + err.message); }
+}
+
+// ==================== ADMIN: TRANSCRIPTION JOBS ====================
+document.getElementById('createTranscriptionForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msgEl = document.getElementById('createTranscriptionMsg');
+  const btn = e.target.querySelector('button[type="submit"]');
+  const audioFile = document.getElementById('transcriptionJobAudio').files[0];
+  if (!audioFile) { msgEl.textContent = '❌ Audio file is required.'; msgEl.style.background='#fee2e2'; msgEl.style.color='#dc2626'; msgEl.style.display='block'; return; }
+  btn.disabled = true; btn.textContent = 'Uploading audio...';
+  try {
+    const formData = new FormData();
+    formData.append('audio', audioFile);
+    formData.append('title', document.getElementById('transcriptionJobTitle').value);
+    formData.append('description', document.getElementById('transcriptionJobDesc').value);
+    formData.append('instructions', document.getElementById('transcriptionJobInstructions').value);
+    formData.append('reward', document.getElementById('transcriptionJobReward').value);
+    formData.append('maxWorkers', document.getElementById('transcriptionJobMaxWorkers').value);
+    const deadline = document.getElementById('transcriptionJobDeadline').value;
+    if (deadline) formData.append('deadline', deadline);
+    const res = await fetch('/api/admin/transcription/create', {
+      method: 'POST', headers: { 'Authorization': `Bearer ${adminToken || localStorage.getItem('token')}` }, body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed');
+    msgEl.textContent = '✅ Transcription job created!'; msgEl.style.background='#dcfce7'; msgEl.style.color='#16a34a'; msgEl.style.display='block';
+    e.target.reset(); loadAdminTranscriptionJobs();
+  } catch(err) { msgEl.textContent = '❌ ' + err.message; msgEl.style.background='#fee2e2'; msgEl.style.color='#dc2626'; msgEl.style.display='block'; }
+  finally { btn.disabled = false; btn.textContent = 'Upload & Create Transcription Job'; }
+});
+
+async function loadAdminTranscriptionJobs() {
+  try {
+    const data = await adminFetch('/api/admin/transcription/all');
+    const el = document.getElementById('adminTranscriptionJobsList');
+    const subEl = document.getElementById('adminTranscriptionSubmissions');
+    if (!data.jobs.length) { el.innerHTML = '<p style="color:var(--gray-500);">No transcription jobs yet.</p>'; subEl.innerHTML = '<p style="color:var(--gray-500);">No pending reviews.</p>'; return; }
+    el.innerHTML = data.jobs.map(job => `
+      <div style="padding:0.75rem;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+        <div>
+          <strong>${job.title}</strong>
+          <span style="margin-left:0.5rem;font-size:0.8rem;background:${job.status==='open'?'#dcfce7':'#f3f4f6'};color:${job.status==='open'?'#16a34a':'#6b7280'};padding:0.1rem 0.4rem;border-radius:4px;">${job.status}</span>
+          <p style="margin:0.25rem 0 0;font-size:0.85rem;color:var(--gray-500);">${job.currentWorkers}/${job.maxWorkers} submitted | ${job.pending} pending | ${job.reward} pts</p>
+          <audio src="${job.audioUrl}" controls style="height:30px;margin-top:0.25rem;"></audio>
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          ${job.pending > 0 ? `<button onclick="loadAdminTranscriptionSubmissions('${job.id}')" class="btn btn-primary" style="padding:0.3rem 0.75rem;font-size:0.8rem;">Review (${job.pending})</button>` : ''}
+          <button onclick="adminDeleteTranscriptionJob('${job.id}')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:0.85rem;">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+    const pending = data.jobs.filter(j => j.pending > 0);
+    if (pending.length) loadAdminTranscriptionSubmissions(pending[0].id);
+    else subEl.innerHTML = '<p style="color:var(--gray-500);">No pending transcription reviews.</p>';
+  } catch(err) { document.getElementById('adminTranscriptionJobsList').innerHTML = `<p style="color:red;">${err.message}</p>`; }
+}
+
+async function loadAdminTranscriptionSubmissions(jobId) {
+  const el = document.getElementById('adminTranscriptionSubmissions');
+  el.innerHTML = 'Loading...';
+  try {
+    const data = await adminFetch(`/api/admin/transcription/${jobId}/submissions`);
+    const pending = data.submissions.filter(s => s.status === 'submitted');
+    if (!pending.length) { el.innerHTML = '<p style="color:var(--gray-500);">No pending submissions.</p>'; return; }
+    el.innerHTML = `<h4 style="margin:0 0 1rem;">${data.jobTitle}</h4>` + pending.map(s => `
+      <div class="card" style="padding:1rem;margin-bottom:1rem;border-left:4px solid #6366f1;">
+        <p style="margin:0;font-weight:bold;">${s.username} <span style="font-weight:normal;font-size:0.85rem;color:var(--gray-500);">(${s.email})</span></p>
+        <details style="margin:0.5rem 0;"><summary style="cursor:pointer;color:#6366f1;font-size:0.9rem;">View Transcription Text</summary>
+          <p style="margin:0.5rem 0;background:#f9fafb;padding:0.75rem;border-radius:0.5rem;font-size:0.85rem;white-space:pre-wrap;">${s.content}</p>
+        </details>
+        <p style="margin:0;font-size:0.8rem;color:var(--gray-500);">Submitted: ${new Date(s.submittedAt).toLocaleString()}</p>
+        <div style="display:flex;gap:0.75rem;margin-top:0.75rem;flex-wrap:wrap;">
+          <button onclick="adminApproveTranscription('${jobId}','${s.userId}')" class="btn btn-primary" style="padding:0.4rem 1rem;font-size:0.85rem;">✅ Approve</button>
+          <button onclick="adminRejectTranscription('${jobId}','${s.userId}')" class="btn btn-danger" style="padding:0.4rem 1rem;font-size:0.85rem;">❌ Reject</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(err) { el.innerHTML = `<p style="color:red;">${err.message}</p>`; }
+}
+
+async function adminApproveTranscription(jobId, userId) {
+  const notes = prompt('Notes (optional):') || '';
+  try {
+    await adminFetch(`/api/admin/transcription/${jobId}/approve/${userId}`, { method: 'POST', body: JSON.stringify({ notes }) });
+    alert('✅ Transcription approved!'); loadAdminTranscriptionJobs();
+  } catch(err) { alert('❌ ' + err.message); }
+}
+async function adminRejectTranscription(jobId, userId) {
+  const reason = prompt('Reason for rejection:') || 'Did not meet requirements';
+  try {
+    await adminFetch(`/api/admin/transcription/${jobId}/reject/${userId}`, { method: 'POST', body: JSON.stringify({ reason }) });
+    alert('Submission rejected.'); loadAdminTranscriptionJobs();
+  } catch(err) { alert('❌ ' + err.message); }
+}
+async function adminDeleteTranscriptionJob(jobId) {
+  if (!confirm('Delete this transcription job?')) return;
+  try { await adminFetch(`/api/admin/transcription/${jobId}`, { method: 'DELETE' }); loadAdminTranscriptionJobs(); }
+  catch(err) { alert('❌ ' + err.message); }
+}
+
+// ==================== ADMIN: DATA ENTRY JOBS ====================
+document.getElementById('createDataentryForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msgEl = document.getElementById('createDataentryMsg');
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled = true; btn.textContent = 'Creating...';
+  try {
+    const formData = new FormData();
+    formData.append('title', document.getElementById('dataentryJobTitle').value);
+    formData.append('description', document.getElementById('dataentryJobDesc').value);
+    formData.append('instructions', document.getElementById('dataentryJobInstructions').value);
+    formData.append('reward', document.getElementById('dataentryJobReward').value);
+    formData.append('maxWorkers', document.getElementById('dataentryJobMaxWorkers').value);
+    const deadline = document.getElementById('dataentryJobDeadline').value;
+    if (deadline) formData.append('deadline', deadline);
+    const tplFile = document.getElementById('dataentryJobTemplate').files[0];
+    if (tplFile) formData.append('template', tplFile);
+    const res = await fetch('/api/admin/dataentry/create', {
+      method: 'POST', headers: { 'Authorization': `Bearer ${adminToken || localStorage.getItem('token')}` }, body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed');
+    msgEl.textContent = '✅ Data entry job created!'; msgEl.style.background='#dcfce7'; msgEl.style.color='#16a34a'; msgEl.style.display='block';
+    e.target.reset(); loadAdminDataentryJobs();
+  } catch(err) { msgEl.textContent = '❌ ' + err.message; msgEl.style.background='#fee2e2'; msgEl.style.color='#dc2626'; msgEl.style.display='block'; }
+  finally { btn.disabled = false; btn.textContent = 'Create Data Entry Job'; }
+});
+
+async function loadAdminDataentryJobs() {
+  try {
+    const data = await adminFetch('/api/admin/dataentry/all');
+    const el = document.getElementById('adminDataentryJobsList');
+    const subEl = document.getElementById('adminDataentrySubmissions');
+    if (!data.jobs.length) { el.innerHTML = '<p style="color:var(--gray-500);">No data entry jobs yet.</p>'; subEl.innerHTML = '<p style="color:var(--gray-500);">No pending reviews.</p>'; return; }
+    el.innerHTML = data.jobs.map(job => `
+      <div style="padding:0.75rem;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+        <div>
+          <strong>${job.title}</strong>
+          <span style="margin-left:0.5rem;font-size:0.8rem;background:${job.status==='open'?'#dcfce7':'#f3f4f6'};color:${job.status==='open'?'#16a34a':'#6b7280'};padding:0.1rem 0.4rem;border-radius:4px;">${job.status}</span>
+          <p style="margin:0.25rem 0 0;font-size:0.85rem;color:var(--gray-500);">${job.currentWorkers}/${job.maxWorkers} submitted | ${job.pending} pending | ${job.reward} pts</p>
+          ${job.templateUrl ? `<a href="${job.templateUrl}" target="_blank" style="font-size:0.8rem;color:#16a34a;">📥 Template</a>` : ''}
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          ${job.pending > 0 ? `<button onclick="loadAdminDataentrySubmissions('${job.id}')" class="btn btn-primary" style="padding:0.3rem 0.75rem;font-size:0.8rem;">Review (${job.pending})</button>` : ''}
+          <button onclick="adminDeleteDataentryJob('${job.id}')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:0.85rem;">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+    const pending = data.jobs.filter(j => j.pending > 0);
+    if (pending.length) loadAdminDataentrySubmissions(pending[0].id);
+    else subEl.innerHTML = '<p style="color:var(--gray-500);">No pending data entry reviews.</p>';
+  } catch(err) { document.getElementById('adminDataentryJobsList').innerHTML = `<p style="color:red;">${err.message}</p>`; }
+}
+
+async function loadAdminDataentrySubmissions(jobId) {
+  const el = document.getElementById('adminDataentrySubmissions');
+  el.innerHTML = 'Loading...';
+  try {
+    const data = await adminFetch(`/api/admin/dataentry/${jobId}/submissions`);
+    const pending = data.submissions.filter(s => s.status === 'submitted');
+    if (!pending.length) { el.innerHTML = '<p style="color:var(--gray-500);">No pending submissions.</p>'; return; }
+    el.innerHTML = `<h4 style="margin:0 0 1rem;">${data.jobTitle}</h4>` + pending.map(s => `
+      <div class="card" style="padding:1rem;margin-bottom:1rem;border-left:4px solid #f59e0b;">
+        <p style="margin:0;font-weight:bold;">${s.username} <span style="font-weight:normal;font-size:0.85rem;color:var(--gray-500);">(${s.email})</span></p>
+        <p style="margin:0.25rem 0;font-size:0.85rem;">📎 <a href="${s.fileUrl}" target="_blank" style="color:#16a34a;">View Submitted File (${s.fileName || 'download'})</a></p>
+        <p style="margin:0;font-size:0.8rem;color:var(--gray-500);">Submitted: ${new Date(s.submittedAt).toLocaleString()}</p>
+        <div style="display:flex;gap:0.75rem;margin-top:0.75rem;flex-wrap:wrap;">
+          <button onclick="adminApproveDataentry('${jobId}','${s.userId}')" class="btn btn-primary" style="padding:0.4rem 1rem;font-size:0.85rem;">✅ Approve</button>
+          <button onclick="adminRejectDataentry('${jobId}','${s.userId}')" class="btn btn-danger" style="padding:0.4rem 1rem;font-size:0.85rem;">❌ Reject</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(err) { el.innerHTML = `<p style="color:red;">${err.message}</p>`; }
+}
+
+async function adminApproveDataentry(jobId, userId) {
+  const notes = prompt('Notes (optional):') || '';
+  try {
+    await adminFetch(`/api/admin/dataentry/${jobId}/approve/${userId}`, { method: 'POST', body: JSON.stringify({ notes }) });
+    alert('✅ Data entry approved!'); loadAdminDataentryJobs();
+  } catch(err) { alert('❌ ' + err.message); }
+}
+async function adminRejectDataentry(jobId, userId) {
+  const reason = prompt('Reason:') || 'Did not meet requirements';
+  try {
+    await adminFetch(`/api/admin/dataentry/${jobId}/reject/${userId}`, { method: 'POST', body: JSON.stringify({ reason }) });
+    alert('Submission rejected.'); loadAdminDataentryJobs();
+  } catch(err) { alert('❌ ' + err.message); }
+}
+async function adminDeleteDataentryJob(jobId) {
+  if (!confirm('Delete this data entry job?')) return;
+  try { await adminFetch(`/api/admin/dataentry/${jobId}`, { method: 'DELETE' }); loadAdminDataentryJobs(); }
+  catch(err) { alert('❌ ' + err.message); }
+}
+
 </script>
 </body>
 </html>
