@@ -1,17 +1,13 @@
 const Commission = require('../models/Commission');
 const User = require('../models/Users');
 
-// Level 1: Father (direct referrer) = 200
-// Level 2: Grandfather = 150
-// Level 3: Great-grandfather = 75
-// Level 4: Great-great-grandfather = 25
-const COMMISSION_LEVELS = {
-  1: 200,
-  2: 150,
-  3: 75,
-  4: 25
-};
+// ─── Business Constants ────────────────────────────────────────────────────
+const ACTIVATION_FEE = 700;          // KES charged to user on activation
+const COMMISSIONS_TOTAL = 450;       // KES 200+150+75+25 paid to upline chain
+const PROFIT_PER_ACTIVATION = ACTIVATION_FEE - COMMISSIONS_TOTAL; // KES 250 net profit
 
+// Level commissions paid from the KES 700 activation fee
+const COMMISSION_LEVELS = { 1: 200, 2: 150, 3: 75, 4: 25 };
 const LEVEL_NAMES = {
   1: 'Father (Direct Referrer)',
   2: 'Grandfather',
@@ -20,77 +16,96 @@ const LEVEL_NAMES = {
 };
 
 /**
- * Distributes commissions with support for Database Transactions
- * @param {Object} newUser - The user being activated
- * @param {String} activationType - Type of activation
- * @param {Object} session - Mongoose session for rollback support
+ * Distributes referral commissions up to 4 upline levels.
+ * Runs inside a Mongoose session for full rollback support.
+ * If ANY step fails, the caller's abortTransaction() will undo everything.
+ *
+ * @param {Object} newUser        - The newly activated user document (already in session)
+ * @param {String} activationType - e.g. 'activation'
+ * @param {Object} session        - Active Mongoose ClientSession
+ * @returns {Array}               - Array of commission records created
  */
-async function distributeReferralCommissions(newUser, activationType = 'user', session = null) {
-  try {
-    const commissions = [];
-    let currentReferrerId = newUser.referrerId;
-    let level = 1;
+async function distributeReferralCommissions(newUser, activationType = 'activation', session) {
+  if (!session) throw new Error('distributeReferralCommissions requires a session for rollback support');
 
-    console.log(`📊 Transactional Commission distribution for: ${newUser.username}`);
+  const commissions = [];
+  let currentReferrerId = newUser.referrerId;
+  let level = 1;
 
-    while (currentReferrerId && level <= 4) {
-      // Fetch referrer using the session
-      const referrer = await User.findById(currentReferrerId).session(session);
-      if (!referrer) break;
+  console.log(`📊 Commission distribution starting for: ${newUser.username}`);
 
-      const amount = COMMISSION_LEVELS[level];
+  while (currentReferrerId && level <= 4) {
+    const referrer = await User.findById(currentReferrerId).session(session);
+    if (!referrer) break;
 
-      console.log(`✅ Level ${level} - ${LEVEL_NAMES[level]}: ${referrer.username} gets KES ${amount}`);
+    const amount = COMMISSION_LEVELS[level];
+    console.log(`  ✅ Level ${level} — ${LEVEL_NAMES[level]}: ${referrer.username} +KES ${amount}`);
 
-      // Add to referrer wallet within session
-      referrer.primaryWallet.balance += amount;
-      referrer.stats.totalEarnings = (referrer.stats.totalEarnings || 0) + amount;
+    // Credit the referrer's KES wallet
+    referrer.primaryWallet.balance += amount;
+    referrer.stats.totalEarnings = (referrer.stats.totalEarnings || 0) + amount;
 
-      commissions.push({
-        fromUserId: newUser._id,
-        toUserId: referrer._id,
-        level: level,
-        amount: amount,
-        type: 'referral_commission',
-        status: 'completed',
-        description: `Level ${level} commission from ${newUser.username} activation (${LEVEL_NAMES[level]})`,
-        metadata: { newUserId: newUser._id, chainLevel: LEVEL_NAMES[level] }
-      });
-
-      // Save the referrer update within the session
-      await referrer.save({ session });
-      
-      currentReferrerId = referrer.referrerId;
-      level++;
+    // Increment new-referral counter so they can eventually withdraw points
+    if (level === 1) {
+      referrer.pointsWallet.referralsSinceLastWithdrawal =
+        (referrer.pointsWallet.referralsSinceLastWithdrawal || 0) + 1;
     }
 
-    if (commissions.length > 0) {
-      // Insert many commission records within the session
-      await Commission.insertMany(commissions, { session });
-    }
+    await referrer.save({ session }); // ← rolls back if session aborts
 
-    console.log(`📈 Transactional Commissions prepared: ${commissions.length} records`);
-    return commissions;
-  } catch (error) {
-    console.error('❌ Commission error (Triggering Rollback):', error.message);
-    // Rethrow error so the auth.js catch block triggers abortTransaction()
-    throw error;
+    commissions.push({
+      fromUserId:  newUser._id,
+      toUserId:    referrer._id,
+      level,
+      amount,
+      type:        'referral_commission',
+      status:      'completed',
+      description: `Level ${level} commission from ${newUser.username} activation (${LEVEL_NAMES[level]})`,
+      metadata:    { newUserId: newUser._id, chainLevel: LEVEL_NAMES[level] }
+    });
+
+    currentReferrerId = referrer.referrerId;
+    level++;
   }
+
+  if (commissions.length > 0) {
+    await Commission.insertMany(commissions, { session }); // ← also rolls back on abort
+  }
+
+  console.log(`📈 Commissions distributed: ${commissions.length} records`);
+  return commissions;
 }
 
-module.exports = { distributeReferralCommissions, getReferralChain };
-
+/**
+ * Returns the upline referral chain for a given userId (up to 4 levels).
+ */
 async function getReferralChain(userId) {
   const chain = [];
   const user = await User.findById(userId).select('referrerId username');
   let currentId = user && user.referrerId;
   let level = 1;
+
   while (currentId && level <= 4) {
-    const referrer = await User.findById(currentId).select('username email phone _id referrerId');
+    const referrer = await User.findById(currentId)
+      .select('username email phone _id referrerId');
     if (!referrer) break;
-    chain.push({ level, userId: referrer._id, username: referrer.username, email: referrer.email, phone: referrer.phone || '' });
+    chain.push({
+      level,
+      userId:   referrer._id,
+      username: referrer.username,
+      email:    referrer.email,
+      phone:    referrer.phone || ''
+    });
     currentId = referrer.referrerId;
     level++;
   }
   return chain;
 }
+
+module.exports = {
+  distributeReferralCommissions,
+  getReferralChain,
+  ACTIVATION_FEE,
+  PROFIT_PER_ACTIVATION,
+  COMMISSION_LEVELS
+};
