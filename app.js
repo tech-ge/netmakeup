@@ -1,6 +1,8 @@
-const express = require('express');
-const cors    = require('cors');
-const path    = require('path');
+require('dotenv').config();
+const express  = require('express');
+const cors     = require('cors');
+const path     = require('path');
+const connectDB = require('./config/db');
 
 const {
   globalLimiter,
@@ -14,9 +16,16 @@ const {
 
 const app = express();
 
+// ─── Connect to MongoDB Atlas ────────────────────────────────────────────────
+// Called once here; db.js guards against duplicate connections (isConnected flag)
+connectDB().catch(err => {
+  console.error('❌ Failed to connect to MongoDB on startup:', err.message);
+  process.exit(1);
+});
+
 console.log('🚀 Starting TechGeo Network Platform...');
 
-// ─── Security headers ───────────────────────────────────────────────────────
+// ─── Security headers ────────────────────────────────────────────────────────
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options',    'nosniff');
   res.setHeader('X-Frame-Options',           'DENY');
@@ -26,7 +35,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Trust proxy — needed for accurate IP detection behind Vercel / Nginx / Heroku
+// Trust Vercel / Nginx proxy for accurate client IP (needed for rate limiting)
 app.set('trust proxy', 1);
 
 app.use(cors({ origin: process.env.FRONTEND_URL || '*', credentials: true }));
@@ -34,48 +43,41 @@ app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ─── Global rate limit (all routes) ─────────────────────────────────────────
+// ─── Global rate limit ───────────────────────────────────────────────────────
 app.use(globalLimiter);
 
-// ─── Auth routes — tightest limits ──────────────────────────────────────────
-// POST /api/auth/signup    → registerLimiter (5/hr)  then authLimiter (10/15min)
-// POST /api/auth/login     → authLimiter (10/15min)
-// PUT  /api/auth/*/password→ sensitiveActionLimiter (3/hr)
+// ─── Auth routes ─────────────────────────────────────────────────────────────
 const authRouter = require('./api/auth');
-app.use('/api/auth/signup', registerLimiter);             // registration cap first
+app.use('/api/auth/signup',          registerLimiter);
 app.use('/api/auth/change-password', sensitiveActionLimiter);
 app.use('/api/auth/reset-password',  sensitiveActionLimiter);
-app.use('/api/auth', authLimiter, authRouter);            // all auth: 10/15min
+app.use('/api/auth', authLimiter, authRouter);
 
-// ─── Withdrawal routes — money endpoints ─────────────────────────────────────
+// ─── Withdrawal routes ────────────────────────────────────────────────────────
 app.use('/api/withdrawals', withdrawalLimiter, require('./api/withdrawal'));
 
-// ─── Task submission routes — prevent spamming ───────────────────────────────
+// ─── Task routes (with submission rate limiting) ──────────────────────────────
 app.use('/api/blogs',          taskSubmitLimiter, require('./api/blog'));
 app.use('/api/surveys',        taskSubmitLimiter, require('./api/surveys'));
-// Additional task routes (transcription, writing, dataentry) if they exist:
-['transcriptions', 'writing', 'dataentry'].forEach(route => {
-  try {
-    app.use(`/api/${route}`, taskSubmitLimiter, require(`./api/${route}`));
-  } catch (_) {
-    // Route file not yet created — skip silently
-  }
-});
+app.use('/api/transcriptions', taskSubmitLimiter, require('./api/transcription'));
+app.use('/api/writing',        taskSubmitLimiter, require('./api/writingJobs'));
+app.use('/api/dataentry',      taskSubmitLimiter, require('./api/dataEntry'));
 
 // ─── Admin routes ─────────────────────────────────────────────────────────────
 app.use('/api/admin', adminLimiter, require('./api/admin'));
 
-// ─── Remaining routes (no extra limit beyond global) ─────────────────────────
-app.use('/api/users',     require('./api/user'));
-app.use('/api/wallets',   require('./api/wallet'));
-app.use('/api/referrals', require('./api/refferals'));
+// ─── Standard authenticated routes ───────────────────────────────────────────
+app.use('/api/users',         require('./api/user'));
+app.use('/api/wallets',       require('./api/wallet'));
+app.use('/api/referrals',     require('./api/refferals'));
+app.use('/api/notifications', require('./api/notifications')); // ← was missing
 
-// ─── Health check (excluded from rate limiting in rateLimiter.js) ─────────────
+// ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   const mongoose = require('mongoose');
   res.json({
-    status: 'OK',
-    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    status:    'OK',
+    database:  mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     timestamp: new Date().toISOString()
   });
 });
@@ -83,14 +85,14 @@ app.get('/api/health', (req, res) => {
 // ─── 404 for unknown API routes ───────────────────────────────────────────────
 app.use('/api/*', (req, res) => res.status(404).json({ error: 'API endpoint not found' }));
 
-// ─── SPA fallback ────────────────────────────────────────────────────────────
+// ─── SPA fallback ─────────────────────────────────────────────────────────────
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // ─── Global error handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
-  console.error('❌ Error:', err.stack);
+  console.error('❌ Unhandled error:', err.stack);
   res.status(500).json({
     error: process.env.NODE_ENV === 'development' ? err.message : 'Server error'
   });
