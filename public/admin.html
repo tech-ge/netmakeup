@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechGeo</title>
+  <title>TechGeo — Admin Panel</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <style>
@@ -512,10 +512,34 @@ async function loadAdminDashboard() {
     document.getElementById('ovWriting').textContent = data.pendingReviews?.writing || 0;
     document.getElementById('ovTranscription').textContent = data.pendingReviews?.transcription || 0;
     document.getElementById('ovDataentry').textContent = data.pendingReviews?.dataEntry || 0;
-    // ── P&L: use profit-summary + real withdrawal data ──────────
+    // ── P&L ─────────────────────────────────────────────────────
+    // Fetch profit-summary + all withdrawal records in parallel
     let ps = {};
-    try { ps = await aF('/api/admin/profit-summary'); } catch(e) { console.warn('profit-summary:', e.message); }
+    let allWithdrawals = [];
+    try {
+      const [psData, wdData] = await Promise.all([
+        aF('/api/admin/profit-summary').catch(()=>({})),
+        aF('/api/withdrawals/admin/all').catch(()=>({withdrawals:[]}))
+      ]);
+      ps = psData;
+      allWithdrawals = wdData.withdrawals || [];
+    } catch(e) { console.warn('P&L fetch error:', e.message); }
 
+    // Tally withdrawals from the live data directly — don't trust cached counts
+    let kesWithdrawnCompleted = 0, kesWithdrawnPending = 0;
+    let ptsWithdrawnCompleted = 0, ptsWithdrawnPending = 0;
+    allWithdrawals.forEach(w => {
+      const amt = w.amount || 0;
+      if (w.type === 'kes') {
+        if (w.status === 'completed') kesWithdrawnCompleted += amt;
+        else if (w.status === 'pending' || w.status === 'approved') kesWithdrawnPending += amt;
+      } else if (w.type === 'points') {
+        if (w.status === 'completed') ptsWithdrawnCompleted += amt;
+        else if (w.status === 'pending' || w.status === 'approved') ptsWithdrawnPending += amt;
+      }
+    });
+
+    // Wallet P&L — activation money
     const activeUsers     = data.users?.active || ps.activations?.count || 0;
     const totalCollected  = activeUsers * 700;
     const commissionsPaid = activeUsers * 450;
@@ -528,30 +552,30 @@ async function loadAdminDashboard() {
     wNetEl.textContent = fmtKES(walletProfit);
     wNetEl.className   = walletProfit >= 0 ? 'pnl-pos' : 'pnl-neg';
 
-    // Referral P&L
+    // Referral P&L — commissions in wallets vs already cashed out
+    // totalKesInUserWallets = sum of all primaryWallet.balance (from profit-summary)
     const refInWallets = ps.businessHealth?.totalKesInUserWallets || 0;
-    const refWithdrawn = ps.kesWithdrawals?.completedTotal || 0;
+    // kesWithdrawnCompleted = real sum from withdrawal records (type:kes, status:completed)
+    const refWithdrawn = kesWithdrawnCompleted;
     document.getElementById('plRefTotal').textContent     = fmtKES(commissionsPaid);
     document.getElementById('plRefInWallets').textContent = fmtKES(refInWallets);
     document.getElementById('plRefWithdrawn').textContent = '− ' + fmtKES(refWithdrawn);
     const refPendEl = document.getElementById('plRefPending');
     refPendEl.textContent = fmtKES(refInWallets);
-    refPendEl.className = refInWallets > walletProfit ? 'pnl-neg' : 'pnl-pos';
+    refPendEl.className   = refInWallets > walletProfit ? 'pnl-neg' : 'pnl-pos';
 
-    // Points P&L
-    const ptsPaidKES    = ps.profitPool?.pointsPayoutsCost || 0;
-    const totalPtsHeld  = ps.businessHealth?.totalPointsInSystem || 0;
-    const ptsHeldKES    = ps.businessHealth?.totalPointsOutstandingKesValue || Math.round(totalPtsHeld/10);
-    let ptsPendingReal  = 0;
-    try {
-      const pdWd = await aF('/api/withdrawals/admin/all?status=pending').catch(()=>({withdrawals:[]}));
-      (pdWd.withdrawals||[]).forEach(w => { if(w.type==='points'||w.type==='POINTS') ptsPendingReal += (w.amount||0); });
-    } catch(e) {}
-    const ptsBalance = walletProfit - ptsPaidKES - ptsPendingReal;
+    // Points P&L — task rewards paid from profit pool
+    const totalPtsHeld = ps.businessHealth?.totalPointsInSystem || 0;
+    const ptsHeldKES   = ps.businessHealth?.totalPointsOutstandingKesValue || Math.round(totalPtsHeld / 10);
+    // Use real withdrawal sums — not cached aggregates
+    const ptsPaidKES    = ptsWithdrawnCompleted;   // already paid out on Tuesdays
+    const ptsPendingKES = ptsWithdrawnPending;      // redeemed but awaiting Tuesday payout
+    const ptsBalance    = walletProfit - ptsPaidKES - ptsPendingKES;
+
     document.getElementById('plPtsSrcProfit').textContent   = fmtKES(walletProfit);
     document.getElementById('plPtsHeld').textContent        = fmt(totalPtsHeld) + ' pts ≈ ' + fmtKES(ptsHeldKES);
     document.getElementById('plPtsAlreadyPaid').textContent = '− ' + fmtKES(ptsPaidKES);
-    document.getElementById('plPtsUnpaid').textContent      = '− ' + fmtKES(ptsPendingReal);
+    document.getElementById('plPtsUnpaid').textContent      = '− ' + fmtKES(ptsPendingKES);
     const pNetEl = document.getElementById('plPtsNet');
     pNetEl.textContent = fmtKES(ptsBalance);
     pNetEl.className   = ptsBalance >= 0 ? 'pnl-pos' : 'pnl-neg';
