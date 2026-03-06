@@ -1,7 +1,6 @@
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
-const connectDB = require('./config/db');
 
 const {
   globalLimiter,
@@ -13,11 +12,13 @@ const {
   sensitiveActionLimiter
 } = require('./middleware/rateLimiter');
 
+const connectDB = require('./config/db');
+
 const app = express();
 
 console.log('🚀 Starting TechGeo Network Platform...');
 
-// ─── Security headers ────────────────────────────────────────────────────────
+// ─── Security headers ─────────────────────────────────────────────────────────
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options',    'nosniff');
   res.setHeader('X-Frame-Options',           'DENY');
@@ -34,77 +35,76 @@ app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ─── Global rate limit ───────────────────────────────────────────────────────
+// ─── Global rate limit ────────────────────────────────────────────────────────
 app.use(globalLimiter);
 
-// ─── DB CONNECTION MIDDLEWARE ────────────────────────────────────────────────
-// Runs before every /api/* route. On Vercel, each cold-start needs to
-// (re)connect to MongoDB before any Mongoose model can be used.
+// ─── DB connection middleware (handles Vercel cold starts) ────────────────────
+// Runs before every /api/* request — connectDB() is idempotent (skips if already connected)
 app.use('/api', async (req, res, next) => {
   try {
     await connectDB();
     next();
   } catch (err) {
-    console.error('DB middleware error:', err.message);
-    return res.status(503).json({
-      error: 'Database unavailable. Please try again in a moment.',
-      detail: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+    console.error('❌ DB connection failed:', err.message);
+    return res.status(503).json({ error: 'Database unavailable. Please try again.' });
   }
 });
 
-// ─── Auth routes ─────────────────────────────────────────────────────────────
+// ─── Auth routes ──────────────────────────────────────────────────────────────
 const authRouter = require('./api/auth');
 app.use('/api/auth/signup',          registerLimiter);
 app.use('/api/auth/change-password', sensitiveActionLimiter);
 app.use('/api/auth/reset-password',  sensitiveActionLimiter);
-app.use('/api/auth', authLimiter, authRouter);
+app.use('/api/auth',                 authLimiter, authRouter);
 
-// ─── Withdrawal routes ───────────────────────────────────────────────────────
+// ─── Withdrawal routes ────────────────────────────────────────────────────────
 app.use('/api/withdrawals', withdrawalLimiter, require('./api/withdrawal'));
 
-// ─── Task routes ─────────────────────────────────────────────────────────────
-app.use('/api/blogs',    taskSubmitLimiter, require('./api/blog'));
-app.use('/api/surveys',  taskSubmitLimiter, require('./api/surveys'));
+// ─── Task routes ──────────────────────────────────────────────────────────────
+// IMPORTANT: filenames are exact — wrong names cause silent 404s
+app.use('/api/blogs',          taskSubmitLimiter, require('./api/blog'));
+app.use('/api/surveys',        taskSubmitLimiter, require('./api/surveys'));
+app.use('/api/writing',        taskSubmitLimiter, require('./api/writingJobs'));   // writingJobs.js
+app.use('/api/transcriptions', taskSubmitLimiter, require('./api/transcription')); // transcription.js (singular)
+app.use('/api/dataentry',      taskSubmitLimiter, require('./api/dataEntry'));      // dataEntry.js (capital E)
 
-// Writing jobs: file is writingJobs.js, mounted at /api/writing
-app.use('/api/writing',        taskSubmitLimiter, require('./api/writingJobs'));
-// Transcription: file is transcription.js, mounted at /api/transcriptions
-app.use('/api/transcriptions', taskSubmitLimiter, require('./api/transcription'));
-// Data entry: file is dataEntry.js (capital E), mounted at /api/dataentry
-app.use('/api/dataentry',      taskSubmitLimiter, require('./api/dataEntry'));
-
-// ─── Admin routes ────────────────────────────────────────────────────────────
-app.use('/api/admin', adminLimiter, require('./api/admin'));
-
-// ─── User / wallet / referral / notification routes ──────────────────────────
-app.use('/api/users',         require('./api/user'));
-app.use('/api/wallets',       require('./api/wallet'));
-app.use('/api/referrals',     require('./api/refferals'));
+// ─── Notification routes ──────────────────────────────────────────────────────
 app.use('/api/notifications', require('./api/notifications'));
 
-// ─── Health check ────────────────────────────────────────────────────────────
-app.get('/api/health', async (req, res) => {
+// ─── Admin routes ─────────────────────────────────────────────────────────────
+app.use('/api/admin',    adminLimiter, require('./api/admin'));
+
+// ─── User / wallet / referral routes ─────────────────────────────────────────
+app.use('/api/users',     require('./api/user'));
+app.use('/api/wallets',   require('./api/wallet'));
+app.use('/api/referrals', require('./api/refferals'));
+
+// ─── Health check ─────────────────────────────────────────────────────────────
+app.get('/api/health', (req, res) => {
   const mongoose = require('mongoose');
-  const state = ['disconnected','connected','connecting','disconnecting'];
   res.json({
     status: 'OK',
-    database: state[mongoose.connection.readyState] || 'unknown',
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     timestamp: new Date().toISOString()
   });
 });
 
-// ─── 404 for unknown API routes ──────────────────────────────────────────────
-app.use('/api/*', (req, res) => res.status(404).json({ error: 'API endpoint not found' }));
+// ─── 404 for unknown API routes ───────────────────────────────────────────────
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ error: 'API endpoint not found' });
+});
 
-// ─── SPA fallback ────────────────────────────────────────────────────────────
+// ─── SPA fallback ─────────────────────────────────────────────────────────────
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ─── Global error handler ────────────────────────────────────────────────────
+// ─── Global error handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error('❌ Unhandled error:', err.stack);
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'File too large. Max 5MB for JSON, 50MB for audio, 20MB for documents.' });
+  }
   res.status(500).json({
     error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
   });
