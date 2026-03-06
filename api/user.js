@@ -152,3 +152,54 @@ router.get('/inactive-referrals', authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+
+// PUT /api/users/update-contact — change email and/or phone (once per 7 days)
+router.put('/update-contact', authMiddleware, async (req, res) => {
+  try {
+    const { email, phone, currentPassword } = req.body;
+
+    if (!email && !phone) {
+      return res.status(400).json({ error: 'Provide at least an email or phone to update.' });
+    }
+    if (!currentPassword) {
+      return res.status(400).json({ error: 'Current password is required to update contact info.' });
+    }
+
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+
+    // Verify password
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) return res.status(401).json({ error: 'Incorrect password.' });
+
+    // Check 7-day cooldown
+    if (user.lastContactUpdate) {
+      const daysSince = (Date.now() - new Date(user.lastContactUpdate).getTime()) / (1000 * 60 * 60 * 24);
+      if (daysSince < 7) {
+        const daysLeft = Math.ceil(7 - daysSince);
+        return res.status(429).json({
+          error: `You can only update contact info once per week. Try again in ${daysLeft} day(s).`
+        });
+      }
+    }
+
+    // Check uniqueness
+    if (email && email !== user.email) {
+      const exists = await User.findOne({ email: email.toLowerCase().trim(), _id: { $ne: user._id } });
+      if (exists) return res.status(400).json({ error: 'That email is already in use.' });
+      user.email = email.toLowerCase().trim();
+    }
+    if (phone && phone !== user.phone) {
+      const exists = await User.findOne({ phone: phone.trim(), _id: { $ne: user._id } });
+      if (exists) return res.status(400).json({ error: 'That phone number is already in use.' });
+      user.phone = phone.trim();
+    }
+
+    user.lastContactUpdate = new Date();
+    await user.save();
+
+    res.json({ message: '✅ Contact info updated. Next update allowed in 7 days.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
