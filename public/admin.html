@@ -5,1024 +5,1004 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TechGeo</title>
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <style>
-    :root{--primary:#16a34a;--primary-dark:#15803d;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-500:#6b7280;--gray-700:#374151;--radius:.75rem;--shadow:0 4px 16px rgba(0,0,0,.08)}
+    :root{--g:#16a34a;--gd:#15803d;--r:#ef4444;--y:#f59e0b;--b:#3b82f6;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-500:#6b7280;--gray-700:#374151;--rad:.65rem;--sh:0 2px 12px rgba(0,0,0,.07)}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Inter',system-ui,sans-serif;color:var(--gray-700);background:var(--gray-50);line-height:1.6}
+    body{font-family:'Inter',system-ui,sans-serif;color:var(--gray-700);background:var(--gray-50);font-size:.88rem;line-height:1.5}
     /* TOPNAV */
-    .topnav{background:#fff;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:100;padding:0 1rem}
-    .topnav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;gap:.5rem}
-    .logo{display:flex;align-items:center;gap:.4rem;font-weight:800;font-size:1.1rem;color:var(--primary);text-decoration:none;white-space:nowrap}
-    /* SIDEBAR NAV for task links */
-    .sidenav{position:fixed;top:60px;left:0;width:210px;height:calc(100vh - 60px);background:#fff;border-right:1px solid var(--gray-200);overflow-y:auto;padding:.75rem .5rem;z-index:90}
-    .sidenav a{display:flex;align-items:center;gap:.5rem;padding:.55rem .85rem;border-radius:.5rem;text-decoration:none;color:var(--gray-700);font-size:.88rem;font-weight:500;transition:.15s;margin-bottom:.1rem}
-    .sidenav a:hover{background:var(--gray-100)}
-    .sidenav a.active{background:#f0fdf4;color:var(--primary);font-weight:700}
-    .sidenav .nav-section{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-500);padding:.5rem .85rem .2rem}
-    /* MAIN CONTENT */
-    .main-wrap{margin-left:210px;padding:1.5rem}
-    .container{max-width:960px;margin:0 auto}
-    /* CARDS */
-    .card{background:#fff;border-radius:var(--radius);border:1px solid var(--gray-200);box-shadow:var(--shadow);overflow:hidden}
-    .card-header{background:var(--gray-50);padding:.75rem 1.25rem;border-bottom:1px solid var(--gray-200);font-weight:700;font-size:.9rem}
-    /* STATS GRID */
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
-    .stat-card{background:#fff;border-radius:var(--radius);border:1px solid var(--gray-200);padding:1.25rem;display:flex;align-items:center;gap:1rem;box-shadow:var(--shadow)}
-    .stat-icon{width:44px;height:44px;border-radius:.6rem;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
-    .stat-icon.green{background:#dcfce7}.stat-icon.yellow{background:#fef3c7}.stat-icon.blue{background:#dbeafe}.stat-icon.purple{background:#ede9fe}
-    .stat-label{font-size:.75rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-    .stat-value{font-size:1.3rem;font-weight:800;color:var(--gray-700);line-height:1.1;margin-top:.15rem}
-    /* TASK MINI BOXES */
-    .task-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:.85rem;margin-top:1rem}
-    .task-box{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;text-align:center;box-shadow:var(--shadow);transition:.15s;text-decoration:none;color:inherit;display:block}
-    .task-box:hover{border-color:var(--primary);box-shadow:0 4px 20px rgba(22,163,74,.15);transform:translateY(-2px)}
-    .task-box-icon{font-size:1.75rem;margin-bottom:.4rem}
-    .task-box-name{font-weight:700;font-size:.85rem;margin-bottom:.2rem}
-    .task-box-pts{font-size:.75rem;color:var(--primary);font-weight:600}
-    .task-box-left{font-size:.7rem;color:var(--gray-500);margin-top:.15rem}
-    /* REFERRAL BOXES */
-    .ref-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin:1rem 0}
-    .ref-box{border-radius:var(--radius);padding:1.1rem;text-align:center;color:#fff}
-    .ref-box-count{font-size:2rem;font-weight:800}
-    .ref-box-label{font-size:.78rem;opacity:.88;margin-top:.1rem}
-    .ref-box-status{font-size:.72rem;margin-top:.4rem;opacity:.75}
-    /* REFERRAL MEMBERS LIST */
-    .member-box{display:flex;align-items:center;justify-content:space-between;padding:.65rem 1rem;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:.4rem}
-    .member-box:last-child{border-bottom:none}
-    .mbadge{padding:.15rem .55rem;border-radius:999px;font-size:.72rem;font-weight:700}
-    .mbadge.active{background:#dcfce7;color:#16a34a}
-    .mbadge.inactive{background:#fef3c7;color:#b45309}
+    .tnav{background:#111827;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;position:sticky;top:0;z-index:200}
+    .tlogo{color:#fff;font-weight:800;font-size:1rem;display:flex;align-items:center;gap:.4rem;text-decoration:none}
+    .tlogo svg{stroke:#4ade80}
+    /* TABS */
+    .tabbar{background:#fff;border-bottom:2px solid var(--gray-200);overflow-x:auto;white-space:nowrap;padding:0 1rem;position:sticky;top:52px;z-index:190}
+    .tbtns{display:inline-flex}
+    .tb{display:inline-flex;align-items:center;gap:.3rem;padding:.65rem 1rem;border:none;background:none;font-weight:600;font-size:.8rem;cursor:pointer;color:var(--gray-500);border-bottom:2.5px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:.15s}
+    .tb:hover{color:var(--gray-700)}
+    .tb.on{color:var(--g);border-bottom-color:var(--g)}
+    /* CONTENT */
+    .tc{display:none;padding:1.25rem;max-width:1280px;margin:0 auto}
+    .tc.on{display:block}
+    /* UNIVERSAL CARD */
+    .c{background:#fff;border:1px solid var(--gray-200);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden;margin-bottom:1.1rem}
+    .ch{background:var(--gray-50);padding:.6rem 1rem;border-bottom:1px solid var(--gray-200);font-weight:700;font-size:.82rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+    .cb{padding:.9rem 1rem}
+    /* STAT STRIP */
+    .sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.85rem;margin-bottom:1.1rem}
+    .sb{background:#fff;border:1px solid var(--gray-200);border-radius:var(--rad);padding:.9rem 1rem;text-align:center;box-shadow:var(--sh)}
+    .sv{font-size:1.5rem;font-weight:800;color:var(--g)}
+    .sl{font-size:.7rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.04em;margin-top:.15rem}
+    /* USER CARDS - Image 1 style */
+    .ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+    .ucard{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:1rem;box-shadow:var(--sh);transition:.15s}
+    .ucard:hover{border-color:#86efac;box-shadow:0 4px 16px rgba(22,163,74,.1)}
+    .ucard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.6rem}
+    .ucard-name{font-weight:800;font-size:.95rem;margin-bottom:.1rem}
+    .ucard-sub{font-size:.75rem;color:var(--gray-500);margin-bottom:.05rem}
+    .ucard-meta{display:flex;align-items:center;gap:.5rem;margin:.5rem 0}
+    .ucard-wallet{background:#f0fdf4;color:var(--g);padding:.2rem .6rem;border-radius:.35rem;font-weight:800;font-size:.8rem;border:1px solid #bbf7d0}
+    .ucard-pts{background:#fef3c7;color:#b45309;padding:.2rem .6rem;border-radius:.35rem;font-weight:800;font-size:.8rem;border:1px solid #fde68a}
+    .ucard-ref{font-size:.72rem;color:var(--gray-500);margin:.3rem 0}
+    .ucard-btns{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem}
+    /* TASK CARDS - Image 2 style */
+    .jgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+    .jcard{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:1rem;box-shadow:var(--sh);border-top:3px solid var(--g)}
+    .jcard-title{font-weight:800;font-size:.9rem;margin-bottom:.2rem}
+    .jcard-desc{font-size:.78rem;color:var(--gray-500);margin-bottom:.6rem;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+    .jcard-stats{display:flex;gap:1rem;margin:.6rem 0;font-size:.75rem}
+    .jcs{text-align:center}
+    .jcs-n{font-weight:800;font-size:.95rem}
+    .jcs-l{color:var(--gray-500);font-size:.68rem;margin-top:.05rem}
+    .jcard-btns{display:flex;gap:.4rem;flex-wrap:wrap;padding-top:.6rem;border-top:1px solid var(--gray-100)}
+    /* WITHDRAWAL BOXES */
+    .wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+    .wcard{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:1rem;box-shadow:var(--sh);border-left:4px solid var(--y)}
+    .wcard.done{border-left-color:var(--g)}
+    .wcard.rej{border-left-color:var(--r)}
+    /* REVIEW BOXES */
+    .rbox{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:.85rem;margin-bottom:.7rem;border-left:4px solid #8b5cf6}
     /* FORMS */
-    .form-group{margin-bottom:1rem}
-    .form-label{display:block;font-weight:600;font-size:.85rem;margin-bottom:.35rem}
-    .form-control{width:100%;padding:.55rem .8rem;border:1.5px solid var(--gray-200);border-radius:.5rem;font-size:.92rem;outline:none;transition:.15s}
-    .form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,163,74,.12)}
+    .fg{margin-bottom:.8rem}
+    .fl{display:block;font-weight:600;font-size:.78rem;margin-bottom:.25rem;color:var(--gray-700)}
+    .fc{width:100%;padding:.48rem .7rem;border:1.5px solid var(--gray-200);border-radius:.45rem;font-size:.85rem;outline:none;transition:.15s;background:#fff}
+    .fc:focus{border-color:var(--g);box-shadow:0 0 0 2px rgba(22,163,74,.1)}
+    .fr2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
     /* BUTTONS */
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;padding:.5rem 1.1rem;border-radius:.5rem;font-weight:600;font-size:.88rem;cursor:pointer;border:none;transition:.15s;text-decoration:none}
-    .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
-    .btn-danger{background:#ef4444;color:#fff}.btn-danger:hover{background:#dc2626}
-    .btn-sm{padding:.3rem .7rem;font-size:.8rem}
-    .w-full{width:100%}
-    /* ALERTS */
-    .alert{padding:.65rem 1rem;border-radius:.5rem;font-size:.85rem;margin-bottom:1rem}
-    .alert-danger{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5}
-    .alert-success{background:#dcfce7;color:#16a34a;border:1px solid #86efac}
-    /* MODALS */
-    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;overflow-y:auto;padding:2rem 1rem}
-    .modal-box{background:#fff;max-width:620px;margin:0 auto;border-radius:1rem;padding:1.75rem;position:relative}
-    .modal-close{position:absolute;top:.85rem;right:.85rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--gray-500)}
-    /* SECTION (page) */
-    .page{display:none}.page.active{display:block}
-    /* ACTIVATION */
-    .activation-wrap{min-height:100vh;background:linear-gradient(135deg,#16a34a,#14532d);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2rem 1rem}
-    /* HAMBURGER */
-    .ham-btn{display:none;background:none;border:none;font-size:1.5rem;cursor:pointer;padding:.25rem}
-    @media(max-width:768px){
-      .sidenav{display:none;position:fixed;inset:0 auto 0 0;z-index:200;width:210px}.sidenav.open{display:block}
-      .main-wrap{margin-left:0;padding:1rem}
-      .ham-btn{display:block}
-      .ref-grid{grid-template-columns:1fr 1fr}
-      .task-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
-    }
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.25rem;padding:.38rem .8rem;border-radius:.4rem;font-weight:700;font-size:.78rem;cursor:pointer;border:none;transition:.15s;white-space:nowrap}
+    .btp{background:var(--g);color:#fff}.btp:hover{background:var(--gd)}
+    .btd{background:var(--r);color:#fff}.btd:hover{background:#dc2626}
+    .btw{background:var(--y);color:#fff}.btw:hover{background:#d97706}
+    .btg{background:none;border:1.5px solid var(--gray-200);color:var(--gray-700)}.btg:hover{background:var(--gray-100)}
+    .btb{background:#2563eb;color:#fff}.btb:hover{background:#1d4ed8}
+    .wfull{width:100%}
+    /* BADGES */
+    .badge{display:inline-flex;align-items:center;gap:.2rem;padding:.18rem .55rem;border-radius:999px;font-size:.7rem;font-weight:700}
+    .bg{background:#dcfce7;color:#16a34a}
+    .by{background:#fef3c7;color:#b45309}
+    .br{background:#fee2e2;color:#dc2626}
+    .bb{background:#dbeafe;color:#1e40af}
+    .bgr{background:var(--gray-100);color:var(--gray-500)}
+    /* MSG */
+    .msg{padding:.5rem .8rem;border-radius:.4rem;font-size:.8rem;margin-bottom:.75rem}
+    .mok{background:#dcfce7;color:#16a34a;border:1px solid #86efac}
+    .merr{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5}
+    /* SEARCH */
+    .sr{border:1.5px solid var(--gray-200);border-radius:.4rem;background:#fff;max-height:200px;overflow-y:auto;position:absolute;z-index:300;width:100%}
+    .sri{padding:.45rem .75rem;cursor:pointer;font-size:.8rem;border-bottom:1px solid var(--gray-100)}
+    .sri:hover{background:var(--gray-50)}
+    .pos-rel{position:relative}
+    /* CHART */
+    .chart-wrap{position:relative;height:220px}
+    /* GRAPH GRID */
+    .gg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.1rem}
+    /* P&L box */
+    .pnl-box{background:#fff;border-radius:var(--rad);border:1px solid var(--gray-200);padding:1rem;box-shadow:var(--sh)}
+    .pnl-title{font-weight:700;font-size:.85rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.35rem}
+    .pnl-row{display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px dashed var(--gray-100);font-size:.82rem}
+    .pnl-row:last-child{border-bottom:none;font-weight:800;padding-top:.5rem}
+    .pnl-pos{color:var(--g);font-weight:700}
+    .pnl-neg{color:var(--r);font-weight:700}
+    @media(max-width:640px){.fr2,.fr3,.gg{grid-template-columns:1fr}.ugrid,.jgrid,.wgrid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
 
-<!-- TOPNAV -->
-<nav class="topnav">
-  <div class="topnav-inner">
-    <div style="display:flex;align-items:center;gap:.75rem">
-      <button class="ham-btn" onclick="toggleSidenav()">☰</button>
-      <a href="/dashboard.html" class="logo">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M6 6L4 4M18 18l2 2M6 18l-2 2M18 6l2-2"/><circle cx="12" cy="12" r="4"/></svg>
-        TechGeo
-      </a>
-    </div>
-    <div style="display:flex;align-items:center;gap:.5rem">
-      <span id="navUsername" style="font-size:.85rem;color:var(--gray-500);font-weight:600"></span>
-      <span id="navWallet" style="font-size:.85rem;background:#f0fdf4;color:var(--primary);padding:.2rem .6rem;border-radius:999px;font-weight:700;border:1px solid #bbf7d0"></span>
-      <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
-    </div>
+<nav class="tnav">
+  <a href="/admin.html" class="tlogo">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M6 6L4 4M18 18l2 2M6 18l-2 2M18 6l2-2"/><circle cx="12" cy="12" r="4"/></svg>
+    TechGeo Admin
+  </a>
+  <div style="display:flex;align-items:center;gap:.75rem">
+    <span id="adminName" style="color:#9ca3af;font-size:.8rem"></span>
+    <button class="btn btd" onclick="adminLogout()">Logout</button>
   </div>
 </nav>
 
-<!-- SIDEBAR -->
-<nav class="sidenav" id="sidenav">
-  <a href="#dashboard" class="nav-lnk active" data-pg="dashboard">🏠 Dashboard</a>
-  <div class="nav-section">Daily Tasks</div>
-  <a href="#blogs" class="nav-lnk" data-pg="blogs">📝 Blog Writing</a>
-  <a href="#surveys" class="nav-lnk" data-pg="surveys">📊 Surveys</a>
-  <a href="#writing" class="nav-lnk" data-pg="writing">✍️ Writing Jobs</a>
-  <a href="#transcription" class="nav-lnk" data-pg="transcription">🎙️ Transcription</a>
-  <a href="#dataentry" class="nav-lnk" data-pg="dataentry">📋 Data Entry</a>
-  <div class="nav-section">Earnings</div>
-  <a href="#referrals" class="nav-lnk" data-pg="referrals">👥 Referrals</a>
-  <a href="#withdraw" class="nav-lnk" data-pg="withdraw">💸 Withdraw</a>
-  <div class="nav-section">Account</div>
-  <a href="#profile" class="nav-lnk" data-pg="profile">👤 Profile</a>
-</nav>
+<div class="tabbar">
+  <div class="tbtns">
+    <button class="tb on" data-tab="overview">📊 Overview</button>
+    <button class="tb" data-tab="deposits">💰 Deposits</button>
+    <button class="tb" data-tab="users">👥 Users</button>
+    <button class="tb" data-tab="blogs">📝 Blogs</button>
+    <button class="tb" data-tab="surveys">📋 Surveys</button>
+    <button class="tb" data-tab="writing">✍️ Writing</button>
+    <button class="tb" data-tab="transcription">🎙️ Transcription</button>
+    <button class="tb" data-tab="dataentry">📂 Data Entry</button>
+    <button class="tb" data-tab="withdrawals">💸 Withdrawals</button>
+  </div>
+</div>
 
-<div class="main-wrap">
-<div class="container">
+<!-- ======= OVERVIEW ======= -->
+<div class="tc on" id="tab-overview">
+  <div class="sg">
+    <div class="sb"><div class="sv" id="ovTotal">—</div><div class="sl">Total Users</div></div>
+    <div class="sb"><div class="sv" id="ovActive">—</div><div class="sl">Active Users</div></div>
+    <div class="sb"><div class="sv" id="ovNotAct">—</div><div class="sl">Not Activated</div></div>
+    <div class="sb"><div class="sv" id="ovWithdraw">—</div><div class="sl">Pending Withdrawals</div></div>
+    <div class="sb" style="cursor:pointer" onclick="switchTab('blogs')"><div class="sv" style="color:#f59e0b" id="ovBlogs">0</div><div class="sl">📝 Blog Reviews</div></div>
+    <div class="sb" style="cursor:pointer" onclick="switchTab('surveys')"><div class="sv" style="color:#3b82f6" id="ovSurveys">0</div><div class="sl">📋 Survey Reviews</div></div>
+    <div class="sb" style="cursor:pointer" onclick="switchTab('writing')"><div class="sv" style="color:#8b5cf6" id="ovWriting">0</div><div class="sl">✍️ Writing</div></div>
+    <div class="sb" style="cursor:pointer" onclick="switchTab('transcription')"><div class="sv" style="color:#ec4899" id="ovTranscription">0</div><div class="sl">🎙️ Transcription</div></div>
+    <div class="sb" style="cursor:pointer" onclick="switchTab('dataentry')"><div class="sv" style="color:#14b8a6" id="ovDataentry">0</div><div class="sl">📂 Data Entry</div></div>
+  </div>
 
-<!-- ====== ACTIVATION PAGE ====== -->
-<div id="pg-activation" class="page">
-  <div class="activation-wrap">
-    <div style="width:100%;max-width:560px">
-      <div style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:1rem;padding:1.5rem;text-align:center;margin-bottom:1.5rem">
-        <p style="color:rgba(255,255,255,.8);font-size:.85rem;margin-bottom:.25rem">YOUR WALLET BALANCE</p>
-        <p style="color:#fff;font-size:2.5rem;font-weight:800;margin:0" id="activationBalance">KES 0</p>
-        <p style="color:rgba(255,255,255,.7);font-size:.8rem;margin-top:.25rem">Updates after admin deposits your M-Pesa payment</p>
+  <!-- P&L GRAPHS -->
+  <div class="gg">
+    <!-- WALLET P&L -->
+    <div class="pnl-box">
+      <div class="pnl-title">💰 Wallet P&L — Money Flow</div>
+      <div class="pnl-row"><span>Total Deposited (activation payments)</span><span class="pnl-pos" id="plWalletIn">KES 0</span></div>
+      <div class="pnl-row"><span>Activation cost deducted</span><span class="pnl-neg" id="plWalletCost">- KES 0</span></div>
+      <div class="pnl-row"><span>Commissions paid out</span><span class="pnl-neg" id="plCommissions">- KES 0</span></div>
+      <div class="pnl-row"><span>Withdrawals paid</span><span class="pnl-neg" id="plWithdrawals">- KES 0</span></div>
+      <div class="pnl-row" style="margin-top:.25rem"><span>💼 Net Profit</span><span id="plWalletNet" class="pnl-pos">KES 0</span></div>
+      <div class="chart-wrap" style="margin-top:.75rem"><canvas id="walletChart"></canvas></div>
+    </div>
+    <!-- POINTS P&L -->
+    <div class="pnl-box">
+      <div class="pnl-title">⭐ Points P&L — Task Economy</div>
+      <div class="pnl-row"><span>Points awarded (from profits)</span><span class="pnl-pos" id="plPtsAwarded">0 pts</span></div>
+      <div class="pnl-row"><span>Points pending withdrawal</span><span class="pnl-neg" id="plPtsPending">0 pts</span></div>
+      <div class="pnl-row"><span>Points already withdrawn</span><span class="pnl-neg" id="plPtsWithdrawn">0 pts</span></div>
+      <div class="pnl-row" style="margin-top:.25rem"><span>⭐ Net Points Float</span><span id="plPtsNet" class="pnl-pos">0 pts</span></div>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.4rem;padding:.6rem .8rem;margin-top:.75rem;font-size:.78rem;color:#166534">
+        💡 Task rewards come from wallet profits. Every KES spent on activations funds the task reward pool.
       </div>
-      <div style="background:#fff;border-radius:1rem;padding:1.75rem;box-shadow:0 20px 50px rgba(0,0,0,.25)">
-        <div style="text-align:center;margin-bottom:1.5rem"><div style="font-size:3rem">🔐</div><h2 style="margin:.25rem 0">Account Not Activated</h2><p style="color:var(--gray-500);font-size:.9rem">Follow these steps to unlock all features</p></div>
-        <div style="background:#f0fdf4;border:1px solid #16a34a;border-radius:.75rem;padding:1.25rem;margin-bottom:.75rem">
-          <p style="font-weight:700;color:#14532d;margin:0 0 .5rem">1. Pay KES 700 via M-Pesa Paybill</p>
-          <div style="background:#fff;border:2px solid #16a34a;border-radius:.5rem;padding:1rem;text-align:center">
-            <p style="font-size:.75rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:1px;margin:0">Paybill: <b>247247</b> | Account:</p>
-            <p style="font-size:2.2rem;font-weight:800;color:var(--primary);letter-spacing:4px;margin:.1rem 0">153316</p>
-            <p style="font-size:.8rem;color:var(--gray-500);margin:0">TechGeo Network</p>
-          </div>
-        </div>
-        <div style="background:#eff6ff;border:1px solid #3b82f6;border-radius:.75rem;padding:1rem;margin-bottom:.75rem">
-          <p style="font-weight:700;color:#1e3a8a;margin:0 0 .25rem">2. Screenshot M-Pesa Confirmation</p>
-          <p style="color:#1e40af;font-size:.88rem;margin:0">Take a screenshot of the M-Pesa success message.</p>
-        </div>
-        <div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:.75rem;padding:1rem;margin-bottom:1rem">
-          <p style="font-weight:700;color:#78350f;margin:0 0 .25rem">3. Send Screenshot to Your Upline</p>
-          <div style="background:#fff;border:1px solid #f59e0b;border-radius:.5rem;padding:.75rem;margin-top:.5rem">
-            <p style="font-size:.75rem;color:var(--gray-500);margin:0">Your Upline</p>
-            <p style="font-weight:700;margin:.15rem 0 0" id="uplineName">Loading...</p>
-            <p style="font-size:.82rem;color:var(--gray-500);margin:.1rem 0 0" id="uplinePhone"></p>
-            <p style="font-size:.82rem;color:var(--gray-500);margin:.05rem 0 0" id="uplineEmail"></p>
-          </div>
-        </div>
-        <div style="background:#f9fafb;border:2px dashed var(--primary);border-radius:.75rem;padding:1rem">
-          <p style="font-weight:700;color:#14532d;margin:0 0 .75rem">4. Click Activate Once Balance Shows KES 700+</p>
-          <button onclick="doActivation()" style="width:100%;background:linear-gradient(135deg,#16a34a,#14532d);color:#fff;border:none;padding:.9rem;font-size:1rem;font-weight:700;border-radius:.65rem;cursor:pointer">🚀 Activate My Account (KES 700)</button>
-          <p id="activationMsg" style="display:none;text-align:center;font-size:.88rem;margin:.6rem 0 0"></p>
-        </div>
-      </div>
+      <div class="chart-wrap" style="margin-top:.75rem"><canvas id="pointsChart"></canvas></div>
     </div>
   </div>
-</div><!-- /#pg-activation -->
 
-<!-- ====== MAIN DASHBOARD ====== -->
-<div id="pg-dashboard" class="page">
-  <!-- Welcome Banner -->
-  <div style="background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem">
-    <h2 style="font-size:1.5rem;margin-bottom:.1rem">Welcome back, <span id="dashUsername">User</span>! 👋</h2>
-    <p id="dashPackageStatus" style="opacity:.88;margin:0;font-size:.9rem"></p>
+  <!-- RECENT ACTIVITY -->
+  <div class="c">
+    <div class="ch">📋 Recent Registrations <button onclick="switchTab('users')" class="btn btg" style="font-size:.73rem">View All →</button></div>
+    <div class="cb" id="ovRecentUsers">Loading...</div>
   </div>
-  <!-- Stats -->
-  <div class="stats-grid">
-    <div class="stat-card"><div class="stat-icon green">💵</div><div><div class="stat-label">KES Wallet</div><div class="stat-value" id="dashMainWallet">0</div></div></div>
-    <div class="stat-card"><div class="stat-icon yellow">⭐</div><div><div class="stat-label">Points</div><div class="stat-value" id="dashPoints">0</div></div></div>
-    <div class="stat-card"><div class="stat-icon blue">👥</div><div><div class="stat-label">Active Refs</div><div class="stat-value" id="dashActiveReferrals">0</div></div></div>
-    <div class="stat-card"><div class="stat-icon purple">📈</div><div><div class="stat-label">Total Earned</div><div class="stat-value" id="dashTotalEarnings">0</div></div></div>
-  </div>
-  <!-- Activation Alert -->
-  <div id="activationAlert" style="display:none;background:#fef3c7;border:2px solid #f59e0b;border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem">
-    <p style="font-weight:700;color:#b45309;margin:0 0 .5rem">⚠️ Package Not Activated</p>
-    <p style="color:#92400e;margin:0 0 .75rem;font-size:.9rem">Deposit KES 700 and activate to start earning.</p>
-    <button id="activateBtn" class="btn btn-primary">🚀 Activate (KES 700)</button>
-  </div>
-  <!-- Points Conversion -->
-  <div id="pointsConversionCard" style="display:none;background:#fff;border-radius:var(--radius);border:1px solid var(--gray-200);padding:1.25rem;margin-bottom:1.5rem;box-shadow:var(--shadow)">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
-      <div><p style="font-weight:700;margin:0">⭐ Convert Points → KES</p><p style="font-size:.85rem;color:var(--gray-500);margin:.2rem 0 0">You have <strong id="currentPoints">0</strong> pts ≈ <strong id="pointsKES">KES 0</strong></p></div>
-      <button id="convertPointsBtn" class="btn btn-primary btn-sm">Convert Now</button>
-    </div>
-  </div>
-  <!-- TASK BOXES -->
-  <div class="card" style="margin-bottom:1.5rem">
-    <div class="card-header">📅 Available Tasks — Click to Start</div>
-    <div style="padding:1.25rem">
-      <div class="task-grid">
-        <a href="#blogs" class="task-box nav-lnk" data-pg="blogs">
-          <div class="task-box-icon">📝</div>
-          <div class="task-box-name">Blog Writing</div>
-          <div class="task-box-pts">100 pts each</div>
-          <div class="task-box-left" id="tbLogsLeft">— left today</div>
-        </a>
-        <a href="#surveys" class="task-box nav-lnk" data-pg="surveys">
-          <div class="task-box-icon">📊</div>
-          <div class="task-box-name">Surveys</div>
-          <div class="task-box-pts">100 pts each</div>
-          <div class="task-box-left" id="tbSurveysLeft">— left today</div>
-        </a>
-        <a href="#writing" class="task-box nav-lnk" data-pg="writing">
-          <div class="task-box-icon">✍️</div>
-          <div class="task-box-name">Writing Jobs</div>
-          <div class="task-box-pts">Varies per task</div>
-          <div class="task-box-left">Upload file</div>
-        </a>
-        <a href="#transcription" class="task-box nav-lnk" data-pg="transcription">
-          <div class="task-box-icon">🎙️</div>
-          <div class="task-box-name">Transcription</div>
-          <div class="task-box-pts">50 pts each</div>
-          <div class="task-box-left">Type audio</div>
-        </a>
-        <a href="#dataentry" class="task-box nav-lnk" data-pg="dataentry">
-          <div class="task-box-icon">📋</div>
-          <div class="task-box-name">Data Entry</div>
-          <div class="task-box-pts">75 pts each</div>
-          <div class="task-box-left">Upload file</div>
-        </a>
+</div>
+
+<!-- ======= DEPOSITS ======= -->
+<div class="tc" id="tab-deposits">
+  <div class="c" style="max-width:480px">
+    <div class="ch">💰 Deposit Balance to User</div>
+    <div class="cb">
+      <div id="depositMsg" class="msg" style="display:none"></div>
+      <div class="fg pos-rel">
+        <label class="fl">Search User (username or email)</label>
+        <input type="text" id="depositSearch" class="fc" placeholder="Type username or email...">
+        <div id="depositSearchResults" class="sr" style="display:none"></div>
       </div>
-      <p style="font-size:.78rem;color:var(--gray-500);margin-top:.75rem">💡 100 pts = KES 10 | Convert on Tuesdays (needs 2,000 pts + 4 active referrals)</p>
-    </div>
-  </div>
-  <!-- REFERRAL SUMMARY MINI BOXES -->
-  <div class="card" style="margin-bottom:1.5rem">
-    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
-      <span>👥 My Referral Network</span>
-      <a href="#referrals" class="nav-lnk btn btn-sm btn-primary" data-pg="referrals">View All</a>
-    </div>
-    <div style="padding:1.25rem">
-      <div class="ref-grid">
-        <div class="ref-box" style="background:linear-gradient(135deg,#16a34a,#15803d)">
-          <div class="ref-box-count" id="dashRef1">0</div>
-          <div class="ref-box-label">Level 1 — KES 200</div>
-          <div class="ref-box-status" id="dashRef1Status">0 active / 0 inactive</div>
-        </div>
-        <div class="ref-box" style="background:linear-gradient(135deg,#22c55e,#16a34a)">
-          <div class="ref-box-count" id="dashRef2">0</div>
-          <div class="ref-box-label">Level 2 — KES 150</div>
-          <div class="ref-box-status" id="dashRef2Status">0 active / 0 inactive</div>
-        </div>
-        <div class="ref-box" style="background:linear-gradient(135deg,#4ade80,#22c55e);color:#14532d">
-          <div class="ref-box-count" id="dashRef3">0</div>
-          <div class="ref-box-label">Level 3 — KES 75</div>
-          <div class="ref-box-status" id="dashRef3Status">0 active / 0 inactive</div>
-        </div>
-        <div class="ref-box" style="background:linear-gradient(135deg,#86efac,#4ade80);color:#14532d">
-          <div class="ref-box-count" id="dashRef4">0</div>
-          <div class="ref-box-label">Level 4 — KES 25</div>
-          <div class="ref-box-status" id="dashRef4Status">0 active / 0 inactive</div>
-        </div>
+      <div class="fg">
+        <label class="fl">Selected User</label>
+        <input type="text" id="depositUserDisplay" class="fc" readonly placeholder="Select from search results" style="background:var(--gray-50)">
+        <input type="hidden" id="depositUserId">
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem;background:var(--gray-50);border-radius:.5rem;margin-top:.75rem">
-        <span style="font-weight:700">Total Commission Earned</span>
-        <span style="font-size:1.2rem;font-weight:800;color:var(--primary)" id="dashTotalCommission">KES 0</span>
+      <div class="fr2">
+        <div class="fg"><label class="fl">Amount (KES)</label><input type="number" id="depositAmount" class="fc" placeholder="700" min="1"></div>
+        <div class="fg"><label class="fl">M-Pesa Reference</label><input type="text" id="depositReference" class="fc" placeholder="Optional"></div>
       </div>
+      <button onclick="doDeposit()" class="btn btp wfull">💰 Deposit to Wallet</button>
     </div>
   </div>
-  <!-- Inactive Referrals Alert -->
-  <div id="inactiveReferralsSection" style="display:none;margin-bottom:1.5rem">
-    <div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:var(--radius);padding:1.25rem">
-      <p style="font-weight:700;color:#b45309;margin:0 0 .75rem">⚠️ These people you invited haven't activated yet</p>
-      <div id="inactiveReferralsList"></div>
+</div>
+
+<!-- ======= USERS ======= -->
+<div class="tc" id="tab-users">
+  <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem">
+    <h3 style="font-size:.95rem">User Management</h3>
+    <select id="uFilterStatus" class="fc" style="width:auto">
+      <option value="all">All Status</option><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option>
+    </select>
+    <select id="uFilterPkg" class="fc" style="width:auto">
+      <option value="all">All Packages</option><option value="not_active">Not Activated</option><option value="normal">Activated</option>
+    </select>
+    <input type="text" id="uSearch" class="fc" style="width:auto;max-width:180px" placeholder="Search name/email...">
+    <button onclick="loadAdminUsers()" class="btn btg">Filter</button>
+    <span id="uCount" style="font-size:.75rem;color:var(--gray-500)"></span>
+  </div>
+  <div id="adminUsersList"><p style="color:var(--gray-500)">Loading...</p></div>
+</div>
+
+<!-- ======= BLOGS ======= -->
+<div class="tc" id="tab-blogs">
+  <div class="c">
+    <div class="ch">Create New Blog Task</div>
+    <div class="cb">
+      <div id="createBlogMsg" class="msg" style="display:none"></div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">Title *</label><input type="text" id="blogTitle" class="fc" required></div>
+        <div class="fg"><label class="fl">Category</label><input type="text" id="blogCategory" class="fc" placeholder="general"></div>
+      </div>
+      <div class="fg"><label class="fl">Description (shown to users) *</label><input type="text" id="blogDescription" class="fc" required></div>
+      <div class="fg"><label class="fl">Full Instructions / Writing Prompt *</label><textarea id="blogContent" class="fc" rows="4" required></textarea></div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">Points Reward</label><input type="number" id="blogReward" class="fc" value="100" min="1"></div>
+        <div class="fg"><label class="fl">Max Writers (slots)</label><input type="number" id="blogMaxBidders" class="fc" value="50" min="1"></div>
+      </div>
+      <button onclick="createBlog()" class="btn btp">📝 Create Blog Task</button>
     </div>
   </div>
-</div><!-- /#pg-dashboard -->
-
-<!-- ====== BLOGS ====== -->
-<div id="pg-blogs" class="page">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
-    <h2>📝 Blog Writing</h2>
-    <div style="background:#f0fdf4;border:1px solid #16a34a;padding:.5rem 1rem;border-radius:.5rem;font-size:.85rem">⭐ 100 pts each | Max 2/day</div>
+  <div class="c">
+    <div class="ch">All Blog Tasks <button onclick="loadAdminBlogs()" class="btn btg" style="font-size:.72rem">↻ Refresh</button></div>
+    <div class="cb" id="adminBlogsList">Loading...</div>
   </div>
-  <div id="blogsDaily" style="background:#fef3c7;border:1px solid #f59e0b;padding:.65rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.88rem">Loading...</div>
-  <div id="blogsList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
+  <div class="c">
+    <div class="ch" id="blogReviewHeader">Pending Blog Reviews — select a task above</div>
+    <div class="cb" id="adminBlogSubmissions"><p style="color:var(--gray-500)">Click "Review" on a blog task above.</p></div>
+  </div>
 </div>
 
-<!-- ====== SURVEYS ====== -->
-<div id="pg-surveys" class="page">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
-    <h2>📊 Surveys</h2>
-    <div style="background:#f0fdf4;border:1px solid #16a34a;padding:.5rem 1rem;border-radius:.5rem;font-size:.85rem">⭐ 100 pts each | Max 2/day</div>
-  </div>
-  <div id="surveysDaily" style="background:#fef3c7;border:1px solid #f59e0b;padding:.65rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.88rem">Loading...</div>
-  <div id="surveysList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
-</div>
-
-<!-- ====== WRITING ====== -->
-<div id="pg-writing" class="page">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
-    <h2>✍️ Writing Jobs</h2>
-    <div style="background:#f0fdf4;border:1px solid #16a34a;padding:.5rem 1rem;border-radius:.5rem;font-size:.85rem">⭐ Reward set per task | Upload file</div>
-  </div>
-  <div id="writingList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
-</div>
-
-<!-- ====== TRANSCRIPTION ====== -->
-<div id="pg-transcription" class="page">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
-    <h2>🎙️ Transcription</h2>
-    <div style="background:#f0fdf4;border:1px solid #16a34a;padding:.5rem 1rem;border-radius:.5rem;font-size:.85rem">⭐ 50 pts each | Type audio</div>
-  </div>
-  <div id="transcriptionList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
-</div>
-
-<!-- ====== DATA ENTRY ====== -->
-<div id="pg-dataentry" class="page">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
-    <h2>📋 Data Entry</h2>
-    <div style="background:#f0fdf4;border:1px solid #16a34a;padding:.5rem 1rem;border-radius:.5rem;font-size:.85rem">⭐ 75 pts each | Upload file</div>
-  </div>
-  <div id="dataentryList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
-</div>
-
-<!-- ====== REFERRALS ====== -->
-<div id="pg-referrals" class="page">
-  <h2 style="margin-bottom:1rem">👥 My Referral Network</h2>
-  <!-- Invite link -->
-  <div class="card" style="margin-bottom:1.25rem;background:linear-gradient(to right,#f0fdf4,#dcfce7);border:2px solid #16a34a">
-    <div class="card-header" style="background:transparent">📤 Your Invite Link</div>
-    <div style="padding:1.25rem">
-      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:.75rem">
-        <input type="text" id="referralLink" class="form-control" readonly style="flex:1;min-width:200px">
-        <button id="copyReferralBtn" class="btn btn-primary">📋 Copy</button>
+<!-- ======= SURVEYS ======= -->
+<div class="tc" id="tab-surveys">
+  <div class="c">
+    <div class="ch">Create New Survey</div>
+    <div class="cb">
+      <div id="createSurveyMsg" class="msg" style="display:none"></div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">Title *</label><input type="text" id="surveyTitle" class="fc" required></div>
+        <div class="fg"><label class="fl">Max Responses</label><input type="number" id="surveyMaxResponses" class="fc" value="100" min="1"></div>
       </div>
-      <p style="color:var(--primary);font-size:.85rem;margin:0">✅ Earn KES 200 (L1) · KES 150 (L2) · KES 75 (L3) · KES 25 (L4) per activation</p>
+      <div class="fr2">
+        <div class="fg"><label class="fl">Description *</label><input type="text" id="surveyDescription" class="fc" required></div>
+        <div class="fg"><label class="fl">Points Reward</label><input type="number" id="surveyReward" class="fc" value="100" min="1"></div>
+      </div>
+      <div id="questionsBuilder">
+        <label class="fl" style="margin-bottom:.4rem">Questions</label>
+        <div id="questionsList"></div>
+        <button type="button" onclick="addQuestion()" class="btn btg" style="margin-top:.4rem;font-size:.75rem">+ Add Question</button>
+      </div>
+      <button onclick="createSurvey()" class="btn btp" style="margin-top:.85rem">📋 Create Survey</button>
     </div>
   </div>
-  <!-- Level boxes -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.25rem">
-    <div class="card" style="border-top:4px solid #16a34a"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:var(--primary)" id="level1Count">0</div><div style="font-weight:700;margin:.2rem 0">Level 1</div><div style="font-size:.8rem;color:var(--gray-500)">KES 200 · Direct Referrals</div><div style="margin-top:.65rem;font-size:.75rem" id="lvl1Status">Active: 0 | Inactive: 0</div><div id="level1Members" style="margin-top:.75rem"></div></div></div>
-    <div class="card" style="border-top:4px solid #22c55e"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#22c55e" id="level2Count">0</div><div style="font-weight:700;margin:.2rem 0">Level 2</div><div style="font-size:.8rem;color:var(--gray-500)">KES 150</div><div style="margin-top:.65rem;font-size:.75rem" id="lvl2Status">Active: 0 | Inactive: 0</div><div id="level2Members" style="margin-top:.75rem"></div></div></div>
-    <div class="card" style="border-top:4px solid #4ade80"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#4ade80" id="level3Count">0</div><div style="font-weight:700;margin:.2rem 0">Level 3</div><div style="font-size:.8rem;color:var(--gray-500)">KES 75</div><div style="margin-top:.65rem;font-size:.75rem" id="lvl3Status">Active: 0 | Inactive: 0</div><div id="level3Members" style="margin-top:.75rem"></div></div></div>
-    <div class="card" style="border-top:4px solid #86efac"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#86efac" id="level4Count">0</div><div style="font-weight:700;margin:.2rem 0">Level 4</div><div style="font-size:.8rem;color:var(--gray-500)">KES 25</div><div style="margin-top:.65rem;font-size:.75rem" id="lvl4Status">Active: 0 | Inactive: 0</div><div id="level4Members" style="margin-top:.75rem"></div></div></div>
+  <div class="c">
+    <div class="ch">All Surveys <button onclick="loadAdminSurveys()" class="btn btg" style="font-size:.72rem">↻ Refresh</button></div>
+    <div class="cb" id="adminSurveysList">Loading...</div>
   </div>
-  <!-- Commission totals -->
-  <div class="card">
-    <div class="card-header">💰 Commission Totals</div>
-    <div style="padding:1.25rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem">
-      <div style="border-left:4px solid #16a34a;padding-left:.75rem"><div style="font-size:.8rem;color:var(--gray-500)">Level 1</div><div style="font-weight:800;font-size:1.2rem" id="commission1">KES 0</div></div>
-      <div style="border-left:4px solid #22c55e;padding-left:.75rem"><div style="font-size:.8rem;color:var(--gray-500)">Level 2</div><div style="font-weight:800;font-size:1.2rem" id="commission2">KES 0</div></div>
-      <div style="border-left:4px solid #4ade80;padding-left:.75rem"><div style="font-size:.8rem;color:var(--gray-500)">Level 3</div><div style="font-weight:800;font-size:1.2rem" id="commission3">KES 0</div></div>
-      <div style="border-left:4px solid #86efac;padding-left:.75rem"><div style="font-size:.8rem;color:var(--gray-500)">Level 4</div><div style="font-weight:800;font-size:1.2rem" id="commission4">KES 0</div></div>
-      <div style="border-left:4px solid var(--primary);padding-left:.75rem;background:#f0fdf4;border-radius:.25rem"><div style="font-size:.8rem;color:var(--gray-500)">Total</div><div style="font-weight:800;font-size:1.3rem;color:var(--primary)" id="totalCommission">KES 0</div></div>
+  <div class="c">
+    <div class="ch">Pending Survey Reviews</div>
+    <div class="cb" id="adminSurveySubmissions"><p style="color:var(--gray-500)">Click "Review" on a survey above.</p></div>
+  </div>
+</div>
+
+<!-- ======= WRITING ======= -->
+<div class="tc" id="tab-writing">
+  <div class="c">
+    <div class="ch">Create Writing Job</div>
+    <div class="cb">
+      <div id="createWritingMsg" class="msg" style="display:none"></div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">Title *</label><input type="text" id="writingJobTitle" class="fc" required></div>
+        <div class="fg"><label class="fl">Word Count (e.g. 500-800 words)</label><input type="text" id="writingJobWordCount" class="fc" placeholder="optional"></div>
+      </div>
+      <div class="fg"><label class="fl">Description *</label><input type="text" id="writingJobDesc" class="fc" required></div>
+      <div class="fg"><label class="fl">Full Instructions *</label><textarea id="writingJobInstructions" class="fc" rows="4" required></textarea></div>
+      <div class="fr3">
+        <div class="fg"><label class="fl">Points Reward</label><input type="number" id="writingJobReward" class="fc" value="100" min="1"></div>
+        <div class="fg"><label class="fl">Max Workers (slots)</label><input type="number" id="writingJobMaxWorkers" class="fc" value="50" min="1"></div>
+        <div class="fg"><label class="fl">Deadline (optional)</label><input type="date" id="writingJobDeadline" class="fc"></div>
+      </div>
+      <button onclick="createWritingJob()" class="btn btp">✍️ Create Writing Job</button>
     </div>
   </div>
-</div><!-- /#pg-referrals -->
-
-<!-- ====== WITHDRAW ====== -->
-<div id="pg-withdraw" class="page">
-  <h2 style="margin-bottom:1rem">💸 Withdraw Earnings</h2>
-  <div id="thursdayMsg" style="background:#eff6ff;border-left:4px solid #3b82f6;padding:.85rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;color:#1e40af;font-weight:500;font-size:.9rem">Checking...</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
-    <div class="card"><div style="padding:1.25rem;text-align:center"><div style="font-size:.78rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem">KES Wallet</div><div style="font-size:2rem;font-weight:800;color:var(--primary)" id="withdrawBalance">0</div><div style="font-size:.78rem;color:var(--gray-500);margin-top:.25rem">Min KES 300 · Thursdays</div></div></div>
-    <div class="card"><div style="padding:1.25rem;text-align:center"><div style="font-size:.78rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem">Points</div><div style="font-size:2rem;font-weight:800;color:#f59e0b" id="withdrawPoints">0</div><div style="font-size:.78rem;color:var(--gray-500);margin-top:.25rem" id="withdrawPointsKES">≈ KES 0 · Tuesdays</div></div></div>
+  <div class="c">
+    <div class="ch">All Writing Jobs <button onclick="loadAdminWritingJobs()" class="btn btg" style="font-size:.72rem">↻ Refresh</button></div>
+    <div class="cb" id="adminWritingJobsList">Loading...</div>
   </div>
-  <div id="pointsConvertHint" style="background:#fefce8;border:1px solid #eab308;padding:.65rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.85rem;color:#854d0e"></div>
-  <div class="card" style="margin-bottom:1.25rem">
-    <div class="card-header">Withdrawal Request (KES Wallet)</div>
-    <form id="withdrawalForm" style="padding:1.25rem">
-      <div class="form-group"><label class="form-label">Amount (KES) — min KES 300</label><input type="number" id="withdrawAmount" class="form-control" placeholder="300" min="300" required></div>
-      <div class="form-group"><label class="form-label">Payment Method</label>
-        <select id="paymentMethod" class="form-control" required><option value="">Select...</option><option value="mpesa">M-Pesa</option><option value="bank">Bank Transfer</option></select>
+  <div class="c">
+    <div class="ch">Pending Writing Reviews</div>
+    <div class="cb" id="adminWritingSubmissions"><p style="color:var(--gray-500)">Click "Review" on a job above.</p></div>
+  </div>
+</div>
+
+<!-- ======= TRANSCRIPTION ======= -->
+<div class="tc" id="tab-transcription">
+  <div class="c">
+    <div class="ch">Create Transcription Job</div>
+    <div class="cb">
+      <div id="createTranscriptionMsg" class="msg" style="display:none"></div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">Title *</label><input type="text" id="transcriptionJobTitle" class="fc" required></div>
+        <div class="fg"><label class="fl">Description *</label><input type="text" id="transcriptionJobDesc" class="fc" required></div>
       </div>
-      <div id="mpesaSection" style="display:none"><div class="form-group"><label class="form-label">M-Pesa Phone</label><input type="tel" id="mpesaPhone" class="form-control" placeholder="254712345678"></div></div>
-      <div id="bankSection" style="display:none">
-        <div class="form-group"><label class="form-label">Bank Name</label><input type="text" id="bankName" class="form-control"></div>
-        <div class="form-group"><label class="form-label">Account Number</label><input type="text" id="accountNumber" class="form-control"></div>
-        <div class="form-group"><label class="form-label">Account Holder Name</label><input type="text" id="accountName" class="form-control"></div>
+      <div class="fg"><label class="fl">Instructions for transcribers *</label><textarea id="transcriptionJobInstructions" class="fc" rows="3" required></textarea></div>
+      <div class="fg"><label class="fl">Audio File (MP3, WAV, M4A — max 50MB) *</label><input type="file" id="transcriptionJobAudio" class="fc" accept=".mp3,.wav,.m4a,.ogg,.webm" required></div>
+      <div class="fr3">
+        <div class="fg"><label class="fl">Points Reward</label><input type="number" id="transcriptionJobReward" class="fc" value="50" min="1"></div>
+        <div class="fg"><label class="fl">Max Workers</label><input type="number" id="transcriptionJobMaxWorkers" class="fc" value="50" min="1"></div>
+        <div class="fg"><label class="fl">Deadline (optional)</label><input type="date" id="transcriptionJobDeadline" class="fc"></div>
       </div>
-      <button type="submit" class="btn btn-primary w-full" id="withdrawBtn">Request Withdrawal</button>
-    </form>
+      <button onclick="createTranscriptionJob()" class="btn btp">🎙️ Upload & Create</button>
+    </div>
   </div>
-  <div class="card">
-    <div class="card-header">Withdrawal History</div>
-    <div id="withdrawHistory" style="padding:1.25rem">Loading...</div>
+  <div class="c">
+    <div class="ch">All Transcription Jobs <button onclick="loadAdminTranscriptionJobs()" class="btn btg" style="font-size:.72rem">↻ Refresh</button></div>
+    <div class="cb" id="adminTranscriptionJobsList">Loading...</div>
   </div>
-</div>
-
-<!-- ====== PROFILE ====== -->
-<div id="pg-profile" class="page">
-  <h2 style="margin-bottom:1rem">👤 Profile</h2>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
-    <div class="card"><div class="card-header">Personal Info</div><div style="padding:1.25rem;display:grid;gap:.75rem">
-      <div><div style="font-size:.75rem;color:var(--gray-500);font-weight:600">USERNAME</div><div style="font-weight:700" id="profileUsername">—</div></div>
-      <div><div style="font-size:.75rem;color:var(--gray-500);font-weight:600">EMAIL</div><div id="profileEmail">—</div></div>
-      <div><div style="font-size:.75rem;color:var(--gray-500);font-weight:600">PHONE</div><div id="profilePhone">—</div></div>
-      <div><div style="font-size:.75rem;color:var(--gray-500);font-weight:600">MEMBER SINCE</div><div id="profileJoinDate">—</div></div>
-      <div><div style="font-size:.75rem;color:var(--gray-500);font-weight:600">PACKAGE</div><div id="profilePackage">—</div></div>
-      <div><div style="font-size:.75rem;color:var(--gray-500);font-weight:600">STATUS</div><div id="profileStatus">—</div></div>
-    </div></div>
-    <div class="card"><div class="card-header">🔗 Your Invite Link</div><div style="padding:1.25rem">
-      <input type="text" id="profileInviteCode" class="form-control" readonly style="background:#f0fdf4;border-color:#16a34a;font-size:.82rem;margin-bottom:.75rem">
-      <p style="font-size:.8rem;color:var(--gray-500);margin:0">Share this link to earn referral commissions</p>
-    </div></div>
-  </div>
-  <div class="card">
-    <div class="card-header">🔒 Change Password</div>
-    <form id="changePasswordForm" style="padding:1.25rem;max-width:400px">
-      <div id="pwdError" style="display:none" class="alert alert-danger"></div>
-      <div id="pwdSuccess" style="display:none" class="alert alert-success">✅ Password changed!</div>
-      <div class="form-group"><label class="form-label">Current Password</label><input type="password" id="currentPassword" class="form-control" required></div>
-      <div class="form-group"><label class="form-label">New Password</label><input type="password" id="newPassword" class="form-control" required minlength="6"></div>
-      <div class="form-group"><label class="form-label">Confirm New Password</label><input type="password" id="confirmPassword" class="form-control" required></div>
-      <button type="submit" class="btn btn-primary" id="changePwdBtn">Change Password</button>
-    </form>
+  <div class="c">
+    <div class="ch">Pending Transcription Reviews</div>
+    <div class="cb" id="adminTranscriptionSubmissions"><p style="color:var(--gray-500)">Click "Review" on a job above.</p></div>
   </div>
 </div>
 
-</div><!-- /.container -->
-</div><!-- /.main-wrap -->
-
-<!-- ============ MODALS ============ -->
-<div class="modal" id="blogModal">
-  <div class="modal-box" style="max-width:700px">
-    <button class="modal-close" onclick="closeBlogModal()">✕</button>
-    <h3 id="blogModalTitle" style="margin-bottom:.25rem"></h3>
-    <p id="blogModalDesc" style="color:var(--gray-500);font-size:.88rem;margin-bottom:.75rem"></p>
-    <div id="blogModalContent" style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:1rem;font-size:.9rem;max-height:180px;overflow-y:auto;line-height:1.6"></div>
-    <label class="form-label">Your Blog Post (min 100 chars)</label>
-    <textarea id="blogWriteContent" class="form-control" rows="8" placeholder="Write here..."></textarea>
-    <div id="blogCharCount" style="font-size:.78rem;color:var(--gray-500);text-align:right;margin:.25rem 0 .75rem">0 chars</div>
-    <button id="blogSubmitBtn" class="btn btn-primary w-full">Submit Blog</button>
+<!-- ======= DATA ENTRY ======= -->
+<div class="tc" id="tab-dataentry">
+  <div class="c">
+    <div class="ch">Create Data Entry Job</div>
+    <div class="cb">
+      <div id="createDataentryMsg" class="msg" style="display:none"></div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">Title *</label><input type="text" id="dataentryJobTitle" class="fc" required></div>
+        <div class="fg"><label class="fl">Description *</label><input type="text" id="dataentryJobDesc" class="fc" required></div>
+      </div>
+      <div class="fg"><label class="fl">Instructions *</label><textarea id="dataentryJobInstructions" class="fc" rows="3" required></textarea></div>
+      <div class="fg"><label class="fl">Template File (optional — PDF/Excel/Word)</label><input type="file" id="dataentryJobTemplate" class="fc" accept=".pdf,.doc,.docx,.xlsx,.csv"></div>
+      <div class="fr3">
+        <div class="fg"><label class="fl">Points Reward</label><input type="number" id="dataentryJobReward" class="fc" value="75" min="1"></div>
+        <div class="fg"><label class="fl">Max Workers</label><input type="number" id="dataentryJobMaxWorkers" class="fc" value="50" min="1"></div>
+        <div class="fg"><label class="fl">Deadline (optional)</label><input type="date" id="dataentryJobDeadline" class="fc"></div>
+      </div>
+      <button onclick="createDataentryJob()" class="btn btp">📂 Create Data Entry Job</button>
+    </div>
+  </div>
+  <div class="c">
+    <div class="ch">All Data Entry Jobs <button onclick="loadAdminDataentryJobs()" class="btn btg" style="font-size:.72rem">↻ Refresh</button></div>
+    <div class="cb" id="adminDataentryJobsList">Loading...</div>
+  </div>
+  <div class="c">
+    <div class="ch">Pending Data Entry Reviews</div>
+    <div class="cb" id="adminDataentrySubmissions"><p style="color:var(--gray-500)">Click "Review" on a job above.</p></div>
   </div>
 </div>
 
-<div class="modal" id="surveyModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeSurveyModal()">✕</button>
-    <h3 id="surveyModalTitle" style="margin-bottom:.25rem"></h3>
-    <p id="surveyModalDesc" style="color:var(--gray-500);font-size:.88rem;margin-bottom:1rem"></p>
-    <div id="surveyModalQuestions"></div>
-    <button id="surveySubmitBtn" class="btn btn-primary w-full" style="margin-top:1rem">Submit Survey</button>
+<!-- ======= WITHDRAWALS ======= -->
+<div class="tc" id="tab-withdrawals">
+  <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem">
+    <h3 style="font-size:.95rem">Withdrawal Requests</h3>
+    <select id="wdFilterStatus" class="fc" style="width:auto">
+      <option value="pending">Pending</option><option value="completed">Completed</option><option value="rejected">Rejected</option>
+    </select>
+    <button onclick="loadAdminWithdrawals()" class="btn btg">Load</button>
+    <span id="wdCount" style="font-size:.75rem;color:var(--gray-500)"></span>
   </div>
+  <div id="adminWithdrawalsList"><p style="color:var(--gray-500)">Click Load to fetch withdrawals.</p></div>
 </div>
 
-<div class="modal" id="writingModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeWritingModal()">✕</button>
-    <h3 id="writingModalTitle" style="margin-bottom:.25rem"></h3>
-    <p id="writingModalDesc" style="color:var(--gray-500);font-size:.88rem;margin-bottom:.75rem"></p>
-    <div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:1rem"><strong>Instructions:</strong><div id="writingModalInstructions" style="margin-top:.4rem;font-size:.88rem;white-space:pre-wrap"></div></div>
-    <div class="form-group"><label class="form-label">Upload Your Work (PDF or Word)</label><input type="file" id="writingFileInput" class="form-control" accept=".pdf,.doc,.docx"><p style="font-size:.75rem;color:var(--gray-500);margin-top:.2rem">Max 20MB</p></div>
-    <button id="writingSubmitBtn" class="btn btn-primary w-full" style="margin-top:.75rem">Submit Writing Job</button>
-  </div>
-</div>
-
-<div class="modal" id="transcriptionModal">
-  <div class="modal-box" style="max-width:660px">
-    <button class="modal-close" onclick="closeTranscriptionModal()">✕</button>
-    <h3 id="transcriptionModalTitle" style="margin-bottom:.25rem"></h3>
-    <p id="transcriptionModalDesc" style="color:var(--gray-500);font-size:.88rem;margin-bottom:.75rem"></p>
-    <div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.75rem"><strong>Instructions:</strong><div id="transcriptionModalInstructions" style="margin-top:.4rem;font-size:.88rem;white-space:pre-wrap"></div></div>
-    <div style="margin-bottom:1rem"><strong>Audio:</strong><audio id="transcriptionAudio" controls style="width:100%;margin-top:.4rem"></audio></div>
-    <div class="form-group"><label class="form-label">Your Transcription Text</label><textarea id="transcriptionText" class="form-control" rows="7" placeholder="Type transcription here..."></textarea><p id="transcriptionCharCount" style="font-size:.75rem;color:var(--gray-500);margin-top:.2rem">0 chars</p></div>
-    <button id="transcriptionSubmitBtn" class="btn btn-primary w-full" style="margin-top:.75rem">Submit Transcription</button>
-  </div>
-</div>
-
-<div class="modal" id="dataentryModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeDataentryModal()">✕</button>
-    <h3 id="dataentryModalTitle" style="margin-bottom:.25rem"></h3>
-    <p id="dataentryModalDesc" style="color:var(--gray-500);font-size:.88rem;margin-bottom:.75rem"></p>
-    <div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.75rem"><strong>Instructions:</strong><div id="dataentryModalInstructions" style="margin-top:.4rem;font-size:.88rem;white-space:pre-wrap"></div></div>
-    <div id="dataentryTemplateSection" style="display:none;margin-bottom:.75rem"><a id="dataentryTemplateLink" href="#" target="_blank" class="btn btn-sm" style="border:1.5px solid var(--primary);color:var(--primary);background:transparent">📥 Download Template</a></div>
-    <div class="form-group"><label class="form-label">Upload Completed File</label><input type="file" id="dataentryFileInput" class="form-control" accept=".pdf,.doc,.docx,.xlsx,.csv"><p style="font-size:.75rem;color:var(--gray-500);margin-top:.2rem">PDF, Word, Excel or CSV · Max 20MB</p></div>
-    <button id="dataentrySubmitBtn" class="btn btn-primary w-full" style="margin-top:.75rem">Submit Data Entry</button>
+<!-- EDIT MODAL -->
+<div id="editModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;overflow-y:auto;padding:2rem 1rem">
+  <div style="background:#fff;max-width:480px;margin:0 auto;border-radius:var(--rad);padding:1.5rem;position:relative">
+    <button onclick="closeEditModal()" style="position:absolute;top:.75rem;right:.75rem;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--gray-500)">✕</button>
+    <h3 id="editModalTitle" style="margin-bottom:1rem;font-size:.95rem"></h3>
+    <div id="editModalBody"></div>
+    <button onclick="saveEdit()" class="btn btp wfull" style="margin-top:.85rem">Save Changes</button>
   </div>
 </div>
 
 <script>
-// ============ AUTH GUARD ============
-const _token = localStorage.getItem('token');
-const _user = (() => { try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch(e) { return null; } })();
-if (!_token || !_user) { window.location.href = '/index.html'; }
-if (_user && _user.isAdmin) { window.location.href = '/admin.html'; }
+// ============ AUTH ============
+const _at = localStorage.getItem('adminToken') || localStorage.getItem('token');
+const _au = (() => { try { return JSON.parse(localStorage.getItem('user')||'null'); } catch(e){return null;} })();
+if (!_at || !_au || !_au.isAdmin) { window.location.href = '/index.html'; }
+if (_au) document.getElementById('adminName').textContent = '👤 ' + _au.username;
 
-// ============ STATE ============
-let currentUser = null;
-let activeBlogId = null, activeSurveyId = null, activeWritingJobId = null, activeTranscriptionJobId = null, activeDataentryJobId = null;
-
-// ============ HELPERS ============
-function apiHeaders() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` }; }
-async function apiFetch(url, opts = {}) {
-  const res = await fetch(url, { ...opts, headers: apiHeaders() });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Request failed');
+function adminLogout() { localStorage.clear(); window.location.href = '/index.html'; }
+function aH() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_at}` }; }
+async function aF(url, opts={}) {
+  const res = await fetch(url, { ...opts, headers: aH() });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || data.message || `${res.status} error`);
   return data;
 }
-function logout() { localStorage.clear(); window.location.href = '/index.html'; }
-function toggleSidenav() { document.getElementById('sidenav').classList.toggle('open'); }
-function showModal(id) { document.getElementById(id).style.display = 'block'; }
-function hideModal(id) { document.getElementById(id).style.display = 'none'; }
-
-// ============ ROUTING ============
-const ACTIVE_ONLY = ['blogs','surveys','writing','transcription','dataentry','referrals','withdraw','profile'];
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const el = document.getElementById('pg-' + name);
-  if (el) el.classList.add('active');
-  document.querySelectorAll('.nav-lnk').forEach(a => { a.classList.toggle('active', a.getAttribute('data-pg') === name); });
-  window.history.pushState({}, '', '#' + name);
-  document.getElementById('sidenav').classList.remove('open');
-  if (name === 'dashboard') loadDashboard();
-  else if (name === 'blogs') loadBlogs();
-  else if (name === 'surveys') loadSurveys();
-  else if (name === 'writing') loadWriting();
-  else if (name === 'transcription') loadTranscription();
-  else if (name === 'dataentry') loadDataentry();
-  else if (name === 'referrals') loadReferrals();
-  else if (name === 'withdraw') loadWithdraw();
-  else if (name === 'profile') loadProfile();
-}
-
-document.addEventListener('click', e => {
-  const el = e.target.closest('.nav-lnk');
+function msg(id, txt, ok=true) {
+  const el = document.getElementById(id);
   if (!el) return;
-  const pg = el.getAttribute('data-pg');
-  if (pg) { e.preventDefault(); showPage(pg); window.scrollTo(0,0); }
-});
+  el.textContent = txt; el.className = 'msg ' + (ok?'mok':'merr'); el.style.display = 'block';
+  setTimeout(()=>{ el.style.display='none'; }, 5000);
+}
+function fmt(n) { return new Intl.NumberFormat().format(Math.round(n||0)); }
+function fmtKES(n) { return 'KES ' + fmt(n); }
 
-window.addEventListener('load', () => {
-  const hash = window.location.hash.slice(1) || 'dashboard';
-  // Check if user needs activation
-  if (_user && _user.packageType === 'not_active') { loadActivationPage(); return; }
-  showPage(hash);
-});
+// ============ TABS ============
+let qCount = 0;
+function switchTab(name) {
+  document.querySelectorAll('.tb').forEach(b => b.classList.toggle('on', b.dataset.tab===name));
+  document.querySelectorAll('.tc').forEach(c => c.classList.toggle('on', c.id==='tab-'+name));
+  const fns = {overview:loadAdminDashboard,users:loadAdminUsers,blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs,withdrawals:()=>{}};
+  if (fns[name]) fns[name]();
+}
+document.querySelectorAll('.tb').forEach(b => b.addEventListener('click', ()=>switchTab(b.dataset.tab)));
 
-// ============ NAV USERNAME ============
-if (_user) {
-  document.getElementById('navUsername').textContent = '@' + _user.username;
+// ============ CHARTS ============
+let walletChart, pointsChart;
+function initCharts(walletData, pointsData) {
+  if (walletChart) walletChart.destroy();
+  if (pointsChart) pointsChart.destroy();
+  const walletCtx = document.getElementById('walletChart').getContext('2d');
+  walletChart = new Chart(walletCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Commission Paid', 'Withdrawals', 'Net Profit'],
+      datasets: [{ data: [walletData.commissions, walletData.withdrawals, walletData.profit], backgroundColor: ['#fca5a5','#fdba74','#86efac'], borderWidth: 2 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8 } } } }
+  });
+  const ptsCtx = document.getElementById('pointsChart').getContext('2d');
+  pointsChart = new Chart(ptsCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Awarded', 'Pending Withdrawal', 'Withdrawn'],
+      datasets: [{ label: 'Points', data: [pointsData.awarded, pointsData.pending, pointsData.withdrawn], backgroundColor: ['#86efac','#fde047','#fca5a5'], borderRadius: 4 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } } }
+  });
 }
 
-// ============ ACTIVATION ============
-async function loadActivationPage() {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('pg-activation').classList.add('active');
+// ============ OVERVIEW ============
+async function loadAdminDashboard() {
   try {
-    const data = await apiFetch('/api/users/profile');
-    const user = data.user;
-    if (user.packageType !== 'not_active') { showPage('dashboard'); return; }
-    document.getElementById('activationBalance').textContent = 'KES ' + (user.primaryWallet?.balance || 0);
+    const data = await aF('/api/admin/dashboard/stats');
+    document.getElementById('ovTotal').textContent = data.users?.total || 0;
+    document.getElementById('ovActive').textContent = data.users?.active || 0;
+    document.getElementById('ovNotAct').textContent = data.packages?.notActivated || 0;
+    document.getElementById('ovWithdraw').textContent = data.pendingWithdrawals || 0;
+    document.getElementById('ovBlogs').textContent = data.pendingReviews?.blogs || 0;
+    document.getElementById('ovSurveys').textContent = data.pendingReviews?.surveys || 0;
+    document.getElementById('ovWriting').textContent = data.pendingReviews?.writing || 0;
+    document.getElementById('ovTranscription').textContent = data.pendingReviews?.transcription || 0;
+    document.getElementById('ovDataentry').textContent = data.pendingReviews?.dataEntry || 0;
+    // P&L calculations
+    const totalDeposited = ((data.stats?.totalActivated||data.users?.active||0) * 700);
+    const commissions = data.stats?.totalCommissionsPaid || 0;
+    const withdrawals = data.stats?.totalWithdrawals || 0;
+    const walletProfit = Math.max(0, totalDeposited - commissions - withdrawals);
+    document.getElementById('plWalletIn').textContent = fmtKES(totalDeposited);
+    document.getElementById('plWalletCost').textContent = '- ' + fmtKES(700 * (data.users?.active||0));
+    document.getElementById('plCommissions').textContent = '- ' + fmtKES(commissions);
+    document.getElementById('plWithdrawals').textContent = '- ' + fmtKES(withdrawals);
+    const netEl = document.getElementById('plWalletNet');
+    netEl.textContent = fmtKES(walletProfit);
+    netEl.className = walletProfit >= 0 ? 'pnl-pos' : 'pnl-neg';
+    const totalPtsAwarded = data.stats?.totalPointsAwarded || 0;
+    const ptsPending = data.stats?.totalPointsPending || 0;
+    const ptsWithdrawn = data.stats?.totalPointsWithdrawn || 0;
+    document.getElementById('plPtsAwarded').textContent = fmt(totalPtsAwarded) + ' pts';
+    document.getElementById('plPtsPending').textContent = fmt(ptsPending) + ' pts';
+    document.getElementById('plPtsWithdrawn').textContent = fmt(ptsWithdrawn) + ' pts';
+    document.getElementById('plPtsNet').textContent = fmt(totalPtsAwarded - ptsPending - ptsWithdrawn) + ' pts';
+    initCharts({ commissions, withdrawals, profit: walletProfit }, { awarded: totalPtsAwarded, pending: ptsPending, withdrawn: ptsWithdrawn });
+    // Recent users
+    const rec = document.getElementById('ovRecentUsers');
+    if (data.recentUsers && data.recentUsers.length) {
+      rec.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem">' +
+        data.recentUsers.map(u => `<div style="display:flex;align-items:center;gap:.6rem;padding:.5rem;border:1px solid var(--gray-200);border-radius:.45rem;background:var(--gray-50)">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--g);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;flex-shrink:0">${(u.username||'?').slice(0,2).toUpperCase()}</div>
+          <div><div style="font-weight:700;font-size:.82rem">${u.username}</div>
+          <div style="font-size:.7rem;color:var(--gray-500)">${new Date(u.createdAt).toLocaleDateString()}</div></div>
+          <span class="badge ${u.packageType!=='not_active'?'bg':'by'}" style="margin-left:auto">${u.packageType!=='not_active'?'Active':'Pending'}</span></div>`).join('') + '</div>';
+    } else { rec.innerHTML = '<p style="color:var(--gray-500)">No recent registrations.</p>'; }
+  } catch(err) { console.error('Overview:', err); }
+}
+
+// ============ DEPOSITS ============
+let depositTimer;
+document.getElementById('depositSearch').addEventListener('input', function() {
+  clearTimeout(depositTimer);
+  const q = this.value.trim();
+  const res = document.getElementById('depositSearchResults');
+  if (q.length < 2) { res.style.display='none'; return; }
+  depositTimer = setTimeout(async () => {
     try {
-      const chainData = await apiFetch('/api/referrals/chain');
-      const father = chainData.chain && chainData.chain[0];
-      if (father) {
-        document.getElementById('uplineName').textContent = father.username || 'Your referrer';
-        document.getElementById('uplinePhone').textContent = father.phone || '';
-        document.getElementById('uplineEmail').textContent = father.email || '';
-      } else { document.getElementById('uplineName').textContent = 'Contact admin'; }
-    } catch(e) { document.getElementById('uplineName').textContent = 'Contact your referrer'; }
-  } catch(err) { if (err.message.toLowerCase().includes('token')) { logout(); } }
-}
-
-async function doActivation() {
-  const msgEl = document.getElementById('activationMsg');
-  if (!confirm('Deduct KES 700 from your wallet to activate?')) return;
-  msgEl.style.display = 'block'; msgEl.style.color = '#6b7280'; msgEl.textContent = 'Activating...';
-  try {
-    const data = await apiFetch('/api/auth/activate-package', { method: 'POST' });
-    msgEl.style.color = '#16a34a'; msgEl.textContent = '✅ ' + data.message;
-    const profile = await apiFetch('/api/users/profile');
-    localStorage.setItem('user', JSON.stringify(profile.user));
-    setTimeout(() => showPage('dashboard'), 1500);
-  } catch(err) {
-    msgEl.style.color = '#dc2626'; msgEl.textContent = '❌ ' + err.message;
-    loadActivationPage();
-  }
-}
-
-// ============ DASHBOARD ============
-async function loadDashboard() {
-  try {
-    const data = await apiFetch('/api/users/dashboard');
-    currentUser = data;
-    localStorage.setItem('user', JSON.stringify({ id: data.profile.id, username: data.profile.username, packageType: data.profile.packageType, isAdmin: false }));
-    if (data.profile.packageType === 'not_active') { loadActivationPage(); return; }
-    document.getElementById('dashUsername').textContent = data.profile.username;
-    document.getElementById('dashMainWallet').textContent = 'KES ' + data.wallets.primary.balance;
-    document.getElementById('navWallet').textContent = 'KES ' + data.wallets.primary.balance;
-    document.getElementById('dashPoints').textContent = data.wallets.points.points + ' pts';
-    document.getElementById('dashActiveReferrals').textContent = data.stats.activeDirectReferrals;
-    document.getElementById('dashTotalEarnings').textContent = 'KES ' + data.stats.totalEarnings;
-    document.getElementById('dashPackageStatus').textContent = '✅ Active Member';
-    document.getElementById('activationAlert').style.display = 'none';
-    document.getElementById('tbLogsLeft').textContent = data.dailyProgress.blogsLeft + ' left today';
-    document.getElementById('tbSurveysLeft').textContent = data.dailyProgress.surveysLeft + ' left today';
-    if (data.wallets.points.canConvert) {
-      document.getElementById('pointsConversionCard').style.display = 'block';
-      document.getElementById('currentPoints').textContent = data.wallets.points.points;
-      document.getElementById('pointsKES').textContent = 'KES ' + data.wallets.points.kesEquivalent;
-    }
-    loadDashboardReferrals();
-    loadInactiveReferrals();
-  } catch(err) { if (err.message.toLowerCase().includes('token')) logout(); }
-}
-
-async function loadDashboardReferrals() {
-  try {
-    const stats = await apiFetch('/api/referrals/stats');
-    const levels = stats.levels;
-    ['1','2','3','4'].forEach(l => {
-      const cnt = levels['level'+l];
-      document.getElementById('dashRef'+l).textContent = cnt ? cnt.count || 0 : 0;
-      const active = cnt ? (cnt.active || 0) : 0;
-      const total = cnt ? (cnt.count || 0) : 0;
-      const inactive = total - active;
-      document.getElementById('dashRef'+l+'Status').textContent = `${active} active / ${inactive} inactive`;
-    });
-    document.getElementById('dashTotalCommission').textContent = 'KES ' + (stats.summary?.totalCommission || 0);
-  } catch(e) {}
-}
-
-async function loadInactiveReferrals() {
-  try {
-    const data = await apiFetch('/api/users/inactive-referrals');
-    const section = document.getElementById('inactiveReferralsSection');
-    const list = document.getElementById('inactiveReferralsList');
-    if (!data.inactiveReferrals.length) { section.style.display = 'none'; return; }
-    section.style.display = 'block';
-    list.innerHTML = data.inactiveReferrals.map(u => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid #fde68a;flex-wrap:wrap;gap:.4rem">
-        <div><strong>${u.name}</strong> <span style="font-size:.8rem;color:#92400e">${u.email} | ${u.phone}</span></div>
-        <span style="background:#fef3c7;color:#b45309;padding:.15rem .6rem;border-radius:999px;font-size:.75rem;font-weight:700">Joined ${u.daysSinceJoined}d ago</span>
-      </div>`).join('');
-  } catch(e) {}
-}
-
-document.getElementById('activateBtn').addEventListener('click', async () => {
-  const btn = document.getElementById('activateBtn');
-  if (!confirm('Activate package? This deducts KES 700.')) return;
-  btn.disabled = true; btn.textContent = 'Activating...';
-  try {
-    const data = await apiFetch('/api/auth/activate-package', { method: 'POST' });
-    toast('✅ ' + data.message); loadDashboard();
-  } catch(err) { toast('❌ ' + err.message, false); }
-  finally { btn.disabled = false; btn.textContent = '🚀 Activate (KES 700)'; }
+      const data = await aF(`/api/admin/users/all?status=all&limit=20`);
+      const filtered = (data.users||[]).filter(u =>
+        u.username.toLowerCase().includes(q.toLowerCase()) ||
+        (u.email||'').toLowerCase().includes(q.toLowerCase())
+      ).slice(0, 7);
+      if (!filtered.length) { res.style.display='none'; return; }
+      res.style.display='block';
+      res.innerHTML = filtered.map(u =>
+        `<div class="sri" onclick="selectDepUser('${u.id}','${u.username}','${u.email||''}')">
+          <strong>${u.username}</strong> — ${u.email} <span style="color:var(--g);font-size:.72rem">| KES ${u.walletBalance||0}</span>
+        </div>`).join('');
+    } catch(e) { res.style.display='none'; }
+  }, 300);
 });
-
-document.getElementById('convertPointsBtn')?.addEventListener('click', async () => {
-  const btn = document.getElementById('convertPointsBtn');
-  if (!confirm('Convert all eligible points to KES?')) return;
-  btn.disabled = true; btn.textContent = 'Converting...';
-  try { const data = await apiFetch('/api/wallets/convert-points', { method: 'POST' }); toast('✅ ' + data.message); loadDashboard(); }
-  catch(err) { toast('❌ ' + err.message, false); }
-  finally { btn.disabled = false; btn.textContent = 'Convert Now'; }
-});
-
-// ============ TOAST ============
-function toast(msg, ok=true) {
-  let t = document.getElementById('_toast');
-  if (!t) { t = document.createElement('div'); t.id='_toast'; t.style.cssText='position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;background:#111;color:#fff;padding:.65rem 1.25rem;border-radius:.6rem;font-size:.88rem;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.35);transition:.3s;opacity:0;pointer-events:none;max-width:90vw;text-align:center'; document.body.appendChild(t); }
-  t.textContent = msg; t.style.background = ok ? '#16a34a' : '#ef4444'; t.style.opacity = '1';
-  setTimeout(() => { t.style.opacity='0'; }, 3500);
+document.addEventListener('click', e => { if (!e.target.closest('.pos-rel')) document.getElementById('depositSearchResults').style.display='none'; });
+function selectDepUser(id, username, email) {
+  document.getElementById('depositUserId').value = id;
+  document.getElementById('depositUserDisplay').value = `${username} (${email})`;
+  document.getElementById('depositSearch').value = '';
+  document.getElementById('depositSearchResults').style.display = 'none';
+}
+async function doDeposit() {
+  const userId = document.getElementById('depositUserId').value.trim();
+  const amount = parseFloat(document.getElementById('depositAmount').value);
+  const reference = document.getElementById('depositReference').value.trim();
+  if (!userId) { msg('depositMsg','❌ Please select a user first.',false); return; }
+  if (!amount || amount < 1) { msg('depositMsg','❌ Enter a valid amount.',false); return; }
+  try {
+    const data = await aF('/api/admin/deposit-balance', {method:'POST', body:JSON.stringify({userId, amount, reason:'activation_deposit', reference})});
+    msg('depositMsg', `✅ Deposited KES ${amount} to ${data.user?.username||'user'}. New balance: KES ${data.transaction?.newBalance||amount}`, true);
+    document.getElementById('depositAmount').value = ''; document.getElementById('depositReference').value = '';
+    document.getElementById('depositUserId').value = ''; document.getElementById('depositUserDisplay').value = '';
+  } catch(err) { msg('depositMsg','❌ '+err.message,false); }
 }
 
-// ============ BLOGS ============
-function taskCardHtml(item, type, userStatus) {
-  const submitted = item.currentBidders || item.currentWorkers || 0;
-  const approved = item.approvedCount || 0;
-  const pending = item.pendingCount || 0;
-  const statusBadge = item.status === 'open' || !item.status
-    ? '<span style="background:#dcfce7;color:#16a34a;padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:700">open</span>'
-    : '<span style="background:#f3f4f6;color:#6b7280;padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:700">'+item.status+'</span>';
-  const deadline = item.deadline ? `<p style="font-size:.72rem;color:#b45309;margin:.2rem 0">⏰ Due: ${new Date(item.deadline).toLocaleDateString()}</p>` : '';
-  const wordCount = item.wordCount ? `<p style="font-size:.72rem;color:#1e40af;margin:.2rem 0">📝 ${item.wordCount}</p>` : '';
-  const template = item.templateUrl ? `<p style="font-size:.72rem;margin:.2rem 0"><a href="${item.templateUrl}" target="_blank" style="color:var(--primary)">📥 Download Template</a></p>` : '';
-  const openFn = {blogs:`openBlogModal('${item.id}')`,surveys:`openSurveyModal('${item.id}')`,writing:`openWritingModal('${item.id}')`,transcription:`openTranscriptionModal('${item.id}')`,dataentry:`openDataentryModal('${item.id}')`}[type];
-  const btnLabel = {blogs:'✍️ Write',surveys:'📋 Take Survey',writing:'📤 Apply & Submit',transcription:'🎙️ Transcribe',dataentry:'📋 Submit Work'}[type];
-  const slotsLeft = (item.maxBidders || item.maxWorkers || 0) - submitted;
-  let actionBtn = '';
-  if (userStatus) { actionBtn = `<span style="background:#dbeafe;color:#1e40af;padding:.2rem .6rem;border-radius:999px;font-size:.72rem;font-weight:600">Your status: ${userStatus}</span>`; }
-  else if (slotsLeft > 0 || (!item.maxBidders && !item.maxWorkers)) { actionBtn = `<button onclick="${openFn}" class="btn btn-primary btn-sm">${btnLabel}</button>`; }
-  else { actionBtn = `<span style="color:#ef4444;font-size:.75rem;font-weight:600">Slots Full</span>`; }
-  return `<div class="card" style="overflow:hidden;border-top:3px solid var(--primary)">
-    <div style="padding:1rem">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.35rem">
-        <h4 style="font-size:.92rem;font-weight:800;margin:0;line-height:1.3">${item.title}</h4>
-        <div style="display:flex;align-items:center;gap:.3rem;flex-shrink:0;margin-left:.4rem">${statusBadge}<span style="background:#f0fdf4;color:#16a34a;padding:.15rem .5rem;border-radius:999px;font-size:.72rem;font-weight:800;border:1px solid #bbf7d0">⭐${item.reward||0}pts</span></div>
-      </div>
-      <p style="color:var(--gray-500);font-size:.78rem;margin:0 0 .4rem;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${item.description||''}</p>
-      ${wordCount}${deadline}${template}
-      ${item.audioUrl ? `<audio src="${item.audioUrl}" controls style="width:100%;height:28px;margin:.3rem 0"></audio>` : ''}
-      <div style="display:flex;gap:.75rem;padding:.45rem 0;margin:.3rem 0;border-top:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100)">
-        <div style="text-align:center"><div style="font-weight:800;font-size:.9rem;color:#3b82f6">📝 ${submitted}</div><div style="font-size:.65rem;color:var(--gray-500)">submitted</div></div>
-        <div style="text-align:center"><div style="font-weight:800;font-size:.9rem;color:#16a34a">✅ ${approved}</div><div style="font-size:.65rem;color:var(--gray-500)">approved</div></div>
-        <div style="text-align:center"><div style="font-weight:800;font-size:.9rem;color:#f59e0b">⏳ ${pending}</div><div style="font-size:.65rem;color:var(--gray-500)">pending</div></div>
-        <div style="text-align:center;margin-left:auto"><div style="font-size:.7rem;color:var(--gray-500)">${submitted}/${item.maxBidders||item.maxWorkers||'∞'}</div><div style="font-size:.65rem;color:var(--gray-500)">slots</div></div>
-      </div>
-      <div style="display:flex;justify-content:flex-end;margin-top:.5rem">${actionBtn}</div>
+// ============ USERS ============
+async function loadAdminUsers() {
+  const status = document.getElementById('uFilterStatus').value||'all';
+  const pkg = document.getElementById('uFilterPkg').value||'all';
+  const search = document.getElementById('uSearch')?.value?.toLowerCase()||'';
+  const el = document.getElementById('adminUsersList');
+  el.innerHTML = '<p style="color:var(--gray-500)">Loading users...</p>';
+  try {
+    const data = await aF(`/api/admin/users/all?status=${status}&packageType=${pkg}`);
+    let users = data.users||[];
+    if (search) users = users.filter(u => u.username.toLowerCase().includes(search) || (u.email||'').toLowerCase().includes(search));
+    document.getElementById('uCount').textContent = `${users.length} user(s)`;
+    if (!users.length) { el.innerHTML='<p style="color:var(--gray-500)">No users found.</p>'; return; }
+    el.innerHTML = '<div class="ugrid">' + users.map(u => {
+      const init = (u.username||'?').slice(0,2).toUpperCase();
+      const isActive = u.packageType !== 'not_active';
+      const isSusp = u.status === 'suspended';
+      return `<div class="ucard">
+        <div class="ucard-top">
+          <div style="display:flex;align-items:center;gap:.6rem">
+            <div style="width:38px;height:38px;border-radius:50%;background:${isActive?'var(--g)':'#9ca3af'};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">${init}</div>
+            <div>
+              <div class="ucard-name">${u.username}</div>
+              <div class="ucard-sub">${u.email||''}</div>
+              <div class="ucard-sub">${u.phone||''}</div>
+            </div>
+          </div>
+          <span class="badge ${isActive?'bg':'by'}">${isActive?'✅ Active':'⏳ Inactive'}</span>
+        </div>
+        <div class="ucard-meta">
+          <span class="ucard-wallet">KES ${fmt(u.walletBalance||0)}</span>
+          <span class="ucard-pts">${fmt(u.pointsBalance||0)} pts</span>
+          ${isSusp?'<span class="badge br">Suspended</span>':''}
+        </div>
+        <div class="ucard-ref">Ref: ${u.referredBy?.username||'—'}</div>
+        <div class="ucard-btns">
+          <button onclick="quickDeposit('${u.id}','${u.username}')" class="btn btp">💰 Deposit</button>
+          ${isSusp
+            ? `<button onclick="unsuspendUser('${u.id}','${u.username}')" class="btn btg">✅ Unsuspend</button>`
+            : `<button onclick="suspendUser('${u.id}','${u.username}')" class="btn btw">⚠️ Suspend</button>`}
+          <button onclick="deleteUser('${u.id}','${u.username}','${isActive}')" class="btn btd">🗑️</button>
+        </div>
+      </div>`;
+    }).join('') + '</div>';
+  } catch(err) { el.innerHTML = `<p style="color:var(--r)">${err.message}</p>`; }
+}
+
+function quickDeposit(userId, username) {
+  const amount = parseFloat(prompt(`💰 Deposit to ${username}:\nAmount (KES):`)||'0');
+  if (!amount || amount<1) return;
+  const ref = prompt('M-Pesa reference (optional):') || '';
+  aF('/api/admin/deposit-balance', {method:'POST', body:JSON.stringify({userId, amount, reason:'activation_deposit', reference:ref})})
+    .then(d => { alert(`✅ KES ${amount} deposited to ${username}.`); loadAdminUsers(); })
+    .catch(e => alert('❌ '+e.message));
+}
+function suspendUser(id, username) {
+  if (!confirm(`Suspend @${username}?`)) return;
+  aF(`/api/admin/users/${id}/suspend`, {method:'POST'}).then(()=>{alert('User suspended.');loadAdminUsers();}).catch(e=>alert('❌ '+e.message));
+}
+function unsuspendUser(id, username) {
+  if (!confirm(`Unsuspend @${username}?`)) return;
+  aF(`/api/admin/users/${id}/unsuspend`, {method:'POST'}).then(()=>{alert('Unsuspended.');loadAdminUsers();}).catch(e=>alert('❌ '+e.message));
+}
+function deleteUser(id, username, isActive) {
+  const warn = isActive==='true' ? '⚠️ This user is ACTIVE.\n' : '';
+  if (!confirm(`${warn}DELETE @${username}? This cannot be undone.`)) return;
+  aF(`/api/admin/users/${id}`, {method:'DELETE'}).then(()=>{alert('Deleted.');loadAdminUsers();}).catch(e=>alert('❌ '+e.message));
+}
+
+// ============ TASK CARD RENDERER (Image 2 style) ============
+function renderJobCard(job, type) {
+  const submitted = job.submitted || job.currentBidders || job.currentWorkers || 0;
+  const approved = job.approved || 0;
+  const pending = job.pending || job.pendingReview || 0;
+  const isOpen = job.status === 'open' || !job.status;
+  const reviewFn = {
+    blogs: `loadBlogSubmissions('${job.id}','${escQ(job.title)}')`,
+    surveys: `loadSurveySubmissions('${job.id}','${escQ(job.title)}')`,
+    writing: `loadWritingSubmissions('${job.id}','${escQ(job.title)}')`,
+    transcription: `loadTranscriptionSubmissions('${job.id}','${escQ(job.title)}')`,
+    dataentry: `loadDataentrySubmissions('${job.id}','${escQ(job.title)}')`
+  }[type];
+  const editFn = `openEditModal('${type}','${job.id}','${escQ(job.title)}',${job.reward},${job.maxBidders||job.maxWorkers||50},${job.maxBidders||job.maxWorkers||50})`;
+  const delFn = `deleteJob('${type}','${job.id}')`;
+  const closeFn = `closeJob('${type}','${job.id}')`;
+  return `<div class="jcard">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
+      <div class="jcard-title">${job.title}</div>
+      <span class="badge ${isOpen?'bg':'bgr'}" style="flex-shrink:0;margin-left:.4rem">${job.status||'open'}</span>
+    </div>
+    <div class="jcard-desc">${job.description||''}</div>
+    ${job.wordCount?`<div style="font-size:.72rem;color:#1e40af;margin-bottom:.2rem">📝 ${job.wordCount}</div>`:''}
+    ${job.deadline?`<div style="font-size:.72rem;color:#b45309;margin-bottom:.2rem">⏰ Due: ${new Date(job.deadline).toLocaleDateString()}</div>`:''}
+    ${job.audioUrl?`<audio src="${job.audioUrl}" controls style="width:100%;height:28px;margin:.3rem 0"></audio>`:''}
+    ${job.templateUrl?`<a href="${job.templateUrl}" target="_blank" style="font-size:.72rem;color:var(--g)">📥 Template</a>`:''}
+    <div class="jcard-stats">
+      <div class="jcs"><div class="jcs-n" style="color:#3b82f6">📝 ${submitted}</div><div class="jcs-l">submitted</div></div>
+      <div class="jcs"><div class="jcs-n" style="color:#16a34a">✅ ${approved}</div><div class="jcs-l">approved</div></div>
+      <div class="jcs"><div class="jcs-n" style="color:#f59e0b">⏳ ${pending}</div><div class="jcs-l">pending</div></div>
+      <div class="jcs"><div class="jcs-n">⭐${job.reward||0}</div><div class="jcs-l">pts</div></div>
+    </div>
+    <div class="jcard-btns">
+      ${pending>0?`<button onclick="${reviewFn}" class="btn btp" style="font-size:.72rem">Review (${pending})</button>`:''}
+      <button onclick="${editFn}" class="btn btg" style="font-size:.72rem">✏️ Edit</button>
+      ${isOpen?`<button onclick="${closeFn}" class="btn btw" style="font-size:.72rem">✅ Close</button>`:''}
+      <button onclick="${delFn}" class="btn btd" style="font-size:.72rem">🗑️</button>
     </div>
   </div>`;
 }
+function escQ(s) { return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;').slice(0,60); }
 
-async function loadBlogs() {
+// ============ EDIT MODAL ============
+let _editType, _editId;
+function openEditModal(type, id, title, reward, maxWorkers) {
+  _editType=type; _editId=id;
+  document.getElementById('editModalTitle').textContent = 'Edit: '+title;
+  document.getElementById('editModalBody').innerHTML = `
+    <div class="fg"><label class="fl">Points Reward</label><input type="number" id="emReward" class="fc" value="${reward||100}" min="1"></div>
+    <div class="fg"><label class="fl">Max Workers / Slots</label><input type="number" id="emMax" class="fc" value="${maxWorkers||50}" min="1"></div>
+    <div class="fg"><label class="fl">Status</label><select id="emStatus" class="fc"><option value="open">Open</option><option value="closed">Closed</option></select></div>`;
+  document.getElementById('editModal').style.display='block';
+}
+function closeEditModal() { document.getElementById('editModal').style.display='none'; }
+async function saveEdit() {
+  const reward = parseInt(document.getElementById('emReward').value);
+  const max = parseInt(document.getElementById('emMax').value);
+  const status = document.getElementById('emStatus').value;
+  const urls = {blogs:`/api/admin/blogs/${_editId}`,surveys:`/api/admin/surveys/${_editId}`,writing:`/api/admin/writing/${_editId}`,transcription:`/api/admin/transcription/${_editId}`,dataentry:`/api/admin/dataentry/${_editId}`};
   try {
-    const [dashData, blogsData] = await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null), apiFetch('/api/blogs')]);
-    if (dashData) document.getElementById('blogsDaily').textContent = `📅 Today: ${dashData.dailyProgress.blogsLeft}/2 remaining | ⭐ Each = 100 points`;
-    const list = document.getElementById('blogsList');
-    if (!blogsData.blogs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No blogs available right now.</p>'; return; }
-    list.innerHTML = blogsData.blogs.map(b => taskCardHtml(b, 'blogs', b.userBidStatus)).join('');
-  } catch(err) { document.getElementById('blogsList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
+    await aF(urls[_editType], {method:'PUT', body:JSON.stringify({reward, maxBidders:max, maxWorkers:max, status})});
+    alert('✅ Updated!'); closeEditModal();
+    const reload = {blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs};
+    if(reload[_editType]) reload[_editType]();
+  } catch(err) { alert('❌ '+err.message); }
+}
+async function deleteJob(type, id) {
+  if (!confirm('Delete this job? All submissions will be lost.')) return;
+  const urls = {blogs:`/api/admin/blogs/${id}`,surveys:`/api/admin/surveys/${id}`,writing:`/api/admin/writing/${id}`,transcription:`/api/admin/transcription/${id}`,dataentry:`/api/admin/dataentry/${id}`};
+  try { await aF(urls[type], {method:'DELETE'}); const r={blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs}; r[type](); }
+  catch(err) { alert('❌ '+err.message); }
+}
+async function closeJob(type, id) {
+  const urls = {blogs:`/api/admin/blogs/${id}/close`,surveys:`/api/admin/surveys/${id}/close`,writing:`/api/admin/writing/${id}/close`,transcription:`/api/admin/transcription/${id}/close`,dataentry:`/api/admin/dataentry/${id}/close`};
+  try { await aF(urls[type], {method:'POST'}); const r={blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs}; r[type](); }
+  catch(err) { alert('❌ '+err.message); }
 }
 
-async function openBlogModal(blogId) {
-  try {
-    const data = await apiFetch(`/api/blogs/${blogId}`);
-    const b = data.blog; activeBlogId = blogId;
-    document.getElementById('blogModalTitle').textContent = b.title;
-    document.getElementById('blogModalDesc').textContent = b.description;
-    document.getElementById('blogModalContent').innerHTML = b.content.replace(/\n/g,'<br>');
-    document.getElementById('blogWriteContent').value = '';
-    document.getElementById('blogCharCount').textContent = '0 chars';
-    showModal('blogModal');
-  } catch(err) { toast('Error: ' + err.message, false); }
+// ============ REVIEW RENDERER ============
+function renderReviewBoxes(submissions, type, jobId, titleEl, parentEl) {
+  const pending = (submissions||[]).filter(s=>s.status==='submitted');
+  if (titleEl) titleEl.textContent = `Pending Reviews — ${pending.length} to review`;
+  if (!pending.length) { parentEl.innerHTML='<p style="color:var(--gray-500)">No pending submissions.</p>'; return; }
+  const appFn = {
+    blogs: (s)=>`adminApprove('blogs','${jobId}','${s.userId}')`,
+    surveys: (s)=>`adminApprove('surveys','${jobId}','${s.userId}')`,
+    writing: (s)=>`adminApprove('writing','${jobId}','${s.userId}')`,
+    transcription: (s)=>`adminApprove('transcription','${jobId}','${s.userId}')`,
+    dataentry: (s)=>`adminApprove('dataentry','${jobId}','${s.userId}')`
+  };
+  const rejFn = {
+    blogs: (s)=>`adminReject('blogs','${jobId}','${s.userId}')`,
+    surveys: (s)=>`adminReject('surveys','${jobId}','${s.userId}')`,
+    writing: (s)=>`adminReject('writing','${jobId}','${s.userId}')`,
+    transcription: (s)=>`adminReject('transcription','${jobId}','${s.userId}')`,
+    dataentry: (s)=>`adminReject('dataentry','${jobId}','${s.userId}')`
+  };
+  parentEl.innerHTML = pending.map(s => `
+    <div class="rbox">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.3rem;margin-bottom:.4rem">
+        <div><strong style="font-size:.85rem">${s.username||'User'}</strong> <span style="font-size:.72rem;color:var(--gray-500)">${s.email||''}</span></div>
+        <span style="font-size:.7rem;color:var(--gray-500)">${s.submittedAt?new Date(s.submittedAt).toLocaleString():''}</span>
+      </div>
+      ${s.content ? `<details><summary style="cursor:pointer;font-size:.78rem;color:#8b5cf6;font-weight:600;margin:.25rem 0">View Submission</summary>
+        <p style="margin:.35rem 0;font-size:.8rem;background:var(--gray-50);padding:.6rem;border-radius:.35rem;white-space:pre-wrap;max-height:200px;overflow-y:auto">${s.content}</p></details>` : ''}
+      ${s.fileUrl ? `<p style="font-size:.78rem;margin:.25rem 0">📎 <a href="${s.fileUrl}" target="_blank" style="color:var(--g);font-weight:600">${s.fileName||'View File'}</a></p>` : ''}
+      ${Array.isArray(s.responses) ? `<details><summary style="cursor:pointer;font-size:.78rem;color:#3b82f6;font-weight:600;margin:.25rem 0">View Responses</summary>
+        <div style="margin:.35rem 0;font-size:.78rem;background:var(--gray-50);padding:.6rem;border-radius:.35rem">${s.responses.map((r,i)=>`<p style="margin:.15rem 0"><strong>Q${i+1}:</strong> ${r||'—'}</p>`).join('')}</div></details>` : ''}
+      <div style="display:flex;gap:.4rem;margin-top:.5rem">
+        <button onclick="${appFn[type](s)}" class="btn btp">✅ Approve + Award Points</button>
+        <button onclick="${rejFn[type](s)}" class="btn btd">❌ Reject</button>
+      </div>
+    </div>`).join('');
 }
-function closeBlogModal() { hideModal('blogModal'); activeBlogId = null; }
-document.getElementById('blogWriteContent').addEventListener('input', function() { document.getElementById('blogCharCount').textContent = this.value.length + ' chars'; });
-document.getElementById('blogSubmitBtn').addEventListener('click', async () => {
-  if (!activeBlogId) return;
-  const content = document.getElementById('blogWriteContent').value.trim();
-  if (content.length < 100) { alert('Min 100 characters.'); return; }
-  const btn = document.getElementById('blogSubmitBtn');
-  btn.disabled = true; btn.textContent = 'Submitting...';
-  try { await apiFetch(`/api/blogs/${activeBlogId}/submit`, { method: 'POST', body: JSON.stringify({ submissionContent: content }) }); toast('✅ Blog submitted! Awaiting review.'); closeBlogModal(); loadBlogs(); }
-  catch(err) { toast('❌ ' + err.message, false); }
-  finally { btn.disabled = false; btn.textContent = 'Submit Blog'; }
-});
+
+// UNIFIED APPROVE/REJECT
+async function adminApprove(type, jobId, userId) {
+  const endpts = {
+    blogs: `/api/admin/blogs/${jobId}/approve/${userId}`,
+    surveys: `/api/admin/surveys/${jobId}/approve/${userId}`,
+    writing: `/api/admin/writing/${jobId}/approve/${userId}`,
+    transcription: `/api/admin/transcription/${jobId}/approve/${userId}`,
+    dataentry: `/api/admin/dataentry/${jobId}/approve/${userId}`
+  };
+  try { await aF(endpts[type], {method:'POST', body:JSON.stringify({notes:'Approved'})}); alert('✅ Approved! Points awarded.'); const r={blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs}; r[type](); }
+  catch(err) { alert('❌ '+err.message); }
+}
+async function adminReject(type, jobId, userId) {
+  const reason = prompt('Reason for rejection:')||'Does not meet requirements';
+  const endpts = {
+    blogs: `/api/admin/blogs/${jobId}/reject/${userId}`,
+    surveys: `/api/admin/surveys/${jobId}/reject/${userId}`,
+    writing: `/api/admin/writing/${jobId}/reject/${userId}`,
+    transcription: `/api/admin/transcription/${jobId}/reject/${userId}`,
+    dataentry: `/api/admin/dataentry/${jobId}/reject/${userId}`
+  };
+  try { await aF(endpts[type], {method:'POST', body:JSON.stringify({reviewNotes:reason, reason})}); alert('Rejected.'); const r={blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs}; r[type](); }
+  catch(err) { alert('❌ '+err.message); }
+}
+
+// ============ BLOGS ============
+async function createBlog() {
+  const title = document.getElementById('blogTitle').value.trim();
+  const description = document.getElementById('blogDescription').value.trim();
+  const content = document.getElementById('blogContent').value.trim();
+  if (!title||!description||!content) { msg('createBlogMsg','❌ Title, description and content are required.',false); return; }
+  try {
+    await aF('/api/admin/blogs/create', {method:'POST', body:JSON.stringify({title,description,content,category:document.getElementById('blogCategory').value||'general',maxBidders:parseInt(document.getElementById('blogMaxBidders').value)||50,reward:parseInt(document.getElementById('blogReward').value)||100})});
+    msg('createBlogMsg','✅ Blog task created!',true);
+    ['blogTitle','blogDescription','blogContent'].forEach(id=>document.getElementById(id).value='');
+    loadAdminBlogs();
+  } catch(err) { msg('createBlogMsg','❌ '+err.message,false); }
+}
+async function loadAdminBlogs() {
+  const el = document.getElementById('adminBlogsList');
+  try {
+    const data = await aF('/api/admin/blogs/all');
+    const blogs = data.blogs||[];
+    if (!blogs.length) { el.innerHTML='<p style="color:var(--gray-500)">No blog tasks yet.</p>'; document.getElementById('adminBlogSubmissions').innerHTML='<p style="color:var(--gray-500)">No blogs yet.</p>'; return; }
+    el.innerHTML = '<div class="jgrid">'+blogs.map(b=>renderJobCard(b,'blogs')).join('')+'</div>';
+    const pending = blogs.filter(b=>(b.pending||b.pendingReview||0)>0);
+    if (pending.length) loadBlogSubmissions(pending[0].id, pending[0].title);
+    else document.getElementById('adminBlogSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending blog reviews.</p>';
+  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
+}
+async function loadBlogSubmissions(blogId, title) {
+  const el = document.getElementById('adminBlogSubmissions');
+  const hEl = document.getElementById('blogReviewHeader');
+  el.innerHTML='Loading submissions...';
+  try {
+    const data = await aF(`/api/admin/blogs/${blogId}/submissions`);
+    renderReviewBoxes(data.submissions||[], 'blogs', blogId, hEl, el);
+  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
+}
 
 // ============ SURVEYS ============
-async function loadSurveys() {
-  try {
-    const [dashData, surveysData] = await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null), apiFetch('/api/surveys')]);
-    if (dashData) document.getElementById('surveysDaily').textContent = `📅 Today: ${dashData.dailyProgress.surveysLeft}/2 remaining | ⭐ Each = 100 points`;
-    const list = document.getElementById('surveysList');
-    if (!surveysData.surveys.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No surveys available right now.</p>'; return; }
-    list.innerHTML = surveysData.surveys.map(s => taskCardHtml(s, 'surveys', s.userBidStatus)).join('');
-  } catch(err) { document.getElementById('surveysList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
+function addQuestion() {
+  const i = qCount++;
+  const div = document.createElement('div');
+  div.id=`question_${i}`;
+  div.style.cssText='border:1px solid var(--gray-200);padding:.65rem;border-radius:.45rem;margin-bottom:.5rem;background:var(--gray-50)';
+  div.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem"><span style="font-weight:700;font-size:.78rem">Question ${i+1}</span><button type="button" onclick="this.closest('[id^=question_]').remove()" style="background:none;border:none;color:var(--r);cursor:pointer;font-size:.78rem">✕ Remove</button></div>
+  <div class="fg"><input type="text" name="qtext_${i}" class="fc" placeholder="Question text" required></div>
+  <div class="fr2">
+    <div class="fg"><select name="qtype_${i}" class="fc" onchange="toggleOpts(${i},this.value)"><option value="text">Text Answer</option><option value="multiple_choice">Multiple Choice</option><option value="rating">Rating 1–5</option><option value="yes_no">Yes/No</option></select></div>
+    <div id="qopts_${i}" style="display:none"><textarea name="qopts_${i}" class="fc" rows="2" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea></div>
+  </div>`;
+  document.getElementById('questionsList').appendChild(div);
 }
-
-async function openSurveyModal(surveyId) {
+function toggleOpts(i, type) { const el=document.getElementById(`qopts_${i}`); if(el) el.style.display=type==='multiple_choice'?'block':'none'; }
+async function createSurvey() {
+  const questions=[];
+  document.querySelectorAll('[id^="question_"]').forEach(div=>{
+    const i=div.id.split('_')[1];
+    const t=div.querySelector(`[name="qtext_${i}"]`)?.value.trim();
+    const type=div.querySelector(`[name="qtype_${i}"]`)?.value;
+    const optRaw=div.querySelector(`[name="qopts_${i}"]`)?.value||'';
+    const options=optRaw.split('\n').map(s=>s.trim()).filter(Boolean);
+    if(t) questions.push({question:t,type,options,required:true});
+  });
+  if (!questions.length) { msg('createSurveyMsg','❌ Add at least one question.',false); return; }
   try {
-    const data = await apiFetch(`/api/surveys/${surveyId}`);
-    const survey = data.survey;
-    if (survey.alreadySubmitted) { alert('Already submitted.'); return; }
-    activeSurveyId = surveyId;
-    document.getElementById('surveyModalTitle').textContent = survey.title;
-    document.getElementById('surveyModalDesc').textContent = survey.description;
-    const qEl = document.getElementById('surveyModalQuestions');
-    qEl.innerHTML = survey.questions.map((q,i) => `
-      <div style="margin-bottom:1.1rem">
-        <label style="font-weight:600;display:block;margin-bottom:.4rem;font-size:.9rem">${i+1}. ${q.question}${q.required?' <span style="color:red">*</span>':''}</label>
-        ${q.type==='multiple_choice'?q.options.map(opt=>`<label style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem;cursor:pointer;font-size:.88rem"><input type="radio" name="q${i}" value="${opt}" ${q.required?'required':''}> ${opt}</label>`).join(''):
-          q.type==='yes_no'?`<label style="margin-right:1rem;font-size:.88rem;cursor:pointer"><input type="radio" name="q${i}" value="Yes" required> Yes</label><label style="font-size:.88rem;cursor:pointer"><input type="radio" name="q${i}" value="No" required> No</label>`:
-          q.type==='rating'?`<div style="display:flex;gap:.4rem">${[1,2,3,4,5].map(n=>`<label style="text-align:center;cursor:pointer;font-size:.85rem"><input type="radio" name="q${i}" value="${n}" ${q.required?'required':''} style="display:block;margin:0 auto">${n}</label>`).join('')}</div>`:
-          `<textarea name="q${i}" class="form-control" rows="2" ${q.required?'required':''}></textarea>`}
-      </div>`).join('');
-    showModal('surveyModal');
-  } catch(err) { toast('Error: ' + err.message, false); }
+    await aF('/api/admin/surveys/create',{method:'POST',body:JSON.stringify({title:document.getElementById('surveyTitle').value,description:document.getElementById('surveyDescription').value,questions,maxResponses:parseInt(document.getElementById('surveyMaxResponses').value)||100,reward:parseInt(document.getElementById('surveyReward').value)||100})});
+    msg('createSurveyMsg','✅ Survey created!',true);
+    ['surveyTitle','surveyDescription'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('questionsList').innerHTML=''; qCount=0;
+    loadAdminSurveys();
+  } catch(err) { msg('createSurveyMsg','❌ '+err.message,false); }
 }
-function closeSurveyModal() { hideModal('surveyModal'); activeSurveyId = null; }
-document.getElementById('surveySubmitBtn').addEventListener('click', async () => {
-  if (!activeSurveyId) return;
-  const responses = [];
-  let i = 0;
-  while (true) {
-    const radio = document.querySelector(`input[name="q${i}"]:checked`);
-    const textarea = document.querySelector(`textarea[name="q${i}"]`);
-    if (!radio && !textarea) break;
-    if (radio) responses.push(radio.value);
-    else if (textarea) responses.push(textarea.value.trim());
-    else responses.push('');
-    i++;
-  }
-  if (!responses.length) { alert('Please answer at least one question.'); return; }
-  const btn = document.getElementById('surveySubmitBtn');
-  btn.disabled = true; btn.textContent = 'Submitting...';
-  try { await apiFetch(`/api/surveys/${activeSurveyId}/submit`, { method: 'POST', body: JSON.stringify({ responses }) }); toast('✅ Survey submitted! Awaiting review.'); closeSurveyModal(); loadSurveys(); }
-  catch(err) { toast('❌ ' + err.message, false); }
-  finally { btn.disabled = false; btn.textContent = 'Submit Survey'; }
-});
+async function loadAdminSurveys() {
+  const el=document.getElementById('adminSurveysList');
+  try {
+    const data=await aF('/api/admin/surveys/all');
+    const surveys=data.surveys||[];
+    if (!surveys.length) { el.innerHTML='<p style="color:var(--gray-500)">No surveys yet.</p>'; document.getElementById('adminSurveySubmissions').innerHTML='<p style="color:var(--gray-500)">No surveys yet.</p>'; return; }
+    el.innerHTML='<div class="jgrid">'+surveys.map(s=>renderJobCard(s,'surveys')).join('')+'</div>';
+    const pending=surveys.filter(s=>(s.pending||s.pendingReview||0)>0);
+    if (pending.length) loadSurveySubmissions(pending[0].id,pending[0].title);
+    else document.getElementById('adminSurveySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending reviews.</p>';
+  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
+}
+async function loadSurveySubmissions(surveyId,title) {
+  const el=document.getElementById('adminSurveySubmissions');
+  el.innerHTML='Loading...';
+  try { const data=await aF(`/api/admin/surveys/${surveyId}/submissions`); renderReviewBoxes(data.submissions||[],'surveys',surveyId,null,el); }
+  catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
+}
 
 // ============ WRITING ============
-async function loadWriting() {
+async function createWritingJob() {
+  const t=document.getElementById('writingJobTitle').value.trim(); const d=document.getElementById('writingJobDesc').value.trim(); const ins=document.getElementById('writingJobInstructions').value.trim();
+  if (!t||!d||!ins) { msg('createWritingMsg','❌ Title, description and instructions required.',false); return; }
   try {
-    const data = await apiFetch('/api/writing');
-    const list = document.getElementById('writingList');
-    if (!data.jobs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No writing jobs available right now.</p>'; return; }
-    list.innerHTML = data.jobs.map(job => taskCardHtml(job, 'writing', job.userSubmission ? ('Your status: ' + job.userSubmission.status + (job.userSubmission.reviewNotes ? ' — ' + job.userSubmission.reviewNotes : '')) : null)).join('');
-  } catch(err) { document.getElementById('writingList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
+    await aF('/api/admin/writing/create',{method:'POST',body:JSON.stringify({title:t,description:d,instructions:ins,wordCount:document.getElementById('writingJobWordCount').value||null,maxWorkers:parseInt(document.getElementById('writingJobMaxWorkers').value)||50,reward:parseInt(document.getElementById('writingJobReward').value)||100,deadline:document.getElementById('writingJobDeadline').value||null})});
+    msg('createWritingMsg','✅ Writing job created!',true);
+    ['writingJobTitle','writingJobDesc','writingJobInstructions','writingJobWordCount'].forEach(id=>document.getElementById(id).value='');
+    loadAdminWritingJobs();
+  } catch(err) { msg('createWritingMsg','❌ '+err.message,false); }
 }
-
-async function openWritingModal(jobId) {
+async function loadAdminWritingJobs() {
+  const el=document.getElementById('adminWritingJobsList');
   try {
-    const data = await apiFetch(`/api/writing/${jobId}`);
-    const job = data.job; activeWritingJobId = jobId;
-    document.getElementById('writingModalTitle').textContent = job.title;
-    document.getElementById('writingModalDesc').textContent = job.description;
-    document.getElementById('writingModalInstructions').textContent = job.instructions;
-    document.getElementById('writingFileInput').value = '';
-    showModal('writingModal');
-  } catch(err) { toast('Error: ' + err.message, false); }
+    const data=await aF('/api/admin/writing/all');
+    const jobs=data.jobs||[];
+    if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No writing jobs yet.</p>'; document.getElementById('adminWritingSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
+    el.innerHTML='<div class="jgrid">'+jobs.map(j=>renderJobCard(j,'writing')).join('')+'</div>';
+    const pending=jobs.filter(j=>(j.pending||0)>0);
+    if (pending.length) loadWritingSubmissions(pending[0].id,pending[0].title);
+    else document.getElementById('adminWritingSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending writing reviews.</p>';
+  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
 }
-function closeWritingModal() { hideModal('writingModal'); activeWritingJobId = null; }
-document.getElementById('writingSubmitBtn').addEventListener('click', async () => {
-  if (!activeWritingJobId) return;
-  const file = document.getElementById('writingFileInput').files[0];
-  if (!file) { alert('Select a file.'); return; }
-  const btn = document.getElementById('writingSubmitBtn'); btn.disabled = true; btn.textContent = 'Uploading...';
-  try {
-    const fd = new FormData(); fd.append('file', file);
-    const res = await fetch(`/api/writing/${activeWritingJobId}/submit`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: fd });
-    const data = await res.json(); if (!res.ok) throw new Error(data.error||'Upload failed');
-    toast('✅ ' + data.message); closeWritingModal(); loadWriting();
-  } catch(err) { toast('❌ ' + err.message, false); }
-  finally { btn.disabled = false; btn.textContent = 'Submit Writing Job'; }
-});
+async function loadWritingSubmissions(jobId,title) {
+  const el=document.getElementById('adminWritingSubmissions');
+  el.innerHTML='Loading...';
+  try { const data=await aF(`/api/admin/writing/${jobId}/submissions`); renderReviewBoxes(data.submissions||[],'writing',jobId,null,el); }
+  catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
+}
 
 // ============ TRANSCRIPTION ============
-async function loadTranscription() {
+async function createTranscriptionJob() {
+  const af=document.getElementById('transcriptionJobAudio').files[0];
+  if (!af) { msg('createTranscriptionMsg','❌ Audio file required.',false); return; }
+  const mEl=document.getElementById('createTranscriptionMsg');
+  mEl.textContent='Uploading audio file...'; mEl.className='msg mok'; mEl.style.display='block';
+  const fd=new FormData();
+  fd.append('audio',af);
+  fd.append('title',document.getElementById('transcriptionJobTitle').value);
+  fd.append('description',document.getElementById('transcriptionJobDesc').value);
+  fd.append('instructions',document.getElementById('transcriptionJobInstructions').value);
+  fd.append('reward',document.getElementById('transcriptionJobReward').value);
+  fd.append('maxWorkers',document.getElementById('transcriptionJobMaxWorkers').value);
+  const dl=document.getElementById('transcriptionJobDeadline').value;
+  if(dl) fd.append('deadline',dl);
   try {
-    const data = await apiFetch('/api/transcriptions');
-    const list = document.getElementById('transcriptionList');
-    if (!data.jobs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No transcription jobs available right now.</p>'; return; }
-    list.innerHTML = data.jobs.map(job => taskCardHtml(job, 'transcription', job.userSubmission ? ('Status: ' + job.userSubmission.status) : null)).join('');
-  } catch(err) { document.getElementById('transcriptionList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
+    const res=await fetch('/api/admin/transcription/create',{method:'POST',headers:{'Authorization':`Bearer ${_at}`},body:fd});
+    const data=await res.json(); if(!res.ok) throw new Error(data.error||'Upload failed');
+    msg('createTranscriptionMsg','✅ Transcription job created!',true);
+    ['transcriptionJobTitle','transcriptionJobDesc','transcriptionJobInstructions'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('transcriptionJobAudio').value='';
+    loadAdminTranscriptionJobs();
+  } catch(err) { msg('createTranscriptionMsg','❌ '+err.message,false); }
 }
-
-async function openTranscriptionModal(jobId) {
+async function loadAdminTranscriptionJobs() {
+  const el=document.getElementById('adminTranscriptionJobsList');
   try {
-    const data = await apiFetch(`/api/transcriptions/${jobId}`);
-    const job = data.job; activeTranscriptionJobId = jobId;
-    document.getElementById('transcriptionModalTitle').textContent = job.title;
-    document.getElementById('transcriptionModalDesc').textContent = job.description;
-    document.getElementById('transcriptionModalInstructions').textContent = job.instructions;
-    document.getElementById('transcriptionAudio').src = job.audioUrl;
-    document.getElementById('transcriptionText').value = '';
-    document.getElementById('transcriptionCharCount').textContent = '0 chars';
-    showModal('transcriptionModal');
-  } catch(err) { toast('Error: ' + err.message, false); }
+    const data=await aF('/api/admin/transcription/all');
+    const jobs=data.jobs||[];
+    if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No transcription jobs yet.</p>'; document.getElementById('adminTranscriptionSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
+    el.innerHTML='<div class="jgrid">'+jobs.map(j=>renderJobCard(j,'transcription')).join('')+'</div>';
+    const pending=jobs.filter(j=>(j.pending||0)>0);
+    if (pending.length) loadTranscriptionSubmissions(pending[0].id,pending[0].title);
+    else document.getElementById('adminTranscriptionSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending transcription reviews.</p>';
+  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
 }
-function closeTranscriptionModal() { hideModal('transcriptionModal'); activeTranscriptionJobId = null; }
-document.getElementById('transcriptionText').addEventListener('input', function() { document.getElementById('transcriptionCharCount').textContent = this.value.length + ' chars'; });
-document.getElementById('transcriptionSubmitBtn').addEventListener('click', async () => {
-  if (!activeTranscriptionJobId) return;
-  const content = document.getElementById('transcriptionText').value.trim();
-  if (content.length < 20) { alert('Too short (min 20 chars).'); return; }
-  const btn = document.getElementById('transcriptionSubmitBtn'); btn.disabled = true; btn.textContent = 'Submitting...';
-  try { await apiFetch(`/api/transcriptions/${activeTranscriptionJobId}/submit`, { method: 'POST', body: JSON.stringify({ content }) }); toast('✅ Submitted!'); closeTranscriptionModal(); loadTranscription(); }
-  catch(err) { toast('❌ ' + err.message, false); }
-  finally { btn.disabled = false; btn.textContent = 'Submit Transcription'; }
-});
+async function loadTranscriptionSubmissions(jobId,title) {
+  const el=document.getElementById('adminTranscriptionSubmissions');
+  el.innerHTML='Loading...';
+  try { const data=await aF(`/api/admin/transcription/${jobId}/submissions`); renderReviewBoxes(data.submissions||[],'transcription',jobId,null,el); }
+  catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
+}
 
 // ============ DATA ENTRY ============
-async function loadDataentry() {
+async function createDataentryJob() {
+  const fd=new FormData();
+  const t=document.getElementById('dataentryJobTitle').value.trim(); const d=document.getElementById('dataentryJobDesc').value.trim(); const ins=document.getElementById('dataentryJobInstructions').value.trim();
+  if (!t||!d||!ins) { msg('createDataentryMsg','❌ Title, description and instructions required.',false); return; }
+  fd.append('title',t); fd.append('description',d); fd.append('instructions',ins);
+  fd.append('reward',document.getElementById('dataentryJobReward').value);
+  fd.append('maxWorkers',document.getElementById('dataentryJobMaxWorkers').value);
+  const dl=document.getElementById('dataentryJobDeadline').value;
+  if(dl) fd.append('deadline',dl);
+  const tf=document.getElementById('dataentryJobTemplate').files[0];
+  if(tf) fd.append('template',tf);
   try {
-    const data = await apiFetch('/api/dataentry');
-    const list = document.getElementById('dataentryList');
-    if (!data.jobs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No data entry jobs available right now.</p>'; return; }
-    list.innerHTML = data.jobs.map(job => taskCardHtml(job, 'dataentry', job.userSubmission ? ('Status: ' + job.userSubmission.status) : null)).join('');
-  } catch(err) { document.getElementById('dataentryList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
+    const res=await fetch('/api/admin/dataentry/create',{method:'POST',headers:{'Authorization':`Bearer ${_at}`},body:fd});
+    const data=await res.json(); if(!res.ok) throw new Error(data.error||'Failed');
+    msg('createDataentryMsg','✅ Data entry job created!',true);
+    ['dataentryJobTitle','dataentryJobDesc','dataentryJobInstructions'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('dataentryJobTemplate').value='';
+    loadAdminDataentryJobs();
+  } catch(err) { msg('createDataentryMsg','❌ '+err.message,false); }
+}
+async function loadAdminDataentryJobs() {
+  const el=document.getElementById('adminDataentryJobsList');
+  try {
+    const data=await aF('/api/admin/dataentry/all');
+    const jobs=data.jobs||[];
+    if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No data entry jobs yet.</p>'; document.getElementById('adminDataentrySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
+    el.innerHTML='<div class="jgrid">'+jobs.map(j=>renderJobCard(j,'dataentry')).join('')+'</div>';
+    const pending=jobs.filter(j=>(j.pending||0)>0);
+    if (pending.length) loadDataentrySubmissions(pending[0].id,pending[0].title);
+    else document.getElementById('adminDataentrySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending data entry reviews.</p>';
+  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
+}
+async function loadDataentrySubmissions(jobId,title) {
+  const el=document.getElementById('adminDataentrySubmissions');
+  el.innerHTML='Loading...';
+  try { const data=await aF(`/api/admin/dataentry/${jobId}/submissions`); renderReviewBoxes(data.submissions||[],'dataentry',jobId,null,el); }
+  catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
 }
 
-async function openDataentryModal(jobId) {
+// ============ WITHDRAWALS ============
+async function loadAdminWithdrawals() {
+  const status=document.getElementById('wdFilterStatus').value||'pending';
+  const el=document.getElementById('adminWithdrawalsList');
+  el.innerHTML='<p style="color:var(--gray-500)">Loading...</p>';
   try {
-    const data = await apiFetch(`/api/dataentry/${jobId}`);
-    const job = data.job; activeDataentryJobId = jobId;
-    document.getElementById('dataentryModalTitle').textContent = job.title;
-    document.getElementById('dataentryModalDesc').textContent = job.description;
-    document.getElementById('dataentryModalInstructions').textContent = job.instructions;
-    const tpl = document.getElementById('dataentryTemplateSection');
-    if (job.templateUrl) { tpl.style.display = 'block'; document.getElementById('dataentryTemplateLink').href = job.templateUrl; } else tpl.style.display = 'none';
-    document.getElementById('dataentryFileInput').value = '';
-    showModal('dataentryModal');
-  } catch(err) { toast('Error: ' + err.message, false); }
-}
-function closeDataentryModal() { hideModal('dataentryModal'); activeDataentryJobId = null; }
-document.getElementById('dataentrySubmitBtn').addEventListener('click', async () => {
-  if (!activeDataentryJobId) return;
-  const file = document.getElementById('dataentryFileInput').files[0];
-  if (!file) { alert('Select a file.'); return; }
-  const btn = document.getElementById('dataentrySubmitBtn'); btn.disabled = true; btn.textContent = 'Uploading...';
-  try {
-    const fd = new FormData(); fd.append('file', file);
-    const res = await fetch(`/api/dataentry/${activeDataentryJobId}/submit`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: fd });
-    const data = await res.json(); if (!res.ok) throw new Error(data.error||'Upload failed');
-    toast('✅ ' + data.message); closeDataentryModal(); loadDataentry();
-  } catch(err) { toast('❌ ' + err.message, false); }
-  finally { btn.disabled = false; btn.textContent = 'Submit Data Entry'; }
-});
-
-// ============ REFERRALS ============
-async function loadReferrals() {
-  try {
-    const [stats, link] = await Promise.all([apiFetch('/api/referrals/stats'), apiFetch('/api/referrals/link')]);
-    const cleanLink = `${window.location.origin}/index.html?ref=${link.inviteCode}`;
-    document.getElementById('referralLink').value = cleanLink;
-    ['1','2','3','4'].forEach(l => {
-      const cnt = stats.levels['level'+l];
-      const total = cnt ? (cnt.count||0) : 0;
-      const active = cnt ? (cnt.active||0) : 0;
-      document.getElementById('level'+l+'Count').textContent = total;
-      document.getElementById('lvl'+l+'Status').textContent = `Active: ${active} | Inactive: ${total-active}`;
-      // Show member boxes
-      const el = document.getElementById('level'+l+'Members');
-      if (el && cnt && cnt.members && cnt.members.length) {
-        el.innerHTML = cnt.members.slice(0,5).map(m => `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-top:1px solid var(--gray-100);font-size:.78rem">
-            <span>${m.username}</span>
-            <span class="mbadge ${m.packageType!=='not_active'?'active':'inactive'}">${m.packageType!=='not_active'?'Active':'Inactive'}</span>
-          </div>`).join('');
-        if (cnt.count > 5) el.innerHTML += `<p style="font-size:.72rem;color:var(--gray-500);margin:.25rem 0 0">+${cnt.count-5} more</p>`;
-      }
-    });
-    document.getElementById('totalCommission').textContent = 'KES ' + (stats.summary?.totalCommission||0);
-    document.getElementById('commission1').textContent = 'KES ' + (stats.summary?.commissionByLevel?.level1||0);
-    document.getElementById('commission2').textContent = 'KES ' + (stats.summary?.commissionByLevel?.level2||0);
-    document.getElementById('commission3').textContent = 'KES ' + (stats.summary?.commissionByLevel?.level3||0);
-    document.getElementById('commission4').textContent = 'KES ' + (stats.summary?.commissionByLevel?.level4||0);
-  } catch(err) { console.error('Referrals:', err); }
-}
-
-document.getElementById('copyReferralBtn').addEventListener('click', () => {
-  const el = document.getElementById('referralLink'); el.select(); document.execCommand('copy'); alert('✅ Referral link copied!');
-});
-
-// ============ WITHDRAW ============
-async function loadWithdraw() {
-  try {
-    const profile = await apiFetch('/api/users/profile');
-    const user = profile.user;
-    document.getElementById('withdrawBalance').textContent = 'KES ' + user.primaryWallet.balance;
-    document.getElementById('withdrawPoints').textContent = user.pointsWallet.points;
-    const pKES = Math.floor(user.pointsWallet.points/100)*10;
-    document.getElementById('withdrawPointsKES').textContent = `≈ KES ${pKES} · Tuesdays`;
-    document.getElementById('pointsConvertHint').textContent = user.canWithdrawPoints ? '✅ Eligible to withdraw points (Tuesdays)!' : 'Need 4 active referrals + 2,000 points. KES wallet: Thursdays only.';
-    const eatTime = new Date(new Date().getTime()+3*3600000);
-    const dayIndex = eatTime.getUTCDay();
-    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    const msg = document.getElementById('thursdayMsg');
-    if (dayIndex===2) { msg.textContent = `✅ Today is ${days[dayIndex]} — POINTS withdrawals OPEN!`; msg.style.background='#f0fdf4'; msg.style.color='#16a34a'; msg.style.borderColor='#16a34a'; }
-    else if (dayIndex===4) { msg.textContent = `✅ Today is ${days[dayIndex]} — KES wallet withdrawals OPEN!`; msg.style.background='#f0fdf4'; msg.style.color='#16a34a'; msg.style.borderColor='#16a34a'; }
-    else { msg.textContent = `⏰ Today is ${days[dayIndex]}. Points: Tuesdays | KES wallet: Thursdays.`; }
-    const hist = await apiFetch('/api/withdrawals/my').catch(()=>null);
-    const histEl = document.getElementById('withdrawHistory');
-    if (hist && hist.withdrawals.length) {
-      histEl.innerHTML = hist.withdrawals.map(w => `
-        <div style="padding:.65rem 0;border-bottom:1px solid var(--gray-100)">
-          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem">
-            <div>
-              <strong>${w.type==='points'?`${w.pointsRedeemed}pts → `:''}KES ${w.amount}</strong>
-              <span style="font-size:.72rem;background:${w.type==='kes'?'#dbeafe':'#fef9c3'};color:${w.type==='kes'?'#1d4ed8':'#854d0e'};padding:.1rem .4rem;border-radius:4px;margin-left:.3rem">${(w.type||'').toUpperCase()}</span>
-              <p style="margin:.15rem 0 0;font-size:.78rem;color:var(--gray-500)">${new Date(w.requestedAt).toLocaleDateString()} | ${(w.paymentMethod||'').toUpperCase()}</p>
-              ${w.adminNotes?`<p style="margin:.1rem 0 0;font-size:.75rem;color:var(--gray-500)">${w.adminNotes}</p>`:''}
-            </div>
-            <span style="padding:.15rem .6rem;border-radius:999px;font-size:.75rem;font-weight:700;background:${w.status==='completed'?'#dcfce7':w.status==='pending'?'#fef3c7':'#fee2e2'};color:${w.status==='completed'?'#16a34a':w.status==='pending'?'#b45309':'#dc2626'}">${(w.status||'').toUpperCase()}</span>
+    const data=await aF(`/api/withdrawals/admin/all?status=${status}`);
+    const wds=data.withdrawals||[];
+    document.getElementById('wdCount').textContent=`${wds.length} request(s)`;
+    if (!wds.length) { el.innerHTML=`<p style="color:var(--gray-500)">No ${status} withdrawals.</p>`; return; }
+    el.innerHTML='<div class="wgrid">'+wds.map(w=>`
+      <div class="wcard ${w.status==='completed'?'done':w.status==='rejected'?'rej':''}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
+          <div>
+            <div style="font-weight:800;font-size:.9rem">${w.username||'User'}</div>
+            <div style="font-size:.72rem;color:var(--gray-500)">${w.email||''} | ${w.phone||''}</div>
           </div>
-        </div>`).join('');
-    } else { histEl.innerHTML = '<p style="color:var(--gray-500);font-size:.88rem">No withdrawal history yet.</p>'; }
-  } catch(err) { console.error('Withdraw:', err); }
+          <span class="badge ${w.status==='completed'?'bg':w.status==='pending'?'by':'br'}">${(w.status||'pending').toUpperCase()}</span>
+        </div>
+        <div style="font-size:1.3rem;font-weight:800;color:var(--g);margin:.3rem 0">KES ${fmt(w.amount)}</div>
+        <div style="font-size:.75rem;color:var(--gray-700);margin:.2rem 0">
+          <strong>Method:</strong> ${(w.paymentMethod||'').toUpperCase()}
+          ${w.paymentDetails?.mpesaPhone?` · 📱 ${w.paymentDetails.mpesaPhone}`:''}
+          ${w.paymentDetails?.accountNumber?` · 🏦 ${w.paymentDetails.accountNumber}`:''}
+        </div>
+        ${w.type?`<div style="font-size:.72rem;color:var(--gray-500)">Type: ${w.type.toUpperCase()}</div>`:''}
+        <div style="font-size:.7rem;color:var(--gray-500);margin:.2rem 0">${w.requestedAt?new Date(w.requestedAt).toLocaleString():''}</div>
+        ${w.adminNotes?`<div style="font-size:.75rem;background:var(--gray-50);padding:.35rem .5rem;border-radius:.3rem;margin:.3rem 0">📝 ${w.adminNotes}</div>`:''}
+        ${w.status==='pending'?`<div style="display:flex;gap:.4rem;margin-top:.6rem">
+          <button onclick="completeWithdrawal('${w.id}')" class="btn btp">✅ Mark Paid</button>
+          <button onclick="rejectWithdrawal('${w.id}')" class="btn btd">❌ Reject</button>
+        </div>`:''}
+      </div>`).join('')+'</div>';
+  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
+}
+async function completeWithdrawal(id) {
+  const notes=prompt('Notes (e.g. M-Pesa ID):')||'Payment processed';
+  try { await aF(`/api/withdrawals/admin/${id}/complete`,{method:'POST',body:JSON.stringify({adminNotes:notes})}); alert('✅ Marked as completed.'); loadAdminWithdrawals(); }
+  catch(err) { alert('❌ '+err.message); }
+}
+async function rejectWithdrawal(id) {
+  const notes=prompt('Reason for rejection:')||'Rejected';
+  try { await aF(`/api/withdrawals/admin/${id}/reject`,{method:'POST',body:JSON.stringify({adminNotes:notes})}); loadAdminWithdrawals(); }
+  catch(err) { alert('❌ '+err.message); }
 }
 
-document.getElementById('paymentMethod').addEventListener('change', e => {
-  document.getElementById('mpesaSection').style.display = e.target.value==='mpesa' ? 'block' : 'none';
-  document.getElementById('bankSection').style.display = e.target.value==='bank' ? 'block' : 'none';
-});
-
-document.getElementById('withdrawalForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const btn = document.getElementById('withdrawBtn'); btn.disabled = true; btn.textContent = 'Submitting...';
-  try {
-    const amount = parseFloat(document.getElementById('withdrawAmount').value);
-    const paymentMethod = document.getElementById('paymentMethod').value;
-    let paymentDetails = {};
-    if (paymentMethod==='mpesa') { paymentDetails = { mpesaPhone: document.getElementById('mpesaPhone').value.trim() }; }
-    else if (paymentMethod==='bank') { paymentDetails = { bankName: document.getElementById('bankName').value, accountNumber: document.getElementById('accountNumber').value, accountName: document.getElementById('accountName').value }; }
-    await apiFetch('/api/withdrawals/kes', { method: 'POST', body: JSON.stringify({ amount, paymentMethod, paymentDetails }) });
-    alert('✅ Withdrawal submitted! Admin will process it.');
-    e.target.reset(); document.getElementById('mpesaSection').style.display='none'; document.getElementById('bankSection').style.display='none';
-    loadWithdraw();
-  } catch(err) { toast('❌ ' + err.message, false); }
-  finally { btn.disabled = false; btn.textContent = 'Request Withdrawal'; }
-});
-
-// ============ PROFILE ============
-async function loadProfile() {
-  try {
-    const data = await apiFetch('/api/users/profile');
-    const user = data.user;
-    document.getElementById('profileUsername').textContent = user.username;
-    document.getElementById('profileEmail').textContent = user.email;
-    document.getElementById('profilePhone').textContent = user.phone;
-    document.getElementById('profileJoinDate').textContent = new Date(user.createdAt).toLocaleDateString();
-    document.getElementById('profilePackage').textContent = user.packageType==='not_active'?'❌ Not Activated':'✅ Active';
-    document.getElementById('profileStatus').textContent = user.status;
-    document.getElementById('profileInviteCode').value = `${window.location.origin}/index.html?ref=${user.inviteCode}`;
-  } catch(err) { console.error('Profile:', err); }
-}
-
-document.getElementById('changePasswordForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const btn = document.getElementById('changePwdBtn');
-  const errEl = document.getElementById('pwdError'); const succEl = document.getElementById('pwdSuccess');
-  errEl.style.display='none'; succEl.style.display='none';
-  const newPwd = document.getElementById('newPassword').value;
-  if (newPwd !== document.getElementById('confirmPassword').value) { errEl.textContent='Passwords do not match.'; errEl.style.display='block'; return; }
-  btn.disabled=true; btn.textContent='Changing...';
-  try { await apiFetch('/api/users/change-password', { method:'PUT', body:JSON.stringify({ currentPassword: document.getElementById('currentPassword').value, newPassword: newPwd }) }); succEl.style.display='block'; e.target.reset(); }
-  catch(err) { errEl.textContent=err.message; errEl.style.display='block'; }
-  finally { btn.disabled=false; btn.textContent='Change Password'; }
-});
+// ============ INIT ============
+loadAdminDashboard();
 </script>
 </body>
 </html>
