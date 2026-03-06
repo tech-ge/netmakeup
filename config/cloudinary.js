@@ -19,16 +19,17 @@ const audioStorage = new CloudinaryStorage({
   }
 });
 
-// ── Document uploads (PDF / DOCX for writing jobs & data entry) ──────────────
+// ── Document uploads (PDF / DOCX / XLSX for writing jobs & data entry) ───────
+// access_mode: 'public' makes raw files publicly downloadable without auth
 const documentStorage = new CloudinaryStorage({
   cloudinary,
   params: (req, file) => {
-    const isPdf = file.mimetype === 'application/pdf';
     return {
-      folder:        'techgeo/documents',
-      resource_type: 'raw',  // raw = any file type
-      allowed_formats: ['pdf', 'docx', 'doc'],
-      public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, '_')}`
+      folder:          'techgeo/documents',
+      resource_type:   'raw',     // raw = PDFs, docs, xlsx, csv etc
+      access_mode:     'public',  // ← KEY FIX: allows unauthenticated download
+      allowed_formats: ['pdf', 'docx', 'doc', 'xlsx', 'csv'],
+      public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '')}`
     };
   }
 });
@@ -54,15 +55,33 @@ const uploadDocument = multer({
     const allowed = [
       'application/pdf',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/msword'
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/csv'
     ];
     if (allowed.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Only PDF and Word documents are allowed'));
+      cb(new Error('Only PDF, Word, Excel and CSV files are allowed'));
     }
   }
 });
+
+// ── Generate a signed time-limited download URL (fallback for restricted accounts) ──
+// Call this server-side when serving file download links to users.
+// Signed URLs expire after 1 hour by default and force browser download.
+const getSignedDownloadUrl = (publicId, resourceType = 'raw', expiresInSeconds = 3600) => {
+  try {
+    return cloudinary.utils.private_download_url(publicId, '', {
+      resource_type: resourceType,
+      expires_at:    Math.floor(Date.now() / 1000) + expiresInSeconds,
+      attachment:    true  // forces download instead of browser preview
+    });
+  } catch (err) {
+    console.error('Signed URL generation error:', err.message);
+    return null;
+  }
+};
 
 // ── Delete a file from Cloudinary ────────────────────────────────────────────
 const deleteFile = async (publicId, resourceType = 'raw') => {
@@ -73,4 +92,4 @@ const deleteFile = async (publicId, resourceType = 'raw') => {
   }
 };
 
-module.exports = { uploadAudio, uploadDocument, deleteFile, cloudinary };
+module.exports = { uploadAudio, uploadDocument, deleteFile, getSignedDownloadUrl, cloudinary };
