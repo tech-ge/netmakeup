@@ -476,7 +476,7 @@
     <h3 id="dataentryModalTitle" style="margin-bottom:.25rem"></h3>
     <p id="dataentryModalDesc" style="color:var(--gray-500);font-size:.88rem;margin-bottom:.75rem"></p>
     <div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.75rem"><strong>Instructions:</strong><div id="dataentryModalInstructions" style="margin-top:.4rem;font-size:.88rem;white-space:pre-wrap"></div></div>
-    <div id="dataentryTemplateSection" style="display:none;margin-bottom:.75rem"><a id="dataentryTemplateLink" href="#" target="_blank" class="btn btn-sm" style="border:1.5px solid var(--primary);color:var(--primary);background:transparent">📥 Download Template</a></div>
+    <div id="dataentryTemplateSection" style="display:none;margin-bottom:.75rem"><a id="dataentryTemplateLink" href="javascript:void(0)" onclick="smartDownload(this.dataset.url,this.dataset.pid,'template')" data-url="" data-pid="" class="btn btn-sm" style="border:1.5px solid var(--primary);color:var(--primary);background:transparent">📥 Download Template</a></div>
     <div class="form-group"><label class="form-label">Upload Completed File</label><input type="file" id="dataentryFileInput" class="form-control" accept=".pdf,.doc,.docx,.xlsx,.csv"><p style="font-size:.75rem;color:var(--gray-500);margin-top:.2rem">PDF, Word, Excel or CSV · Max 20MB</p></div>
     <button id="dataentrySubmitBtn" class="btn btn-primary w-full" style="margin-top:.75rem">Submit Data Entry</button>
   </div>
@@ -660,6 +660,25 @@ document.getElementById('convertPointsBtn')?.addEventListener('click', async () 
   finally { btn.disabled = false; btn.textContent = 'Convert Now'; }
 });
 
+// ============ SMART FILE DOWNLOAD ============
+async function smartDownload(directUrl, publicId, fileName) {
+  if (!directUrl) return;
+  try {
+    const probe = await fetch(directUrl, { method: 'HEAD' }).catch(()=>null);
+    if (probe && probe.ok) {
+      const a = document.createElement('a'); a.href = directUrl; a.target = '_blank'; a.download = fileName || 'download';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      return;
+    }
+  } catch(e) {}
+  if (!publicId || publicId === directUrl) { window.open(directUrl, '_blank'); return; }
+  try {
+    const data = await apiFetch(`/api/dataentry/file/signed?publicId=${encodeURIComponent(publicId)}&fileName=${encodeURIComponent(fileName||'download')}`);
+    if (data.url) window.open(data.url, '_blank');
+    else window.open(directUrl, '_blank');
+  } catch(e) { window.open(directUrl, '_blank'); }
+}
+
 // ============ TOAST ============
 function toast(msg, ok=true) {
   let t = document.getElementById('_toast');
@@ -678,7 +697,7 @@ function taskCardHtml(item, type, userStatus) {
     : '<span style="background:#f3f4f6;color:#6b7280;padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:700">'+item.status+'</span>';
   const deadline = item.deadline ? `<p style="font-size:.72rem;color:#b45309;margin:.2rem 0">⏰ Due: ${new Date(item.deadline).toLocaleDateString()}</p>` : '';
   const wordCount = item.wordCount ? `<p style="font-size:.72rem;color:#1e40af;margin:.2rem 0">📝 ${item.wordCount}</p>` : '';
-  const template = item.templateUrl ? `<p style="font-size:.72rem;margin:.2rem 0"><a href="${item.templateUrl}" target="_blank" style="color:var(--primary)">📥 Download Template</a></p>` : '';
+  const template = item.templateUrl ? `<p style="font-size:.72rem;margin:.2rem 0"><a href="javascript:void(0)" onclick="smartDownload('${item.templateUrl}','${item.templatePublicId||''}','${(item.title||'template').replace(/'/g,"")}_template')" style="color:var(--primary);cursor:pointer">📥 Download Template</a></p>` : '';
   const openFn = {blogs:`openBlogModal('${item.id}')`,surveys:`openSurveyModal('${item.id}')`,writing:`openWritingModal('${item.id}')`,transcription:`openTranscriptionModal('${item.id}')`,dataentry:`openDataentryModal('${item.id}')`}[type];
   const btnLabel = {blogs:'✍️ Write',surveys:'📋 Take Survey',writing:'📤 Apply & Submit',transcription:'🎙️ Transcribe',dataentry:'📋 Submit Work'}[type];
   const slotsLeft = (item.maxBidders || item.maxWorkers || 0) - submitted;
@@ -883,7 +902,7 @@ async function openDataentryModal(jobId) {
     document.getElementById('dataentryModalDesc').textContent = job.description;
     document.getElementById('dataentryModalInstructions').textContent = job.instructions;
     const tpl = document.getElementById('dataentryTemplateSection');
-    if (job.templateUrl) { tpl.style.display = 'block'; document.getElementById('dataentryTemplateLink').href = job.templateUrl; } else tpl.style.display = 'none';
+    if (job.templateUrl) { tpl.style.display = 'block'; const tl = document.getElementById('dataentryTemplateLink'); tl.dataset.url = job.templateUrl; tl.dataset.pid = job.templatePublicId || ''; } else tpl.style.display = 'none';
     document.getElementById('dataentryFileInput').value = '';
     showModal('dataentryModal');
   } catch(err) { toast('Error: ' + err.message, false); }
