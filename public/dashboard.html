@@ -646,8 +646,8 @@ document.getElementById('activateBtn').addEventListener('click', async () => {
   btn.disabled = true; btn.textContent = 'Activating...';
   try {
     const data = await apiFetch('/api/auth/activate-package', { method: 'POST' });
-    alert('✅ ' + data.message); loadDashboard();
-  } catch(err) { alert('❌ ' + err.message); }
+    toast('✅ ' + data.message); loadDashboard();
+  } catch(err) { toast('❌ ' + err.message, false); }
   finally { btn.disabled = false; btn.textContent = '🚀 Activate (KES 700)'; }
 });
 
@@ -655,32 +655,64 @@ document.getElementById('convertPointsBtn')?.addEventListener('click', async () 
   const btn = document.getElementById('convertPointsBtn');
   if (!confirm('Convert all eligible points to KES?')) return;
   btn.disabled = true; btn.textContent = 'Converting...';
-  try { const data = await apiFetch('/api/wallets/convert-points', { method: 'POST' }); alert('✅ ' + data.message); loadDashboard(); }
-  catch(err) { alert('❌ ' + err.message); }
+  try { const data = await apiFetch('/api/wallets/convert-points', { method: 'POST' }); toast('✅ ' + data.message); loadDashboard(); }
+  catch(err) { toast('❌ ' + err.message, false); }
   finally { btn.disabled = false; btn.textContent = 'Convert Now'; }
 });
 
+// ============ TOAST ============
+function toast(msg, ok=true) {
+  let t = document.getElementById('_toast');
+  if (!t) { t = document.createElement('div'); t.id='_toast'; t.style.cssText='position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;background:#111;color:#fff;padding:.65rem 1.25rem;border-radius:.6rem;font-size:.88rem;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.35);transition:.3s;opacity:0;pointer-events:none;max-width:90vw;text-align:center'; document.body.appendChild(t); }
+  t.textContent = msg; t.style.background = ok ? '#16a34a' : '#ef4444'; t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity='0'; }, 3500);
+}
+
 // ============ BLOGS ============
+function taskCardHtml(item, type, userStatus) {
+  const submitted = item.currentBidders || item.currentWorkers || 0;
+  const approved = item.approvedCount || 0;
+  const pending = item.pendingCount || 0;
+  const statusBadge = item.status === 'open' || !item.status
+    ? '<span style="background:#dcfce7;color:#16a34a;padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:700">open</span>'
+    : '<span style="background:#f3f4f6;color:#6b7280;padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:700">'+item.status+'</span>';
+  const deadline = item.deadline ? `<p style="font-size:.72rem;color:#b45309;margin:.2rem 0">⏰ Due: ${new Date(item.deadline).toLocaleDateString()}</p>` : '';
+  const wordCount = item.wordCount ? `<p style="font-size:.72rem;color:#1e40af;margin:.2rem 0">📝 ${item.wordCount}</p>` : '';
+  const template = item.templateUrl ? `<p style="font-size:.72rem;margin:.2rem 0"><a href="${item.templateUrl}" target="_blank" style="color:var(--primary)">📥 Download Template</a></p>` : '';
+  const openFn = {blogs:`openBlogModal('${item.id}')`,surveys:`openSurveyModal('${item.id}')`,writing:`openWritingModal('${item.id}')`,transcription:`openTranscriptionModal('${item.id}')`,dataentry:`openDataentryModal('${item.id}')`}[type];
+  const btnLabel = {blogs:'✍️ Write',surveys:'📋 Take Survey',writing:'📤 Apply & Submit',transcription:'🎙️ Transcribe',dataentry:'📋 Submit Work'}[type];
+  const slotsLeft = (item.maxBidders || item.maxWorkers || 0) - submitted;
+  let actionBtn = '';
+  if (userStatus) { actionBtn = `<span style="background:#dbeafe;color:#1e40af;padding:.2rem .6rem;border-radius:999px;font-size:.72rem;font-weight:600">Your status: ${userStatus}</span>`; }
+  else if (slotsLeft > 0 || (!item.maxBidders && !item.maxWorkers)) { actionBtn = `<button onclick="${openFn}" class="btn btn-primary btn-sm">${btnLabel}</button>`; }
+  else { actionBtn = `<span style="color:#ef4444;font-size:.75rem;font-weight:600">Slots Full</span>`; }
+  return `<div class="card" style="overflow:hidden;border-top:3px solid var(--primary)">
+    <div style="padding:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.35rem">
+        <h4 style="font-size:.92rem;font-weight:800;margin:0;line-height:1.3">${item.title}</h4>
+        <div style="display:flex;align-items:center;gap:.3rem;flex-shrink:0;margin-left:.4rem">${statusBadge}<span style="background:#f0fdf4;color:#16a34a;padding:.15rem .5rem;border-radius:999px;font-size:.72rem;font-weight:800;border:1px solid #bbf7d0">⭐${item.reward||0}pts</span></div>
+      </div>
+      <p style="color:var(--gray-500);font-size:.78rem;margin:0 0 .4rem;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${item.description||''}</p>
+      ${wordCount}${deadline}${template}
+      ${item.audioUrl ? `<audio src="${item.audioUrl}" controls style="width:100%;height:28px;margin:.3rem 0"></audio>` : ''}
+      <div style="display:flex;gap:.75rem;padding:.45rem 0;margin:.3rem 0;border-top:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100)">
+        <div style="text-align:center"><div style="font-weight:800;font-size:.9rem;color:#3b82f6">📝 ${submitted}</div><div style="font-size:.65rem;color:var(--gray-500)">submitted</div></div>
+        <div style="text-align:center"><div style="font-weight:800;font-size:.9rem;color:#16a34a">✅ ${approved}</div><div style="font-size:.65rem;color:var(--gray-500)">approved</div></div>
+        <div style="text-align:center"><div style="font-weight:800;font-size:.9rem;color:#f59e0b">⏳ ${pending}</div><div style="font-size:.65rem;color:var(--gray-500)">pending</div></div>
+        <div style="text-align:center;margin-left:auto"><div style="font-size:.7rem;color:var(--gray-500)">${submitted}/${item.maxBidders||item.maxWorkers||'∞'}</div><div style="font-size:.65rem;color:var(--gray-500)">slots</div></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:.5rem">${actionBtn}</div>
+    </div>
+  </div>`;
+}
+
 async function loadBlogs() {
   try {
     const [dashData, blogsData] = await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null), apiFetch('/api/blogs')]);
     if (dashData) document.getElementById('blogsDaily').textContent = `📅 Today: ${dashData.dailyProgress.blogsLeft}/2 remaining | ⭐ Each = 100 points`;
     const list = document.getElementById('blogsList');
     if (!blogsData.blogs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No blogs available right now.</p>'; return; }
-    list.innerHTML = blogsData.blogs.map(b => `
-      <div class="card" style="overflow:hidden">
-        <div style="padding:1.1rem">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
-            <h4 style="font-size:.95rem;font-weight:700;margin:0">${b.title}</h4>
-            <span style="background:#f0fdf4;color:#16a34a;padding:.15rem .55rem;border-radius:999px;font-size:.75rem;font-weight:700;white-space:nowrap;margin-left:.5rem">⭐ ${b.reward}pts</span>
-          </div>
-          <p style="color:var(--gray-500);font-size:.82rem;margin:0 0 .65rem">${b.description}</p>
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4rem">
-            <span style="font-size:.78rem;color:var(--gray-500)">📝 ${b.currentBidders}/${b.maxBidders} slots</span>
-            ${b.userBidStatus ? `<span style="background:#dbeafe;color:#1e40af;padding:.15rem .55rem;border-radius:999px;font-size:.75rem">${b.userBidStatus}</span>` : `<button onclick="openBlogModal('${b.id}')" class="btn btn-primary btn-sm">Write</button>`}
-          </div>
-        </div>
-      </div>`).join('');
+    list.innerHTML = blogsData.blogs.map(b => taskCardHtml(b, 'blogs', b.userBidStatus)).join('');
   } catch(err) { document.getElementById('blogsList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
 }
 
@@ -694,7 +726,7 @@ async function openBlogModal(blogId) {
     document.getElementById('blogWriteContent').value = '';
     document.getElementById('blogCharCount').textContent = '0 chars';
     showModal('blogModal');
-  } catch(err) { alert('Error: ' + err.message); }
+  } catch(err) { toast('Error: ' + err.message, false); }
 }
 function closeBlogModal() { hideModal('blogModal'); activeBlogId = null; }
 document.getElementById('blogWriteContent').addEventListener('input', function() { document.getElementById('blogCharCount').textContent = this.value.length + ' chars'; });
@@ -704,8 +736,8 @@ document.getElementById('blogSubmitBtn').addEventListener('click', async () => {
   if (content.length < 100) { alert('Min 100 characters.'); return; }
   const btn = document.getElementById('blogSubmitBtn');
   btn.disabled = true; btn.textContent = 'Submitting...';
-  try { await apiFetch(`/api/blogs/${activeBlogId}/submit`, { method: 'POST', body: JSON.stringify({ submissionContent: content }) }); alert('✅ Blog submitted! Awaiting review.'); closeBlogModal(); loadBlogs(); }
-  catch(err) { alert('❌ ' + err.message); }
+  try { await apiFetch(`/api/blogs/${activeBlogId}/submit`, { method: 'POST', body: JSON.stringify({ submissionContent: content }) }); toast('✅ Blog submitted! Awaiting review.'); closeBlogModal(); loadBlogs(); }
+  catch(err) { toast('❌ ' + err.message, false); }
   finally { btn.disabled = false; btn.textContent = 'Submit Blog'; }
 });
 
@@ -716,20 +748,7 @@ async function loadSurveys() {
     if (dashData) document.getElementById('surveysDaily').textContent = `📅 Today: ${dashData.dailyProgress.surveysLeft}/2 remaining | ⭐ Each = 100 points`;
     const list = document.getElementById('surveysList');
     if (!surveysData.surveys.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No surveys available right now.</p>'; return; }
-    list.innerHTML = surveysData.surveys.map(s => `
-      <div class="card" style="overflow:hidden">
-        <div style="padding:1.1rem">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
-            <h4 style="font-size:.95rem;font-weight:700;margin:0">${s.title}</h4>
-            <span style="background:#f0fdf4;color:#16a34a;padding:.15rem .55rem;border-radius:999px;font-size:.75rem;font-weight:700;white-space:nowrap;margin-left:.5rem">⭐ ${s.reward}pts</span>
-          </div>
-          <p style="color:var(--gray-500);font-size:.82rem;margin:0 0 .35rem">${s.description}</p>
-          <p style="font-size:.78rem;color:var(--gray-500);margin:0 0 .65rem">📋 ${s.questionsCount} questions · ${s.currentResponses}/${s.maxResponses}</p>
-          <div style="text-align:right">
-            ${s.userBidStatus ? `<span style="background:#dbeafe;color:#1e40af;padding:.15rem .55rem;border-radius:999px;font-size:.75rem">${s.userBidStatus}</span>` : `<button onclick="openSurveyModal('${s.id}')" class="btn btn-primary btn-sm">Take Survey</button>`}
-          </div>
-        </div>
-      </div>`).join('');
+    list.innerHTML = surveysData.surveys.map(s => taskCardHtml(s, 'surveys', s.userBidStatus)).join('');
   } catch(err) { document.getElementById('surveysList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
 }
 
@@ -751,22 +770,27 @@ async function openSurveyModal(surveyId) {
           `<textarea name="q${i}" class="form-control" rows="2" ${q.required?'required':''}></textarea>`}
       </div>`).join('');
     showModal('surveyModal');
-  } catch(err) { alert('Error: ' + err.message); }
+  } catch(err) { toast('Error: ' + err.message, false); }
 }
 function closeSurveyModal() { hideModal('surveyModal'); activeSurveyId = null; }
 document.getElementById('surveySubmitBtn').addEventListener('click', async () => {
   if (!activeSurveyId) return;
-  const qEl = document.getElementById('surveyModalQuestions');
-  const allQ = [];
-  qEl.querySelectorAll('div').forEach((div,i) => {
-    const radio = div.querySelector(`input[name="q${i}"]:checked`);
-    const textarea = div.querySelector(`textarea[name="q${i}"]`);
-    if (radio) allQ[i] = radio.value; else if (textarea) allQ[i] = textarea.value.trim(); else allQ[i] = '';
-  });
+  const responses = [];
+  let i = 0;
+  while (true) {
+    const radio = document.querySelector(`input[name="q${i}"]:checked`);
+    const textarea = document.querySelector(`textarea[name="q${i}"]`);
+    if (!radio && !textarea) break;
+    if (radio) responses.push(radio.value);
+    else if (textarea) responses.push(textarea.value.trim());
+    else responses.push('');
+    i++;
+  }
+  if (!responses.length) { alert('Please answer at least one question.'); return; }
   const btn = document.getElementById('surveySubmitBtn');
   btn.disabled = true; btn.textContent = 'Submitting...';
-  try { await apiFetch(`/api/surveys/${activeSurveyId}/submit`, { method: 'POST', body: JSON.stringify({ responses: allQ }) }); alert('✅ Survey submitted!'); closeSurveyModal(); loadSurveys(); }
-  catch(err) { alert('❌ ' + err.message); }
+  try { await apiFetch(`/api/surveys/${activeSurveyId}/submit`, { method: 'POST', body: JSON.stringify({ responses }) }); toast('✅ Survey submitted! Awaiting review.'); closeSurveyModal(); loadSurveys(); }
+  catch(err) { toast('❌ ' + err.message, false); }
   finally { btn.disabled = false; btn.textContent = 'Submit Survey'; }
 });
 
@@ -776,23 +800,7 @@ async function loadWriting() {
     const data = await apiFetch('/api/writing');
     const list = document.getElementById('writingList');
     if (!data.jobs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No writing jobs available right now.</p>'; return; }
-    list.innerHTML = data.jobs.map(job => `
-      <div class="card" style="overflow:hidden">
-        <div style="padding:1.1rem">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
-            <h4 style="font-size:.95rem;font-weight:700;margin:0">${job.title}</h4>
-            <span style="background:#f0fdf4;color:#16a34a;padding:.15rem .55rem;border-radius:999px;font-size:.75rem;font-weight:700;white-space:nowrap;margin-left:.5rem">⭐ ${job.reward}pts</span>
-          </div>
-          <p style="color:var(--gray-500);font-size:.82rem;margin:0 0 .35rem">${job.description}</p>
-          ${job.wordCount?`<p style="font-size:.78rem;color:#1e40af;margin:0 0 .35rem">📝 ${job.wordCount}</p>`:''}
-          ${job.deadline?`<p style="font-size:.78rem;color:#b45309;margin:0 0 .35rem">⏰ Due: ${new Date(job.deadline).toLocaleDateString()}</p>`:''}
-          <p style="font-size:.78rem;color:var(--gray-500);margin:0 0 .65rem">👥 ${job.currentWorkers}/${job.maxWorkers} slots</p>
-          <div style="text-align:right">
-            ${job.userSubmission?`<span style="background:#dbeafe;color:#1e40af;padding:.15rem .55rem;border-radius:999px;font-size:.75rem">Status: ${job.userSubmission.status}${job.userSubmission.reviewNotes?' — '+job.userSubmission.reviewNotes:''}</span>`:
-              job.slotsLeft>0?`<button onclick="openWritingModal('${job.id}')" class="btn btn-primary btn-sm">Apply & Submit</button>`:`<span style="color:#ef4444;font-size:.78rem">Full</span>`}
-          </div>
-        </div>
-      </div>`).join('');
+    list.innerHTML = data.jobs.map(job => taskCardHtml(job, 'writing', job.userSubmission ? ('Your status: ' + job.userSubmission.status + (job.userSubmission.reviewNotes ? ' — ' + job.userSubmission.reviewNotes : '')) : null)).join('');
   } catch(err) { document.getElementById('writingList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
 }
 
@@ -805,7 +813,7 @@ async function openWritingModal(jobId) {
     document.getElementById('writingModalInstructions').textContent = job.instructions;
     document.getElementById('writingFileInput').value = '';
     showModal('writingModal');
-  } catch(err) { alert('Error: ' + err.message); }
+  } catch(err) { toast('Error: ' + err.message, false); }
 }
 function closeWritingModal() { hideModal('writingModal'); activeWritingJobId = null; }
 document.getElementById('writingSubmitBtn').addEventListener('click', async () => {
@@ -817,8 +825,8 @@ document.getElementById('writingSubmitBtn').addEventListener('click', async () =
     const fd = new FormData(); fd.append('file', file);
     const res = await fetch(`/api/writing/${activeWritingJobId}/submit`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: fd });
     const data = await res.json(); if (!res.ok) throw new Error(data.error||'Upload failed');
-    alert('✅ ' + data.message); closeWritingModal(); loadWriting();
-  } catch(err) { alert('❌ ' + err.message); }
+    toast('✅ ' + data.message); closeWritingModal(); loadWriting();
+  } catch(err) { toast('❌ ' + err.message, false); }
   finally { btn.disabled = false; btn.textContent = 'Submit Writing Job'; }
 });
 
@@ -828,21 +836,7 @@ async function loadTranscription() {
     const data = await apiFetch('/api/transcriptions');
     const list = document.getElementById('transcriptionList');
     if (!data.jobs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No transcription jobs available right now.</p>'; return; }
-    list.innerHTML = data.jobs.map(job => `
-      <div class="card" style="overflow:hidden">
-        <div style="padding:1.1rem">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
-            <h4 style="font-size:.95rem;font-weight:700;margin:0">${job.title}</h4>
-            <span style="background:#f0fdf4;color:#16a34a;padding:.15rem .55rem;border-radius:999px;font-size:.75rem;font-weight:700;white-space:nowrap;margin-left:.5rem">⭐ ${job.reward}pts</span>
-          </div>
-          <p style="color:var(--gray-500);font-size:.82rem;margin:0 0 .65rem">${job.description}</p>
-          <p style="font-size:.78rem;color:var(--gray-500);margin:0 0 .65rem">👥 ${job.currentWorkers}/${job.maxWorkers} slots</p>
-          <div style="text-align:right">
-            ${job.userSubmission?`<span style="background:#dbeafe;color:#1e40af;padding:.15rem .55rem;border-radius:999px;font-size:.75rem">Status: ${job.userSubmission.status}</span>`:
-              job.slotsLeft>0?`<button onclick="openTranscriptionModal('${job.id}')" class="btn btn-primary btn-sm">Transcribe</button>`:`<span style="color:#ef4444;font-size:.78rem">Full</span>`}
-          </div>
-        </div>
-      </div>`).join('');
+    list.innerHTML = data.jobs.map(job => taskCardHtml(job, 'transcription', job.userSubmission ? ('Status: ' + job.userSubmission.status) : null)).join('');
   } catch(err) { document.getElementById('transcriptionList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
 }
 
@@ -857,7 +851,7 @@ async function openTranscriptionModal(jobId) {
     document.getElementById('transcriptionText').value = '';
     document.getElementById('transcriptionCharCount').textContent = '0 chars';
     showModal('transcriptionModal');
-  } catch(err) { alert('Error: ' + err.message); }
+  } catch(err) { toast('Error: ' + err.message, false); }
 }
 function closeTranscriptionModal() { hideModal('transcriptionModal'); activeTranscriptionJobId = null; }
 document.getElementById('transcriptionText').addEventListener('input', function() { document.getElementById('transcriptionCharCount').textContent = this.value.length + ' chars'; });
@@ -866,8 +860,8 @@ document.getElementById('transcriptionSubmitBtn').addEventListener('click', asyn
   const content = document.getElementById('transcriptionText').value.trim();
   if (content.length < 20) { alert('Too short (min 20 chars).'); return; }
   const btn = document.getElementById('transcriptionSubmitBtn'); btn.disabled = true; btn.textContent = 'Submitting...';
-  try { await apiFetch(`/api/transcriptions/${activeTranscriptionJobId}/submit`, { method: 'POST', body: JSON.stringify({ content }) }); alert('✅ Submitted!'); closeTranscriptionModal(); loadTranscription(); }
-  catch(err) { alert('❌ ' + err.message); }
+  try { await apiFetch(`/api/transcriptions/${activeTranscriptionJobId}/submit`, { method: 'POST', body: JSON.stringify({ content }) }); toast('✅ Submitted!'); closeTranscriptionModal(); loadTranscription(); }
+  catch(err) { toast('❌ ' + err.message, false); }
   finally { btn.disabled = false; btn.textContent = 'Submit Transcription'; }
 });
 
@@ -877,22 +871,7 @@ async function loadDataentry() {
     const data = await apiFetch('/api/dataentry');
     const list = document.getElementById('dataentryList');
     if (!data.jobs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No data entry jobs available right now.</p>'; return; }
-    list.innerHTML = data.jobs.map(job => `
-      <div class="card" style="overflow:hidden">
-        <div style="padding:1.1rem">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
-            <h4 style="font-size:.95rem;font-weight:700;margin:0">${job.title}</h4>
-            <span style="background:#f0fdf4;color:#16a34a;padding:.15rem .55rem;border-radius:999px;font-size:.75rem;font-weight:700;white-space:nowrap;margin-left:.5rem">⭐ ${job.reward}pts</span>
-          </div>
-          <p style="color:var(--gray-500);font-size:.82rem;margin:0 0 .35rem">${job.description}</p>
-          ${job.templateUrl?`<p style="font-size:.78rem;margin:0 0 .35rem"><a href="${job.templateUrl}" target="_blank" style="color:var(--primary)">📥 Download Template</a></p>`:''}
-          <p style="font-size:.78rem;color:var(--gray-500);margin:0 0 .65rem">👥 ${job.currentWorkers}/${job.maxWorkers} slots</p>
-          <div style="text-align:right">
-            ${job.userSubmission?`<span style="background:#dbeafe;color:#1e40af;padding:.15rem .55rem;border-radius:999px;font-size:.75rem">Status: ${job.userSubmission.status}</span>`:
-              job.slotsLeft>0?`<button onclick="openDataentryModal('${job.id}')" class="btn btn-primary btn-sm">Submit Work</button>`:`<span style="color:#ef4444;font-size:.78rem">Full</span>`}
-          </div>
-        </div>
-      </div>`).join('');
+    list.innerHTML = data.jobs.map(job => taskCardHtml(job, 'dataentry', job.userSubmission ? ('Status: ' + job.userSubmission.status) : null)).join('');
   } catch(err) { document.getElementById('dataentryList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
 }
 
@@ -907,7 +886,7 @@ async function openDataentryModal(jobId) {
     if (job.templateUrl) { tpl.style.display = 'block'; document.getElementById('dataentryTemplateLink').href = job.templateUrl; } else tpl.style.display = 'none';
     document.getElementById('dataentryFileInput').value = '';
     showModal('dataentryModal');
-  } catch(err) { alert('Error: ' + err.message); }
+  } catch(err) { toast('Error: ' + err.message, false); }
 }
 function closeDataentryModal() { hideModal('dataentryModal'); activeDataentryJobId = null; }
 document.getElementById('dataentrySubmitBtn').addEventListener('click', async () => {
@@ -919,8 +898,8 @@ document.getElementById('dataentrySubmitBtn').addEventListener('click', async ()
     const fd = new FormData(); fd.append('file', file);
     const res = await fetch(`/api/dataentry/${activeDataentryJobId}/submit`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: fd });
     const data = await res.json(); if (!res.ok) throw new Error(data.error||'Upload failed');
-    alert('✅ ' + data.message); closeDataentryModal(); loadDataentry();
-  } catch(err) { alert('❌ ' + err.message); }
+    toast('✅ ' + data.message); closeDataentryModal(); loadDataentry();
+  } catch(err) { toast('❌ ' + err.message, false); }
   finally { btn.disabled = false; btn.textContent = 'Submit Data Entry'; }
 });
 
@@ -1013,7 +992,7 @@ document.getElementById('withdrawalForm').addEventListener('submit', async e => 
     alert('✅ Withdrawal submitted! Admin will process it.');
     e.target.reset(); document.getElementById('mpesaSection').style.display='none'; document.getElementById('bankSection').style.display='none';
     loadWithdraw();
-  } catch(err) { alert('❌ ' + err.message); }
+  } catch(err) { toast('❌ ' + err.message, false); }
   finally { btn.disabled = false; btn.textContent = 'Request Withdrawal'; }
 });
 
