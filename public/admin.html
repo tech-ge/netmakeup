@@ -5,924 +5,1024 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TechGeo</title>
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    :root{--primary:#16a34a;--primary-dark:#15803d;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-500:#6b7280;--gray-700:#374151;--radius:.65rem;--shadow:0 2px 12px rgba(0,0,0,.07)}
+    :root{--primary:#16a34a;--primary-dark:#15803d;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-500:#6b7280;--gray-700:#374151;--radius:.75rem;--shadow:0 4px 16px rgba(0,0,0,.08)}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Inter',system-ui,sans-serif;color:var(--gray-700);background:var(--gray-50);line-height:1.55;font-size:.9rem}
-    .topnav{background:#111827;padding:0 1.25rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-    .logo{color:#fff;font-weight:800;font-size:1.1rem;display:flex;align-items:center;gap:.4rem;text-decoration:none}
-    .logo svg{stroke:#4ade80}
-    /* TABS */
-    .tabs-wrap{background:#fff;border-bottom:2px solid var(--gray-200);padding:0 1.25rem;overflow-x:auto;white-space:nowrap;position:sticky;top:56px;z-index:90}
-    .tab-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.7rem 1rem;border:none;background:none;font-weight:600;font-size:.82rem;cursor:pointer;color:var(--gray-500);border-bottom:2.5px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:.15s}
-    .tab-btn:hover{color:var(--gray-700)}
-    .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
-    /* CONTENT */
-    .tab-content{display:none;padding:1.25rem;max-width:1200px;margin:0 auto}
-    .tab-content.active{display:block}
+    body{font-family:'Inter',system-ui,sans-serif;color:var(--gray-700);background:var(--gray-50);line-height:1.6}
+    /* TOPNAV */
+    .topnav{background:#fff;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:100;padding:0 1rem}
+    .topnav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;gap:.5rem}
+    .logo{display:flex;align-items:center;gap:.4rem;font-weight:800;font-size:1.1rem;color:var(--primary);text-decoration:none;white-space:nowrap}
+    /* SIDEBAR NAV for task links */
+    .sidenav{position:fixed;top:60px;left:0;width:210px;height:calc(100vh - 60px);background:#fff;border-right:1px solid var(--gray-200);overflow-y:auto;padding:.75rem .5rem;z-index:90}
+    .sidenav a{display:flex;align-items:center;gap:.5rem;padding:.55rem .85rem;border-radius:.5rem;text-decoration:none;color:var(--gray-700);font-size:.88rem;font-weight:500;transition:.15s;margin-bottom:.1rem}
+    .sidenav a:hover{background:var(--gray-100)}
+    .sidenav a.active{background:#f0fdf4;color:var(--primary);font-weight:700}
+    .sidenav .nav-section{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-500);padding:.5rem .85rem .2rem}
+    /* MAIN CONTENT */
+    .main-wrap{margin-left:210px;padding:1.5rem}
+    .container{max-width:960px;margin:0 auto}
     /* CARDS */
-    .card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:1.25rem}
-    .card-header{background:var(--gray-50);padding:.65rem 1rem;border-bottom:1px solid var(--gray-200);font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:space-between}
-    .card-body{padding:1rem}
-    /* USER BOXES */
-    .user-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
-    .user-box{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow)}
-    .user-box-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.65rem}
-    .user-avatar{width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;flex-shrink:0}
-    .user-info{flex:1;margin:0 .75rem}
-    .user-name{font-weight:700;font-size:.88rem}
-    .user-sub{font-size:.75rem;color:var(--gray-500);margin:.1rem 0}
-    .user-stats{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.65rem;padding:.5rem;background:var(--gray-50);border-radius:.4rem}
-    .user-stat{text-align:center}<br>
-    .user-stat-v{font-weight:800;font-size:.9rem;color:var(--gray-700)}
-    .user-stat-l{font-size:.65rem;color:var(--gray-500);text-transform:uppercase}
-    .user-actions{display:flex;gap:.4rem;flex-wrap:wrap}
-    /* WITHDRAWAL BOXES */
-    .wd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
-    .wd-box{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow);border-left:4px solid #f59e0b}
-    .wd-box.completed{border-left-color:#16a34a}
-    .wd-box.rejected{border-left-color:#ef4444}
-    /* TASK BOXES (pending reviews) */
-    .review-box{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;margin-bottom:.75rem;border-left:4px solid #8b5cf6}
+    .card{background:#fff;border-radius:var(--radius);border:1px solid var(--gray-200);box-shadow:var(--shadow);overflow:hidden}
+    .card-header{background:var(--gray-50);padding:.75rem 1.25rem;border-bottom:1px solid var(--gray-200);font-weight:700;font-size:.9rem}
     /* STATS GRID */
-    .stats-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.85rem;margin-bottom:1.25rem}
-    .stat-box{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;text-align:center;box-shadow:var(--shadow)}
-    .stat-box-v{font-size:1.6rem;font-weight:800;color:var(--primary)}
-    .stat-box-l{font-size:.72rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.04em;margin-top:.15rem}
-    /* BADGES */
-    .badge{display:inline-block;padding:.15rem .55rem;border-radius:999px;font-size:.72rem;font-weight:700}
-    .badge-green{background:#dcfce7;color:#16a34a}
-    .badge-yellow{background:#fef3c7;color:#b45309}
-    .badge-red{background:#fee2e2;color:#dc2626}
-    .badge-blue{background:#dbeafe;color:#1e40af}
-    .badge-gray{background:var(--gray-100);color:var(--gray-500)}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .stat-card{background:#fff;border-radius:var(--radius);border:1px solid var(--gray-200);padding:1.25rem;display:flex;align-items:center;gap:1rem;box-shadow:var(--shadow)}
+    .stat-icon{width:44px;height:44px;border-radius:.6rem;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+    .stat-icon.green{background:#dcfce7}.stat-icon.yellow{background:#fef3c7}.stat-icon.blue{background:#dbeafe}.stat-icon.purple{background:#ede9fe}
+    .stat-label{font-size:.75rem;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+    .stat-value{font-size:1.3rem;font-weight:800;color:var(--gray-700);line-height:1.1;margin-top:.15rem}
+    /* TASK MINI BOXES */
+    .task-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:.85rem;margin-top:1rem}
+    .task-box{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;text-align:center;box-shadow:var(--shadow);transition:.15s;text-decoration:none;color:inherit;display:block}
+    .task-box:hover{border-color:var(--primary);box-shadow:0 4px 20px rgba(22,163,74,.15);transform:translateY(-2px)}
+    .task-box-icon{font-size:1.75rem;margin-bottom:.4rem}
+    .task-box-name{font-weight:700;font-size:.85rem;margin-bottom:.2rem}
+    .task-box-pts{font-size:.75rem;color:var(--primary);font-weight:600}
+    .task-box-left{font-size:.7rem;color:var(--gray-500);margin-top:.15rem}
+    /* REFERRAL BOXES */
+    .ref-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin:1rem 0}
+    .ref-box{border-radius:var(--radius);padding:1.1rem;text-align:center;color:#fff}
+    .ref-box-count{font-size:2rem;font-weight:800}
+    .ref-box-label{font-size:.78rem;opacity:.88;margin-top:.1rem}
+    .ref-box-status{font-size:.72rem;margin-top:.4rem;opacity:.75}
+    /* REFERRAL MEMBERS LIST */
+    .member-box{display:flex;align-items:center;justify-content:space-between;padding:.65rem 1rem;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:.4rem}
+    .member-box:last-child{border-bottom:none}
+    .mbadge{padding:.15rem .55rem;border-radius:999px;font-size:.72rem;font-weight:700}
+    .mbadge.active{background:#dcfce7;color:#16a34a}
+    .mbadge.inactive{background:#fef3c7;color:#b45309}
     /* FORMS */
-    .form-group{margin-bottom:.85rem}
-    .form-label{display:block;font-weight:600;font-size:.8rem;margin-bottom:.3rem;color:var(--gray-700)}
-    .form-control{width:100%;padding:.5rem .75rem;border:1.5px solid var(--gray-200);border-radius:.45rem;font-size:.88rem;outline:none;transition:.15s}
-    .form-control:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(22,163,74,.1)}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
-    .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
+    .form-group{margin-bottom:1rem}
+    .form-label{display:block;font-weight:600;font-size:.85rem;margin-bottom:.35rem}
+    .form-control{width:100%;padding:.55rem .8rem;border:1.5px solid var(--gray-200);border-radius:.5rem;font-size:.92rem;outline:none;transition:.15s}
+    .form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,163,74,.12)}
     /* BUTTONS */
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.3rem;padding:.4rem .9rem;border-radius:.4rem;font-weight:600;font-size:.8rem;cursor:pointer;border:none;transition:.15s;text-decoration:none}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;padding:.5rem 1.1rem;border-radius:.5rem;font-weight:600;font-size:.88rem;cursor:pointer;border:none;transition:.15s;text-decoration:none}
     .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
     .btn-danger{background:#ef4444;color:#fff}.btn-danger:hover{background:#dc2626}
-    .btn-warning{background:#f59e0b;color:#fff}.btn-warning:hover{background:#d97706}
-    .btn-ghost{background:none;border:1px solid var(--gray-200);color:var(--gray-700)}.btn-ghost:hover{background:var(--gray-100)}
-    .btn-sm{padding:.28rem .65rem;font-size:.75rem}
+    .btn-sm{padding:.3rem .7rem;font-size:.8rem}
     .w-full{width:100%}
-    .mt-1{margin-top:.85rem}
-    /* MSG */
-    .msg{padding:.55rem .85rem;border-radius:.4rem;font-size:.82rem;margin-bottom:.75rem}
-    .msg-ok{background:#dcfce7;color:#16a34a;border:1px solid #86efac}
-    .msg-err{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5}
-    /* SEARCH */
-    .search-input{padding:.45rem .75rem;border:1.5px solid var(--gray-200);border-radius:.45rem;font-size:.85rem;width:100%;max-width:260px;outline:none}
-    .search-input:focus{border-color:var(--primary)}
-    /* DEPOSIT DROPDOWN */
-    .search-results{border:1px solid var(--gray-200);border-radius:.4rem;background:#fff;margin-top:.25rem;max-height:200px;overflow-y:auto}
-    .search-result-item{padding:.5rem .75rem;cursor:pointer;font-size:.82rem;border-bottom:1px solid var(--gray-100)}
-    .search-result-item:hover{background:var(--gray-50)}
-    @media(max-width:640px){.form-row{grid-template-columns:1fr}.form-row-3{grid-template-columns:1fr 1fr}.user-grid{grid-template-columns:1fr}.wd-grid{grid-template-columns:1fr}}
+    /* ALERTS */
+    .alert{padding:.65rem 1rem;border-radius:.5rem;font-size:.85rem;margin-bottom:1rem}
+    .alert-danger{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5}
+    .alert-success{background:#dcfce7;color:#16a34a;border:1px solid #86efac}
+    /* MODALS */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;overflow-y:auto;padding:2rem 1rem}
+    .modal-box{background:#fff;max-width:620px;margin:0 auto;border-radius:1rem;padding:1.75rem;position:relative}
+    .modal-close{position:absolute;top:.85rem;right:.85rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--gray-500)}
+    /* SECTION (page) */
+    .page{display:none}.page.active{display:block}
+    /* ACTIVATION */
+    .activation-wrap{min-height:100vh;background:linear-gradient(135deg,#16a34a,#14532d);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2rem 1rem}
+    /* HAMBURGER */
+    .ham-btn{display:none;background:none;border:none;font-size:1.5rem;cursor:pointer;padding:.25rem}
+    @media(max-width:768px){
+      .sidenav{display:none;position:fixed;inset:0 auto 0 0;z-index:200;width:210px}.sidenav.open{display:block}
+      .main-wrap{margin-left:0;padding:1rem}
+      .ham-btn{display:block}
+      .ref-grid{grid-template-columns:1fr 1fr}
+      .task-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+    }
   </style>
 </head>
 <body>
 
+<!-- TOPNAV -->
 <nav class="topnav">
-  <a href="/admin.html" class="logo">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M6 6L4 4M18 18l2 2M6 18l-2 2M18 6l2-2"/><circle cx="12" cy="12" r="4"/></svg>
-    TechGeo Admin
-  </a>
-  <div style="display:flex;align-items:center;gap:.75rem">
-    <span id="adminName" style="color:#9ca3af;font-size:.82rem"></span>
-    <button class="btn btn-danger btn-sm" onclick="adminLogout()">Logout</button>
+  <div class="topnav-inner">
+    <div style="display:flex;align-items:center;gap:.75rem">
+      <button class="ham-btn" onclick="toggleSidenav()">☰</button>
+      <a href="/dashboard.html" class="logo">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M6 6L4 4M18 18l2 2M6 18l-2 2M18 6l2-2"/><circle cx="12" cy="12" r="4"/></svg>
+        TechGeo
+      </a>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <span id="navUsername" style="font-size:.85rem;color:var(--gray-500);font-weight:600"></span>
+      <span id="navWallet" style="font-size:.85rem;background:#f0fdf4;color:var(--primary);padding:.2rem .6rem;border-radius:999px;font-weight:700;border:1px solid #bbf7d0"></span>
+      <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+    </div>
   </div>
 </nav>
 
-<!-- TABS -->
-<div class="tabs-wrap">
-  <button class="tab-btn active" data-tab="overview">📊 Overview</button>
-  <button class="tab-btn" data-tab="deposits">💰 Deposits</button>
-  <button class="tab-btn" data-tab="users">👥 Users</button>
-  <button class="tab-btn" data-tab="blogs">📝 Blogs</button>
-  <button class="tab-btn" data-tab="surveys">📋 Surveys</button>
-  <button class="tab-btn" data-tab="writing">✍️ Writing</button>
-  <button class="tab-btn" data-tab="transcription">🎙️ Transcription</button>
-  <button class="tab-btn" data-tab="dataentry">📂 Data Entry</button>
-  <button class="tab-btn" data-tab="withdrawals">💸 Withdrawals</button>
-</div>
+<!-- SIDEBAR -->
+<nav class="sidenav" id="sidenav">
+  <a href="#dashboard" class="nav-lnk active" data-pg="dashboard">🏠 Dashboard</a>
+  <div class="nav-section">Daily Tasks</div>
+  <a href="#blogs" class="nav-lnk" data-pg="blogs">📝 Blog Writing</a>
+  <a href="#surveys" class="nav-lnk" data-pg="surveys">📊 Surveys</a>
+  <a href="#writing" class="nav-lnk" data-pg="writing">✍️ Writing Jobs</a>
+  <a href="#transcription" class="nav-lnk" data-pg="transcription">🎙️ Transcription</a>
+  <a href="#dataentry" class="nav-lnk" data-pg="dataentry">📋 Data Entry</a>
+  <div class="nav-section">Earnings</div>
+  <a href="#referrals" class="nav-lnk" data-pg="referrals">👥 Referrals</a>
+  <a href="#withdraw" class="nav-lnk" data-pg="withdraw">💸 Withdraw</a>
+  <div class="nav-section">Account</div>
+  <a href="#profile" class="nav-lnk" data-pg="profile">👤 Profile</a>
+</nav>
 
-<!-- ============ OVERVIEW ============ -->
-<div class="tab-content active" id="tab-overview">
-  <div class="stats-g">
-    <div class="stat-box"><div class="stat-box-v" id="ovTotalUsers">—</div><div class="stat-box-l">Total Users</div></div>
-    <div class="stat-box"><div class="stat-box-v" id="ovActiveUsers">—</div><div class="stat-box-l">Active Users</div></div>
-    <div class="stat-box"><div class="stat-box-v" id="ovNotActivated">—</div><div class="stat-box-l">Not Activated</div></div>
-    <div class="stat-box"><div class="stat-box-v" id="ovPendingWithdrawals">—</div><div class="stat-box-l">Pending Withdrawals</div></div>
-  </div>
-  <h3 style="margin-bottom:.75rem">Pending Reviews</h3>
-  <div class="stats-g">
-    <div class="stat-box" style="cursor:pointer" onclick="switchTab('blogs')"><div class="stat-box-v" id="ovBlogs">0</div><div class="stat-box-l">📝 Blog Reviews</div></div>
-    <div class="stat-box" style="cursor:pointer" onclick="switchTab('surveys')"><div class="stat-box-v" id="ovSurveys">0</div><div class="stat-box-l">📋 Survey Reviews</div></div>
-    <div class="stat-box" style="cursor:pointer" onclick="switchTab('writing')"><div class="stat-box-v" id="ovWriting">0</div><div class="stat-box-l">✍️ Writing</div></div>
-    <div class="stat-box" style="cursor:pointer" onclick="switchTab('transcription')"><div class="stat-box-v" id="ovTranscription">0</div><div class="stat-box-l">🎙️ Transcription</div></div>
-    <div class="stat-box" style="cursor:pointer" onclick="switchTab('dataentry')"><div class="stat-box-v" id="ovDataentry">0</div><div class="stat-box-l">📂 Data Entry</div></div>
-  </div>
-</div>
+<div class="main-wrap">
+<div class="container">
 
-<!-- ============ DEPOSITS ============ -->
-<div class="tab-content" id="tab-deposits">
-  <div class="card" style="max-width:500px">
-    <div class="card-header">💰 Deposit Balance to User</div>
-    <div class="card-body">
-      <div id="depositMsg" class="msg" style="display:none"></div>
-      <div class="form-group">
-        <label class="form-label">Search User (username or email)</label>
-        <input type="text" id="depositSearch" class="form-control" placeholder="Type to search...">
-        <div id="depositSearchResults" class="search-results" style="display:none"></div>
+<!-- ====== ACTIVATION PAGE ====== -->
+<div id="pg-activation" class="page">
+  <div class="activation-wrap">
+    <div style="width:100%;max-width:560px">
+      <div style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:1rem;padding:1.5rem;text-align:center;margin-bottom:1.5rem">
+        <p style="color:rgba(255,255,255,.8);font-size:.85rem;margin-bottom:.25rem">YOUR WALLET BALANCE</p>
+        <p style="color:#fff;font-size:2.5rem;font-weight:800;margin:0" id="activationBalance">KES 0</p>
+        <p style="color:rgba(255,255,255,.7);font-size:.8rem;margin-top:.25rem">Updates after admin deposits your M-Pesa payment</p>
       </div>
-      <div class="form-group">
-        <label class="form-label">Selected User</label>
-        <input type="text" id="depositUserDisplay" class="form-control" readonly placeholder="Will fill on selection" style="background:var(--gray-50)">
-        <input type="hidden" id="depositUserId">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Amount (KES)</label>
-          <input type="number" id="depositAmount" class="form-control" placeholder="700" min="1">
+      <div style="background:#fff;border-radius:1rem;padding:1.75rem;box-shadow:0 20px 50px rgba(0,0,0,.25)">
+        <div style="text-align:center;margin-bottom:1.5rem"><div style="font-size:3rem">🔐</div><h2 style="margin:.25rem 0">Account Not Activated</h2><p style="color:var(--gray-500);font-size:.9rem">Follow these steps to unlock all features</p></div>
+        <div style="background:#f0fdf4;border:1px solid #16a34a;border-radius:.75rem;padding:1.25rem;margin-bottom:.75rem">
+          <p style="font-weight:700;color:#14532d;margin:0 0 .5rem">1. Pay KES 700 via M-Pesa Paybill</p>
+          <div style="background:#fff;border:2px solid #16a34a;border-radius:.5rem;padding:1rem;text-align:center">
+            <p style="font-size:.75rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:1px;margin:0">Paybill: <b>247247</b> | Account:</p>
+            <p style="font-size:2.2rem;font-weight:800;color:var(--primary);letter-spacing:4px;margin:.1rem 0">153316</p>
+            <p style="font-size:.8rem;color:var(--gray-500);margin:0">TechGeo Network</p>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Reference (M-Pesa ID)</label>
-          <input type="text" id="depositReference" class="form-control" placeholder="Optional">
+        <div style="background:#eff6ff;border:1px solid #3b82f6;border-radius:.75rem;padding:1rem;margin-bottom:.75rem">
+          <p style="font-weight:700;color:#1e3a8a;margin:0 0 .25rem">2. Screenshot M-Pesa Confirmation</p>
+          <p style="color:#1e40af;font-size:.88rem;margin:0">Take a screenshot of the M-Pesa success message.</p>
+        </div>
+        <div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:.75rem;padding:1rem;margin-bottom:1rem">
+          <p style="font-weight:700;color:#78350f;margin:0 0 .25rem">3. Send Screenshot to Your Upline</p>
+          <div style="background:#fff;border:1px solid #f59e0b;border-radius:.5rem;padding:.75rem;margin-top:.5rem">
+            <p style="font-size:.75rem;color:var(--gray-500);margin:0">Your Upline</p>
+            <p style="font-weight:700;margin:.15rem 0 0" id="uplineName">Loading...</p>
+            <p style="font-size:.82rem;color:var(--gray-500);margin:.1rem 0 0" id="uplinePhone"></p>
+            <p style="font-size:.82rem;color:var(--gray-500);margin:.05rem 0 0" id="uplineEmail"></p>
+          </div>
+        </div>
+        <div style="background:#f9fafb;border:2px dashed var(--primary);border-radius:.75rem;padding:1rem">
+          <p style="font-weight:700;color:#14532d;margin:0 0 .75rem">4. Click Activate Once Balance Shows KES 700+</p>
+          <button onclick="doActivation()" style="width:100%;background:linear-gradient(135deg,#16a34a,#14532d);color:#fff;border:none;padding:.9rem;font-size:1rem;font-weight:700;border-radius:.65rem;cursor:pointer">🚀 Activate My Account (KES 700)</button>
+          <p id="activationMsg" style="display:none;text-align:center;font-size:.88rem;margin:.6rem 0 0"></p>
         </div>
       </div>
-      <button onclick="doDeposit()" class="btn btn-primary w-full">Deposit to User Wallet</button>
     </div>
   </div>
-</div>
+</div><!-- /#pg-activation -->
 
-<!-- ============ USERS ============ -->
-<div class="tab-content" id="tab-users">
-  <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
-    <h3>User Management</h3>
-    <select id="userFilterStatus" class="form-control" style="width:auto">
-      <option value="all">All Status</option><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option>
-    </select>
-    <select id="userFilterPackage" class="form-control" style="width:auto">
-      <option value="all">All Packages</option><option value="not_active">Not Activated</option><option value="normal">Activated</option>
-    </select>
-    <button onclick="loadAdminUsers()" class="btn btn-ghost btn-sm">Filter</button>
+<!-- ====== MAIN DASHBOARD ====== -->
+<div id="pg-dashboard" class="page">
+  <!-- Welcome Banner -->
+  <div style="background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem">
+    <h2 style="font-size:1.5rem;margin-bottom:.1rem">Welcome back, <span id="dashUsername">User</span>! 👋</h2>
+    <p id="dashPackageStatus" style="opacity:.88;margin:0;font-size:.9rem"></p>
   </div>
-  <div id="adminUsersList"></div>
-</div>
-
-<!-- ============ BLOGS ============ -->
-<div class="tab-content" id="tab-blogs">
-  <div class="card">
-    <div class="card-header">Create New Blog Task</div>
-    <div class="card-body">
-      <div id="createBlogMsg" class="msg" style="display:none"></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Title</label><input type="text" id="blogTitle" class="form-control" required></div>
-        <div class="form-group"><label class="form-label">Category</label><input type="text" id="blogCategory" class="form-control" placeholder="general"></div>
-      </div>
-      <div class="form-group"><label class="form-label">Description (shown to users)</label><input type="text" id="blogDescription" class="form-control" required></div>
-      <div class="form-group"><label class="form-label">Full Instructions / Content</label><textarea id="blogContent" class="form-control" rows="5" required></textarea></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Points Reward</label><input type="number" id="blogReward" class="form-control" value="100" min="1"></div>
-        <div class="form-group"><label class="form-label">Max Writers (slots)</label><input type="number" id="blogMaxBidders" class="form-control" value="50" min="1"></div>
-      </div>
-      <button onclick="createBlog()" class="btn btn-primary">Create Blog Task</button>
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon green">💵</div><div><div class="stat-label">KES Wallet</div><div class="stat-value" id="dashMainWallet">0</div></div></div>
+    <div class="stat-card"><div class="stat-icon yellow">⭐</div><div><div class="stat-label">Points</div><div class="stat-value" id="dashPoints">0</div></div></div>
+    <div class="stat-card"><div class="stat-icon blue">👥</div><div><div class="stat-label">Active Refs</div><div class="stat-value" id="dashActiveReferrals">0</div></div></div>
+    <div class="stat-card"><div class="stat-icon purple">📈</div><div><div class="stat-label">Total Earned</div><div class="stat-value" id="dashTotalEarnings">0</div></div></div>
+  </div>
+  <!-- Activation Alert -->
+  <div id="activationAlert" style="display:none;background:#fef3c7;border:2px solid #f59e0b;border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem">
+    <p style="font-weight:700;color:#b45309;margin:0 0 .5rem">⚠️ Package Not Activated</p>
+    <p style="color:#92400e;margin:0 0 .75rem;font-size:.9rem">Deposit KES 700 and activate to start earning.</p>
+    <button id="activateBtn" class="btn btn-primary">🚀 Activate (KES 700)</button>
+  </div>
+  <!-- Points Conversion -->
+  <div id="pointsConversionCard" style="display:none;background:#fff;border-radius:var(--radius);border:1px solid var(--gray-200);padding:1.25rem;margin-bottom:1.5rem;box-shadow:var(--shadow)">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+      <div><p style="font-weight:700;margin:0">⭐ Convert Points → KES</p><p style="font-size:.85rem;color:var(--gray-500);margin:.2rem 0 0">You have <strong id="currentPoints">0</strong> pts ≈ <strong id="pointsKES">KES 0</strong></p></div>
+      <button id="convertPointsBtn" class="btn btn-primary btn-sm">Convert Now</button>
     </div>
   </div>
-  <div class="card">
-    <div class="card-header">All Blog Tasks <button onclick="loadAdminBlogs()" class="btn btn-ghost btn-sm">Refresh</button></div>
-    <div id="adminBlogsList" class="card-body">Loading...</div>
-  </div>
-  <div class="card">
-    <div class="card-header">Pending Blog Submissions</div>
-    <div id="adminBlogSubmissions" class="card-body">Select a blog task above to review submissions.</div>
-  </div>
-</div>
-
-<!-- ============ SURVEYS ============ -->
-<div class="tab-content" id="tab-surveys">
-  <div class="card">
-    <div class="card-header">Create New Survey</div>
-    <div class="card-body">
-      <div id="createSurveyMsg" class="msg" style="display:none"></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Title</label><input type="text" id="surveyTitle" class="form-control" required></div>
-        <div class="form-group"><label class="form-label">Max Responses</label><input type="number" id="surveyMaxResponses" class="form-control" value="100" min="1"></div>
+  <!-- TASK BOXES -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header">📅 Available Tasks — Click to Start</div>
+    <div style="padding:1.25rem">
+      <div class="task-grid">
+        <a href="#blogs" class="task-box nav-lnk" data-pg="blogs">
+          <div class="task-box-icon">📝</div>
+          <div class="task-box-name">Blog Writing</div>
+          <div class="task-box-pts">100 pts each</div>
+          <div class="task-box-left" id="tbLogsLeft">— left today</div>
+        </a>
+        <a href="#surveys" class="task-box nav-lnk" data-pg="surveys">
+          <div class="task-box-icon">📊</div>
+          <div class="task-box-name">Surveys</div>
+          <div class="task-box-pts">100 pts each</div>
+          <div class="task-box-left" id="tbSurveysLeft">— left today</div>
+        </a>
+        <a href="#writing" class="task-box nav-lnk" data-pg="writing">
+          <div class="task-box-icon">✍️</div>
+          <div class="task-box-name">Writing Jobs</div>
+          <div class="task-box-pts">Varies per task</div>
+          <div class="task-box-left">Upload file</div>
+        </a>
+        <a href="#transcription" class="task-box nav-lnk" data-pg="transcription">
+          <div class="task-box-icon">🎙️</div>
+          <div class="task-box-name">Transcription</div>
+          <div class="task-box-pts">50 pts each</div>
+          <div class="task-box-left">Type audio</div>
+        </a>
+        <a href="#dataentry" class="task-box nav-lnk" data-pg="dataentry">
+          <div class="task-box-icon">📋</div>
+          <div class="task-box-name">Data Entry</div>
+          <div class="task-box-pts">75 pts each</div>
+          <div class="task-box-left">Upload file</div>
+        </a>
       </div>
-      <div class="form-group"><label class="form-label">Description</label><input type="text" id="surveyDescription" class="form-control" required></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Points Reward</label><input type="number" id="surveyReward" class="form-control" value="100" min="1"></div>
-      </div>
-      <div id="questionsBuilder">
-        <label class="form-label">Questions</label>
-        <div id="questionsList"></div>
-        <button type="button" onclick="addQuestion()" class="btn btn-ghost btn-sm mt-1">+ Add Question</button>
-      </div>
-      <button onclick="createSurvey()" class="btn btn-primary mt-1">Create Survey</button>
+      <p style="font-size:.78rem;color:var(--gray-500);margin-top:.75rem">💡 100 pts = KES 10 | Convert on Tuesdays (needs 2,000 pts + 4 active referrals)</p>
     </div>
   </div>
-  <div class="card">
-    <div class="card-header">All Surveys <button onclick="loadAdminSurveys()" class="btn btn-ghost btn-sm">Refresh</button></div>
-    <div id="adminSurveysList" class="card-body">Loading...</div>
-  </div>
-  <div class="card">
-    <div class="card-header">Pending Survey Submissions</div>
-    <div id="adminSurveySubmissions" class="card-body">Select a survey above to review submissions.</div>
-  </div>
-</div>
-
-<!-- ============ WRITING ============ -->
-<div class="tab-content" id="tab-writing">
-  <div class="card">
-    <div class="card-header">Create Writing Job</div>
-    <div class="card-body">
-      <div id="createWritingMsg" class="msg" style="display:none"></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Title</label><input type="text" id="writingJobTitle" class="form-control" required></div>
-        <div class="form-group"><label class="form-label">Word Count (e.g. 500-800)</label><input type="text" id="writingJobWordCount" class="form-control" placeholder="optional"></div>
+  <!-- REFERRAL SUMMARY MINI BOXES -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+      <span>👥 My Referral Network</span>
+      <a href="#referrals" class="nav-lnk btn btn-sm btn-primary" data-pg="referrals">View All</a>
+    </div>
+    <div style="padding:1.25rem">
+      <div class="ref-grid">
+        <div class="ref-box" style="background:linear-gradient(135deg,#16a34a,#15803d)">
+          <div class="ref-box-count" id="dashRef1">0</div>
+          <div class="ref-box-label">Level 1 — KES 200</div>
+          <div class="ref-box-status" id="dashRef1Status">0 active / 0 inactive</div>
+        </div>
+        <div class="ref-box" style="background:linear-gradient(135deg,#22c55e,#16a34a)">
+          <div class="ref-box-count" id="dashRef2">0</div>
+          <div class="ref-box-label">Level 2 — KES 150</div>
+          <div class="ref-box-status" id="dashRef2Status">0 active / 0 inactive</div>
+        </div>
+        <div class="ref-box" style="background:linear-gradient(135deg,#4ade80,#22c55e);color:#14532d">
+          <div class="ref-box-count" id="dashRef3">0</div>
+          <div class="ref-box-label">Level 3 — KES 75</div>
+          <div class="ref-box-status" id="dashRef3Status">0 active / 0 inactive</div>
+        </div>
+        <div class="ref-box" style="background:linear-gradient(135deg,#86efac,#4ade80);color:#14532d">
+          <div class="ref-box-count" id="dashRef4">0</div>
+          <div class="ref-box-label">Level 4 — KES 25</div>
+          <div class="ref-box-status" id="dashRef4Status">0 active / 0 inactive</div>
+        </div>
       </div>
-      <div class="form-group"><label class="form-label">Description</label><input type="text" id="writingJobDesc" class="form-control" required></div>
-      <div class="form-group"><label class="form-label">Full Instructions</label><textarea id="writingJobInstructions" class="form-control" rows="4" required></textarea></div>
-      <div class="form-row-3">
-        <div class="form-group"><label class="form-label">Points Reward</label><input type="number" id="writingJobReward" class="form-control" value="100" min="1"></div>
-        <div class="form-group"><label class="form-label">Max Workers (slots)</label><input type="number" id="writingJobMaxWorkers" class="form-control" value="50" min="1"></div>
-        <div class="form-group"><label class="form-label">Deadline (optional)</label><input type="date" id="writingJobDeadline" class="form-control"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem;background:var(--gray-50);border-radius:.5rem;margin-top:.75rem">
+        <span style="font-weight:700">Total Commission Earned</span>
+        <span style="font-size:1.2rem;font-weight:800;color:var(--primary)" id="dashTotalCommission">KES 0</span>
       </div>
-      <button onclick="createWritingJob()" class="btn btn-primary">Create Writing Job</button>
     </div>
   </div>
-  <div class="card">
-    <div class="card-header">All Writing Jobs <button onclick="loadAdminWritingJobs()" class="btn btn-ghost btn-sm">Refresh</button></div>
-    <div id="adminWritingJobsList" class="card-body">Loading...</div>
-  </div>
-  <div class="card">
-    <div class="card-header" id="writingReviewHeader">Pending Writing Reviews</div>
-    <div id="adminWritingSubmissions" class="card-body">Click "Review" on a job above.</div>
-  </div>
-</div>
-
-<!-- ============ TRANSCRIPTION ============ -->
-<div class="tab-content" id="tab-transcription">
-  <div class="card">
-    <div class="card-header">Create Transcription Job (Upload Audio)</div>
-    <div class="card-body">
-      <div id="createTranscriptionMsg" class="msg" style="display:none"></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Title</label><input type="text" id="transcriptionJobTitle" class="form-control" required></div>
-        <div class="form-group"><label class="form-label">Description</label><input type="text" id="transcriptionJobDesc" class="form-control" required></div>
-      </div>
-      <div class="form-group"><label class="form-label">Instructions for transcribers</label><textarea id="transcriptionJobInstructions" class="form-control" rows="3" required></textarea></div>
-      <div class="form-group"><label class="form-label">Audio File (MP3, WAV, M4A — max 50MB)</label><input type="file" id="transcriptionJobAudio" class="form-control" accept=".mp3,.wav,.m4a,.ogg,.webm" required></div>
-      <div class="form-row-3">
-        <div class="form-group"><label class="form-label">Points Reward</label><input type="number" id="transcriptionJobReward" class="form-control" value="50" min="1"></div>
-        <div class="form-group"><label class="form-label">Max Workers</label><input type="number" id="transcriptionJobMaxWorkers" class="form-control" value="50" min="1"></div>
-        <div class="form-group"><label class="form-label">Deadline (optional)</label><input type="date" id="transcriptionJobDeadline" class="form-control"></div>
-      </div>
-      <button onclick="createTranscriptionJob()" class="btn btn-primary">Upload & Create</button>
+  <!-- Inactive Referrals Alert -->
+  <div id="inactiveReferralsSection" style="display:none;margin-bottom:1.5rem">
+    <div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:var(--radius);padding:1.25rem">
+      <p style="font-weight:700;color:#b45309;margin:0 0 .75rem">⚠️ These people you invited haven't activated yet</p>
+      <div id="inactiveReferralsList"></div>
     </div>
   </div>
-  <div class="card">
-    <div class="card-header">All Transcription Jobs <button onclick="loadAdminTranscriptionJobs()" class="btn btn-ghost btn-sm">Refresh</button></div>
-    <div id="adminTranscriptionJobsList" class="card-body">Loading...</div>
+</div><!-- /#pg-dashboard -->
+
+<!-- ====== BLOGS ====== -->
+<div id="pg-blogs" class="page">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
+    <h2>📝 Blog Writing</h2>
+    <div style="background:#f0fdf4;border:1px solid #16a34a;padding:.5rem 1rem;border-radius:.5rem;font-size:.85rem">⭐ 100 pts each | Max 2/day</div>
   </div>
-  <div class="card">
-    <div class="card-header">Pending Transcription Reviews</div>
-    <div id="adminTranscriptionSubmissions" class="card-body">Click "Review" on a job above.</div>
-  </div>
+  <div id="blogsDaily" style="background:#fef3c7;border:1px solid #f59e0b;padding:.65rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.88rem">Loading...</div>
+  <div id="blogsList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
 </div>
 
-<!-- ============ DATA ENTRY ============ -->
-<div class="tab-content" id="tab-dataentry">
-  <div class="card">
-    <div class="card-header">Create Data Entry Job</div>
-    <div class="card-body">
-      <div id="createDataentryMsg" class="msg" style="display:none"></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Title</label><input type="text" id="dataentryJobTitle" class="form-control" required></div>
-        <div class="form-group"><label class="form-label">Description</label><input type="text" id="dataentryJobDesc" class="form-control" required></div>
+<!-- ====== SURVEYS ====== -->
+<div id="pg-surveys" class="page">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
+    <h2>📊 Surveys</h2>
+    <div style="background:#f0fdf4;border:1px solid #16a34a;padding:.5rem 1rem;border-radius:.5rem;font-size:.85rem">⭐ 100 pts each | Max 2/day</div>
+  </div>
+  <div id="surveysDaily" style="background:#fef3c7;border:1px solid #f59e0b;padding:.65rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.88rem">Loading...</div>
+  <div id="surveysList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
+</div>
+
+<!-- ====== WRITING ====== -->
+<div id="pg-writing" class="page">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
+    <h2>✍️ Writing Jobs</h2>
+    <div style="background:#f0fdf4;border:1px solid #16a34a;padding:.5rem 1rem;border-radius:.5rem;font-size:.85rem">⭐ Reward set per task | Upload file</div>
+  </div>
+  <div id="writingList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
+</div>
+
+<!-- ====== TRANSCRIPTION ====== -->
+<div id="pg-transcription" class="page">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
+    <h2>🎙️ Transcription</h2>
+    <div style="background:#f0fdf4;border:1px solid #16a34a;padding:.5rem 1rem;border-radius:.5rem;font-size:.85rem">⭐ 50 pts each | Type audio</div>
+  </div>
+  <div id="transcriptionList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
+</div>
+
+<!-- ====== DATA ENTRY ====== -->
+<div id="pg-dataentry" class="page">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
+    <h2>📋 Data Entry</h2>
+    <div style="background:#f0fdf4;border:1px solid #16a34a;padding:.5rem 1rem;border-radius:.5rem;font-size:.85rem">⭐ 75 pts each | Upload file</div>
+  </div>
+  <div id="dataentryList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
+</div>
+
+<!-- ====== REFERRALS ====== -->
+<div id="pg-referrals" class="page">
+  <h2 style="margin-bottom:1rem">👥 My Referral Network</h2>
+  <!-- Invite link -->
+  <div class="card" style="margin-bottom:1.25rem;background:linear-gradient(to right,#f0fdf4,#dcfce7);border:2px solid #16a34a">
+    <div class="card-header" style="background:transparent">📤 Your Invite Link</div>
+    <div style="padding:1.25rem">
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:.75rem">
+        <input type="text" id="referralLink" class="form-control" readonly style="flex:1;min-width:200px">
+        <button id="copyReferralBtn" class="btn btn-primary">📋 Copy</button>
       </div>
-      <div class="form-group"><label class="form-label">Instructions</label><textarea id="dataentryJobInstructions" class="form-control" rows="3" required></textarea></div>
-      <div class="form-group"><label class="form-label">Template File (optional — PDF/Excel/Word)</label><input type="file" id="dataentryJobTemplate" class="form-control" accept=".pdf,.doc,.docx,.xlsx,.csv"></div>
-      <div class="form-row-3">
-        <div class="form-group"><label class="form-label">Points Reward</label><input type="number" id="dataentryJobReward" class="form-control" value="75" min="1"></div>
-        <div class="form-group"><label class="form-label">Max Workers</label><input type="number" id="dataentryJobMaxWorkers" class="form-control" value="50" min="1"></div>
-        <div class="form-group"><label class="form-label">Deadline (optional)</label><input type="date" id="dataentryJobDeadline" class="form-control"></div>
-      </div>
-      <button onclick="createDataentryJob()" class="btn btn-primary">Create Data Entry Job</button>
+      <p style="color:var(--primary);font-size:.85rem;margin:0">✅ Earn KES 200 (L1) · KES 150 (L2) · KES 75 (L3) · KES 25 (L4) per activation</p>
     </div>
   </div>
+  <!-- Level boxes -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.25rem">
+    <div class="card" style="border-top:4px solid #16a34a"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:var(--primary)" id="level1Count">0</div><div style="font-weight:700;margin:.2rem 0">Level 1</div><div style="font-size:.8rem;color:var(--gray-500)">KES 200 · Direct Referrals</div><div style="margin-top:.65rem;font-size:.75rem" id="lvl1Status">Active: 0 | Inactive: 0</div><div id="level1Members" style="margin-top:.75rem"></div></div></div>
+    <div class="card" style="border-top:4px solid #22c55e"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#22c55e" id="level2Count">0</div><div style="font-weight:700;margin:.2rem 0">Level 2</div><div style="font-size:.8rem;color:var(--gray-500)">KES 150</div><div style="margin-top:.65rem;font-size:.75rem" id="lvl2Status">Active: 0 | Inactive: 0</div><div id="level2Members" style="margin-top:.75rem"></div></div></div>
+    <div class="card" style="border-top:4px solid #4ade80"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#4ade80" id="level3Count">0</div><div style="font-weight:700;margin:.2rem 0">Level 3</div><div style="font-size:.8rem;color:var(--gray-500)">KES 75</div><div style="margin-top:.65rem;font-size:.75rem" id="lvl3Status">Active: 0 | Inactive: 0</div><div id="level3Members" style="margin-top:.75rem"></div></div></div>
+    <div class="card" style="border-top:4px solid #86efac"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#86efac" id="level4Count">0</div><div style="font-weight:700;margin:.2rem 0">Level 4</div><div style="font-size:.8rem;color:var(--gray-500)">KES 25</div><div style="margin-top:.65rem;font-size:.75rem" id="lvl4Status">Active: 0 | Inactive: 0</div><div id="level4Members" style="margin-top:.75rem"></div></div></div>
+  </div>
+  <!-- Commission totals -->
   <div class="card">
-    <div class="card-header">All Data Entry Jobs <button onclick="loadAdminDataentryJobs()" class="btn btn-ghost btn-sm">Refresh</button></div>
-    <div id="adminDataentryJobsList" class="card-body">Loading...</div>
+    <div class="card-header">💰 Commission Totals</div>
+    <div style="padding:1.25rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem">
+      <div style="border-left:4px solid #16a34a;padding-left:.75rem"><div style="font-size:.8rem;color:var(--gray-500)">Level 1</div><div style="font-weight:800;font-size:1.2rem" id="commission1">KES 0</div></div>
+      <div style="border-left:4px solid #22c55e;padding-left:.75rem"><div style="font-size:.8rem;color:var(--gray-500)">Level 2</div><div style="font-weight:800;font-size:1.2rem" id="commission2">KES 0</div></div>
+      <div style="border-left:4px solid #4ade80;padding-left:.75rem"><div style="font-size:.8rem;color:var(--gray-500)">Level 3</div><div style="font-weight:800;font-size:1.2rem" id="commission3">KES 0</div></div>
+      <div style="border-left:4px solid #86efac;padding-left:.75rem"><div style="font-size:.8rem;color:var(--gray-500)">Level 4</div><div style="font-weight:800;font-size:1.2rem" id="commission4">KES 0</div></div>
+      <div style="border-left:4px solid var(--primary);padding-left:.75rem;background:#f0fdf4;border-radius:.25rem"><div style="font-size:.8rem;color:var(--gray-500)">Total</div><div style="font-weight:800;font-size:1.3rem;color:var(--primary)" id="totalCommission">KES 0</div></div>
+    </div>
+  </div>
+</div><!-- /#pg-referrals -->
+
+<!-- ====== WITHDRAW ====== -->
+<div id="pg-withdraw" class="page">
+  <h2 style="margin-bottom:1rem">💸 Withdraw Earnings</h2>
+  <div id="thursdayMsg" style="background:#eff6ff;border-left:4px solid #3b82f6;padding:.85rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;color:#1e40af;font-weight:500;font-size:.9rem">Checking...</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
+    <div class="card"><div style="padding:1.25rem;text-align:center"><div style="font-size:.78rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem">KES Wallet</div><div style="font-size:2rem;font-weight:800;color:var(--primary)" id="withdrawBalance">0</div><div style="font-size:.78rem;color:var(--gray-500);margin-top:.25rem">Min KES 300 · Thursdays</div></div></div>
+    <div class="card"><div style="padding:1.25rem;text-align:center"><div style="font-size:.78rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem">Points</div><div style="font-size:2rem;font-weight:800;color:#f59e0b" id="withdrawPoints">0</div><div style="font-size:.78rem;color:var(--gray-500);margin-top:.25rem" id="withdrawPointsKES">≈ KES 0 · Tuesdays</div></div></div>
+  </div>
+  <div id="pointsConvertHint" style="background:#fefce8;border:1px solid #eab308;padding:.65rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.85rem;color:#854d0e"></div>
+  <div class="card" style="margin-bottom:1.25rem">
+    <div class="card-header">Withdrawal Request (KES Wallet)</div>
+    <form id="withdrawalForm" style="padding:1.25rem">
+      <div class="form-group"><label class="form-label">Amount (KES) — min KES 300</label><input type="number" id="withdrawAmount" class="form-control" placeholder="300" min="300" required></div>
+      <div class="form-group"><label class="form-label">Payment Method</label>
+        <select id="paymentMethod" class="form-control" required><option value="">Select...</option><option value="mpesa">M-Pesa</option><option value="bank">Bank Transfer</option></select>
+      </div>
+      <div id="mpesaSection" style="display:none"><div class="form-group"><label class="form-label">M-Pesa Phone</label><input type="tel" id="mpesaPhone" class="form-control" placeholder="254712345678"></div></div>
+      <div id="bankSection" style="display:none">
+        <div class="form-group"><label class="form-label">Bank Name</label><input type="text" id="bankName" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Account Number</label><input type="text" id="accountNumber" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Account Holder Name</label><input type="text" id="accountName" class="form-control"></div>
+      </div>
+      <button type="submit" class="btn btn-primary w-full" id="withdrawBtn">Request Withdrawal</button>
+    </form>
   </div>
   <div class="card">
-    <div class="card-header">Pending Data Entry Reviews</div>
-    <div id="adminDataentrySubmissions" class="card-body">Click "Review" on a job above.</div>
+    <div class="card-header">Withdrawal History</div>
+    <div id="withdrawHistory" style="padding:1.25rem">Loading...</div>
   </div>
 </div>
 
-<!-- ============ WITHDRAWALS ============ -->
-<div class="tab-content" id="tab-withdrawals">
-  <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
-    <h3>Withdrawal Requests</h3>
-    <select id="withdrawFilterStatus" class="form-control" style="width:auto">
-      <option value="pending">Pending</option><option value="completed">Completed</option><option value="rejected">Rejected</option>
-    </select>
-    <button onclick="loadAdminWithdrawals()" class="btn btn-ghost btn-sm">Load</button>
+<!-- ====== PROFILE ====== -->
+<div id="pg-profile" class="page">
+  <h2 style="margin-bottom:1rem">👤 Profile</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
+    <div class="card"><div class="card-header">Personal Info</div><div style="padding:1.25rem;display:grid;gap:.75rem">
+      <div><div style="font-size:.75rem;color:var(--gray-500);font-weight:600">USERNAME</div><div style="font-weight:700" id="profileUsername">—</div></div>
+      <div><div style="font-size:.75rem;color:var(--gray-500);font-weight:600">EMAIL</div><div id="profileEmail">—</div></div>
+      <div><div style="font-size:.75rem;color:var(--gray-500);font-weight:600">PHONE</div><div id="profilePhone">—</div></div>
+      <div><div style="font-size:.75rem;color:var(--gray-500);font-weight:600">MEMBER SINCE</div><div id="profileJoinDate">—</div></div>
+      <div><div style="font-size:.75rem;color:var(--gray-500);font-weight:600">PACKAGE</div><div id="profilePackage">—</div></div>
+      <div><div style="font-size:.75rem;color:var(--gray-500);font-weight:600">STATUS</div><div id="profileStatus">—</div></div>
+    </div></div>
+    <div class="card"><div class="card-header">🔗 Your Invite Link</div><div style="padding:1.25rem">
+      <input type="text" id="profileInviteCode" class="form-control" readonly style="background:#f0fdf4;border-color:#16a34a;font-size:.82rem;margin-bottom:.75rem">
+      <p style="font-size:.8rem;color:var(--gray-500);margin:0">Share this link to earn referral commissions</p>
+    </div></div>
   </div>
-  <div id="adminWithdrawalsList"></div>
+  <div class="card">
+    <div class="card-header">🔒 Change Password</div>
+    <form id="changePasswordForm" style="padding:1.25rem;max-width:400px">
+      <div id="pwdError" style="display:none" class="alert alert-danger"></div>
+      <div id="pwdSuccess" style="display:none" class="alert alert-success">✅ Password changed!</div>
+      <div class="form-group"><label class="form-label">Current Password</label><input type="password" id="currentPassword" class="form-control" required></div>
+      <div class="form-group"><label class="form-label">New Password</label><input type="password" id="newPassword" class="form-control" required minlength="6"></div>
+      <div class="form-group"><label class="form-label">Confirm New Password</label><input type="password" id="confirmPassword" class="form-control" required></div>
+      <button type="submit" class="btn btn-primary" id="changePwdBtn">Change Password</button>
+    </form>
+  </div>
+</div>
+
+</div><!-- /.container -->
+</div><!-- /.main-wrap -->
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="blogModal">
+  <div class="modal-box" style="max-width:700px">
+    <button class="modal-close" onclick="closeBlogModal()">✕</button>
+    <h3 id="blogModalTitle" style="margin-bottom:.25rem"></h3>
+    <p id="blogModalDesc" style="color:var(--gray-500);font-size:.88rem;margin-bottom:.75rem"></p>
+    <div id="blogModalContent" style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:1rem;font-size:.9rem;max-height:180px;overflow-y:auto;line-height:1.6"></div>
+    <label class="form-label">Your Blog Post (min 100 chars)</label>
+    <textarea id="blogWriteContent" class="form-control" rows="8" placeholder="Write here..."></textarea>
+    <div id="blogCharCount" style="font-size:.78rem;color:var(--gray-500);text-align:right;margin:.25rem 0 .75rem">0 chars</div>
+    <button id="blogSubmitBtn" class="btn btn-primary w-full">Submit Blog</button>
+  </div>
+</div>
+
+<div class="modal" id="surveyModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeSurveyModal()">✕</button>
+    <h3 id="surveyModalTitle" style="margin-bottom:.25rem"></h3>
+    <p id="surveyModalDesc" style="color:var(--gray-500);font-size:.88rem;margin-bottom:1rem"></p>
+    <div id="surveyModalQuestions"></div>
+    <button id="surveySubmitBtn" class="btn btn-primary w-full" style="margin-top:1rem">Submit Survey</button>
+  </div>
+</div>
+
+<div class="modal" id="writingModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeWritingModal()">✕</button>
+    <h3 id="writingModalTitle" style="margin-bottom:.25rem"></h3>
+    <p id="writingModalDesc" style="color:var(--gray-500);font-size:.88rem;margin-bottom:.75rem"></p>
+    <div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:1rem"><strong>Instructions:</strong><div id="writingModalInstructions" style="margin-top:.4rem;font-size:.88rem;white-space:pre-wrap"></div></div>
+    <div class="form-group"><label class="form-label">Upload Your Work (PDF or Word)</label><input type="file" id="writingFileInput" class="form-control" accept=".pdf,.doc,.docx"><p style="font-size:.75rem;color:var(--gray-500);margin-top:.2rem">Max 20MB</p></div>
+    <button id="writingSubmitBtn" class="btn btn-primary w-full" style="margin-top:.75rem">Submit Writing Job</button>
+  </div>
+</div>
+
+<div class="modal" id="transcriptionModal">
+  <div class="modal-box" style="max-width:660px">
+    <button class="modal-close" onclick="closeTranscriptionModal()">✕</button>
+    <h3 id="transcriptionModalTitle" style="margin-bottom:.25rem"></h3>
+    <p id="transcriptionModalDesc" style="color:var(--gray-500);font-size:.88rem;margin-bottom:.75rem"></p>
+    <div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.75rem"><strong>Instructions:</strong><div id="transcriptionModalInstructions" style="margin-top:.4rem;font-size:.88rem;white-space:pre-wrap"></div></div>
+    <div style="margin-bottom:1rem"><strong>Audio:</strong><audio id="transcriptionAudio" controls style="width:100%;margin-top:.4rem"></audio></div>
+    <div class="form-group"><label class="form-label">Your Transcription Text</label><textarea id="transcriptionText" class="form-control" rows="7" placeholder="Type transcription here..."></textarea><p id="transcriptionCharCount" style="font-size:.75rem;color:var(--gray-500);margin-top:.2rem">0 chars</p></div>
+    <button id="transcriptionSubmitBtn" class="btn btn-primary w-full" style="margin-top:.75rem">Submit Transcription</button>
+  </div>
+</div>
+
+<div class="modal" id="dataentryModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeDataentryModal()">✕</button>
+    <h3 id="dataentryModalTitle" style="margin-bottom:.25rem"></h3>
+    <p id="dataentryModalDesc" style="color:var(--gray-500);font-size:.88rem;margin-bottom:.75rem"></p>
+    <div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.75rem"><strong>Instructions:</strong><div id="dataentryModalInstructions" style="margin-top:.4rem;font-size:.88rem;white-space:pre-wrap"></div></div>
+    <div id="dataentryTemplateSection" style="display:none;margin-bottom:.75rem"><a id="dataentryTemplateLink" href="#" target="_blank" class="btn btn-sm" style="border:1.5px solid var(--primary);color:var(--primary);background:transparent">📥 Download Template</a></div>
+    <div class="form-group"><label class="form-label">Upload Completed File</label><input type="file" id="dataentryFileInput" class="form-control" accept=".pdf,.doc,.docx,.xlsx,.csv"><p style="font-size:.75rem;color:var(--gray-500);margin-top:.2rem">PDF, Word, Excel or CSV · Max 20MB</p></div>
+    <button id="dataentrySubmitBtn" class="btn btn-primary w-full" style="margin-top:.75rem">Submit Data Entry</button>
+  </div>
 </div>
 
 <script>
 // ============ AUTH GUARD ============
-const _adminToken = localStorage.getItem('adminToken') || localStorage.getItem('token');
-const _adminUser = (() => { try { return JSON.parse(localStorage.getItem('user')||'null'); } catch(e){return null;} })();
-if (!_adminToken || !_adminUser || !_adminUser.isAdmin) { window.location.href = '/index.html'; }
-document.getElementById('adminName').textContent = _adminUser ? '@'+_adminUser.username : '';
+const _token = localStorage.getItem('token');
+const _user = (() => { try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch(e) { return null; } })();
+if (!_token || !_user) { window.location.href = '/index.html'; }
+if (_user && _user.isAdmin) { window.location.href = '/admin.html'; }
 
-function adminLogout() { localStorage.clear(); window.location.href = '/index.html'; }
-function aHeaders() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_adminToken}` }; }
-async function aFetch(url, opts={}) {
-  const res = await fetch(url, { ...opts, headers: aHeaders() });
+// ============ STATE ============
+let currentUser = null;
+let activeBlogId = null, activeSurveyId = null, activeWritingJobId = null, activeTranscriptionJobId = null, activeDataentryJobId = null;
+
+// ============ HELPERS ============
+function apiHeaders() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` }; }
+async function apiFetch(url, opts = {}) {
+  const res = await fetch(url, { ...opts, headers: apiHeaders() });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Admin request failed');
+  if (!res.ok) throw new Error(data.error || 'Request failed');
   return data;
 }
-function showMsg(id, text, ok=true) {
-  const el = document.getElementById(id);
-  el.textContent = text; el.className = 'msg ' + (ok ? 'msg-ok' : 'msg-err'); el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, 4000);
+function logout() { localStorage.clear(); window.location.href = '/index.html'; }
+function toggleSidenav() { document.getElementById('sidenav').classList.toggle('open'); }
+function showModal(id) { document.getElementById(id).style.display = 'block'; }
+function hideModal(id) { document.getElementById(id).style.display = 'none'; }
+
+// ============ ROUTING ============
+const ACTIVE_ONLY = ['blogs','surveys','writing','transcription','dataentry','referrals','withdraw','profile'];
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('pg-' + name);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-lnk').forEach(a => { a.classList.toggle('active', a.getAttribute('data-pg') === name); });
+  window.history.pushState({}, '', '#' + name);
+  document.getElementById('sidenav').classList.remove('open');
+  if (name === 'dashboard') loadDashboard();
+  else if (name === 'blogs') loadBlogs();
+  else if (name === 'surveys') loadSurveys();
+  else if (name === 'writing') loadWriting();
+  else if (name === 'transcription') loadTranscription();
+  else if (name === 'dataentry') loadDataentry();
+  else if (name === 'referrals') loadReferrals();
+  else if (name === 'withdraw') loadWithdraw();
+  else if (name === 'profile') loadProfile();
 }
 
-// ============ TABS ============
-let questionCount = 0;
-function switchTab(name) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === name));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + name));
-  const loaders = { overview: loadAdminDashboard, users: loadAdminUsers, blogs: loadAdminBlogs, surveys: loadAdminSurveys, writing: loadAdminWritingJobs, transcription: loadAdminTranscriptionJobs, dataentry: loadAdminDataentryJobs, withdrawals: loadAdminWithdrawals };
-  if (loaders[name]) loaders[name]();
-}
-document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))));
-
-// ============ OVERVIEW ============
-async function loadAdminDashboard() {
-  try {
-    const data = await aFetch('/api/admin/dashboard/stats');
-    document.getElementById('ovTotalUsers').textContent = data.users?.total || 0;
-    document.getElementById('ovActiveUsers').textContent = data.users?.active || 0;
-    document.getElementById('ovNotActivated').textContent = data.packages?.notActivated || 0;
-    document.getElementById('ovPendingWithdrawals').textContent = data.pendingWithdrawals || 0;
-    document.getElementById('ovBlogs').textContent = data.pendingReviews?.blogs || 0;
-    document.getElementById('ovSurveys').textContent = data.pendingReviews?.surveys || 0;
-    document.getElementById('ovWriting').textContent = data.pendingReviews?.writing || 0;
-    document.getElementById('ovTranscription').textContent = data.pendingReviews?.transcription || 0;
-    document.getElementById('ovDataentry').textContent = data.pendingReviews?.dataEntry || 0;
-  } catch(err) { console.error('Overview:', err); }
-}
-
-// ============ DEPOSITS ============
-let depositSearchTimer;
-document.getElementById('depositSearch').addEventListener('input', function() {
-  clearTimeout(depositSearchTimer);
-  const q = this.value.trim();
-  const res = document.getElementById('depositSearchResults');
-  if (q.length < 2) { res.style.display = 'none'; return; }
-  depositSearchTimer = setTimeout(async () => {
-    try {
-      const data = await aFetch(`/api/admin/users/all?status=all&limit=8`);
-      const filtered = data.users.filter(u => u.username.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase())).slice(0,6);
-      if (!filtered.length) { res.style.display = 'none'; return; }
-      res.style.display = 'block';
-      res.innerHTML = filtered.map(u => `<div class="search-result-item" onclick="selectDepUser('${u.id}','${u.username}','${u.email}')"><strong>${u.username}</strong> — ${u.email} | KES ${u.walletBalance}</div>`).join('');
-    } catch(e) {}
-  }, 300);
+document.addEventListener('click', e => {
+  const el = e.target.closest('.nav-lnk');
+  if (!el) return;
+  const pg = el.getAttribute('data-pg');
+  if (pg) { e.preventDefault(); showPage(pg); window.scrollTo(0,0); }
 });
-function selectDepUser(id, username, email) {
-  document.getElementById('depositUserId').value = id;
-  document.getElementById('depositUserDisplay').value = `${username} (${email})`;
-  document.getElementById('depositSearch').value = '';
-  document.getElementById('depositSearchResults').style.display = 'none';
-}
-async function doDeposit() {
-  const userId = document.getElementById('depositUserId').value;
-  const amount = parseFloat(document.getElementById('depositAmount').value);
-  const reference = document.getElementById('depositReference').value;
-  if (!userId) { showMsg('depositMsg', '❌ Select a user first.', false); return; }
-  if (!amount || amount < 1) { showMsg('depositMsg', '❌ Enter a valid amount.', false); return; }
-  try {
-    const data = await aFetch('/api/admin/deposit-balance', { method: 'POST', body: JSON.stringify({ userId, amount, reason: 'activation_deposit', reference }) });
-    showMsg('depositMsg', `✅ Deposited KES ${amount} to ${data.user?.username}. New balance: KES ${data.transaction?.newBalance}`, true);
-    document.getElementById('depositAmount').value = ''; document.getElementById('depositReference').value = '';
-  } catch(err) { showMsg('depositMsg', '❌ ' + err.message, false); }
+
+window.addEventListener('load', () => {
+  const hash = window.location.hash.slice(1) || 'dashboard';
+  // Check if user needs activation
+  if (_user && _user.packageType === 'not_active') { loadActivationPage(); return; }
+  showPage(hash);
+});
+
+// ============ NAV USERNAME ============
+if (_user) {
+  document.getElementById('navUsername').textContent = '@' + _user.username;
 }
 
-// ============ USERS ============
-async function loadAdminUsers() {
-  const status = document.getElementById('userFilterStatus')?.value || 'all';
-  const pkg = document.getElementById('userFilterPackage')?.value || 'all';
-  const el = document.getElementById('adminUsersList');
-  el.innerHTML = 'Loading...';
+// ============ ACTIVATION ============
+async function loadActivationPage() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('pg-activation').classList.add('active');
   try {
-    const data = await aFetch(`/api/admin/users/all?status=${status}&packageType=${pkg}`);
-    if (!data.users.length) { el.innerHTML = '<p style="color:var(--gray-500)">No users found.</p>'; return; }
-    el.innerHTML = `<p style="font-size:.8rem;color:var(--gray-500);margin-bottom:.75rem">Showing ${data.users.length} of ${data.total} users</p>
-    <div class="user-grid">` +
-    data.users.map(u => {
-      const initials = u.username.slice(0,2).toUpperCase();
-      const pkgBadge = u.packageType === 'not_active' ? '<span class="badge badge-yellow">Not Activated</span>' : '<span class="badge badge-green">Active</span>';
-      const statusBadge = u.status === 'active' ? '<span class="badge badge-green">Active</span>' : u.status === 'suspended' ? '<span class="badge badge-red">Suspended</span>' : '<span class="badge badge-gray">Pending</span>';
-      return `<div class="user-box">
-        <div class="user-box-top">
-          <div class="user-avatar">${initials}</div>
-          <div class="user-info">
-            <div class="user-name">${u.username}</div>
-            <div class="user-sub">${u.email}</div>
-            <div class="user-sub">${u.phone || '—'}</div>
-          </div>
-          <div>${statusBadge}</div>
-        </div>
-        <div class="user-stats">
-          <div class="user-stat"><div class="user-stat-v">KES ${u.walletBalance}</div><div class="user-stat-l">Wallet</div></div>
-          <div class="user-stat"><div class="user-stat-v">${u.pointsBalance} pts</div><div class="user-stat-l">Points</div></div>
-        </div>
-        <div style="margin-bottom:.5rem">${pkgBadge} ${u.referredBy ? `<span style="font-size:.72rem;color:var(--gray-500)">via ${u.referredBy.username}</span>` : ''}</div>
-        <div class="user-actions">
-          <button onclick="quickDeposit('${u.id}','${u.username}')" class="btn btn-primary btn-sm">💰 Deposit</button>
-          ${u.status !== 'suspended' ? `<button onclick="suspendUser('${u.id}','${u.username}')" class="btn btn-warning btn-sm">⚠️ Suspend</button>` : `<button onclick="unsuspendUser('${u.id}','${u.username}')" class="btn btn-ghost btn-sm">✅ Unsuspend</button>`}
-          ${u.packageType === 'not_active' ? `<button onclick="deleteUser('${u.id}','${u.username}')" class="btn btn-danger btn-sm">🗑️ Delete</button>` : ''}
-        </div>
-      </div>`;
-    }).join('') + '</div>';
-  } catch(err) { el.innerHTML = `<p style="color:#dc2626">${err.message}</p>`; }
+    const data = await apiFetch('/api/users/profile');
+    const user = data.user;
+    if (user.packageType !== 'not_active') { showPage('dashboard'); return; }
+    document.getElementById('activationBalance').textContent = 'KES ' + (user.primaryWallet?.balance || 0);
+    try {
+      const chainData = await apiFetch('/api/referrals/chain');
+      const father = chainData.chain && chainData.chain[0];
+      if (father) {
+        document.getElementById('uplineName').textContent = father.username || 'Your referrer';
+        document.getElementById('uplinePhone').textContent = father.phone || '';
+        document.getElementById('uplineEmail').textContent = father.email || '';
+      } else { document.getElementById('uplineName').textContent = 'Contact admin'; }
+    } catch(e) { document.getElementById('uplineName').textContent = 'Contact your referrer'; }
+  } catch(err) { if (err.message.toLowerCase().includes('token')) { logout(); } }
 }
 
-function quickDeposit(userId, username) {
-  const amount = prompt(`Deposit amount (KES) to ${username}:`);
-  if (!amount || isNaN(amount)) return;
-  const ref = prompt('M-Pesa reference (optional):') || '';
-  aFetch('/api/admin/deposit-balance', { method: 'POST', body: JSON.stringify({ userId, amount: parseFloat(amount), reason: 'activation_deposit', reference: ref }) })
-    .then(data => { alert(`✅ Deposited KES ${amount} to ${username}.`); loadAdminUsers(); })
-    .catch(err => alert('❌ ' + err.message));
+async function doActivation() {
+  const msgEl = document.getElementById('activationMsg');
+  if (!confirm('Deduct KES 700 from your wallet to activate?')) return;
+  msgEl.style.display = 'block'; msgEl.style.color = '#6b7280'; msgEl.textContent = 'Activating...';
+  try {
+    const data = await apiFetch('/api/auth/activate-package', { method: 'POST' });
+    msgEl.style.color = '#16a34a'; msgEl.textContent = '✅ ' + data.message;
+    const profile = await apiFetch('/api/users/profile');
+    localStorage.setItem('user', JSON.stringify(profile.user));
+    setTimeout(() => showPage('dashboard'), 1500);
+  } catch(err) {
+    msgEl.style.color = '#dc2626'; msgEl.textContent = '❌ ' + err.message;
+    loadActivationPage();
+  }
 }
-function suspendUser(id, username) {
-  if (!confirm(`Suspend ${username}?`)) return;
-  aFetch(`/api/admin/users/${id}/suspend`, { method: 'POST' }).then(() => { alert('User suspended.'); loadAdminUsers(); }).catch(err => alert('❌ ' + err.message));
+
+// ============ DASHBOARD ============
+async function loadDashboard() {
+  try {
+    const data = await apiFetch('/api/users/dashboard');
+    currentUser = data;
+    localStorage.setItem('user', JSON.stringify({ id: data.profile.id, username: data.profile.username, packageType: data.profile.packageType, isAdmin: false }));
+    if (data.profile.packageType === 'not_active') { loadActivationPage(); return; }
+    document.getElementById('dashUsername').textContent = data.profile.username;
+    document.getElementById('dashMainWallet').textContent = 'KES ' + data.wallets.primary.balance;
+    document.getElementById('navWallet').textContent = 'KES ' + data.wallets.primary.balance;
+    document.getElementById('dashPoints').textContent = data.wallets.points.points + ' pts';
+    document.getElementById('dashActiveReferrals').textContent = data.stats.activeDirectReferrals;
+    document.getElementById('dashTotalEarnings').textContent = 'KES ' + data.stats.totalEarnings;
+    document.getElementById('dashPackageStatus').textContent = '✅ Active Member';
+    document.getElementById('activationAlert').style.display = 'none';
+    document.getElementById('tbLogsLeft').textContent = data.dailyProgress.blogsLeft + ' left today';
+    document.getElementById('tbSurveysLeft').textContent = data.dailyProgress.surveysLeft + ' left today';
+    if (data.wallets.points.canConvert) {
+      document.getElementById('pointsConversionCard').style.display = 'block';
+      document.getElementById('currentPoints').textContent = data.wallets.points.points;
+      document.getElementById('pointsKES').textContent = 'KES ' + data.wallets.points.kesEquivalent;
+    }
+    loadDashboardReferrals();
+    loadInactiveReferrals();
+  } catch(err) { if (err.message.toLowerCase().includes('token')) logout(); }
 }
-function unsuspendUser(id, username) {
-  if (!confirm(`Unsuspend ${username}?`)) return;
-  aFetch(`/api/admin/users/${id}/unsuspend`, { method: 'POST' }).then(() => { alert('User unsuspended.'); loadAdminUsers(); }).catch(err => alert('❌ ' + err.message));
+
+async function loadDashboardReferrals() {
+  try {
+    const stats = await apiFetch('/api/referrals/stats');
+    const levels = stats.levels;
+    ['1','2','3','4'].forEach(l => {
+      const cnt = levels['level'+l];
+      document.getElementById('dashRef'+l).textContent = cnt ? cnt.count || 0 : 0;
+      const active = cnt ? (cnt.active || 0) : 0;
+      const total = cnt ? (cnt.count || 0) : 0;
+      const inactive = total - active;
+      document.getElementById('dashRef'+l+'Status').textContent = `${active} active / ${inactive} inactive`;
+    });
+    document.getElementById('dashTotalCommission').textContent = 'KES ' + (stats.summary?.totalCommission || 0);
+  } catch(e) {}
 }
-function deleteUser(id, username) {
-  if (!confirm(`DELETE user ${username}? This cannot be undone.`)) return;
-  aFetch(`/api/admin/users/${id}`, { method: 'DELETE' }).then(() => { alert('User deleted.'); loadAdminUsers(); }).catch(err => alert('❌ ' + err.message));
+
+async function loadInactiveReferrals() {
+  try {
+    const data = await apiFetch('/api/users/inactive-referrals');
+    const section = document.getElementById('inactiveReferralsSection');
+    const list = document.getElementById('inactiveReferralsList');
+    if (!data.inactiveReferrals.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    list.innerHTML = data.inactiveReferrals.map(u => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid #fde68a;flex-wrap:wrap;gap:.4rem">
+        <div><strong>${u.name}</strong> <span style="font-size:.8rem;color:#92400e">${u.email} | ${u.phone}</span></div>
+        <span style="background:#fef3c7;color:#b45309;padding:.15rem .6rem;border-radius:999px;font-size:.75rem;font-weight:700">Joined ${u.daysSinceJoined}d ago</span>
+      </div>`).join('');
+  } catch(e) {}
+}
+
+document.getElementById('activateBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('activateBtn');
+  if (!confirm('Activate package? This deducts KES 700.')) return;
+  btn.disabled = true; btn.textContent = 'Activating...';
+  try {
+    const data = await apiFetch('/api/auth/activate-package', { method: 'POST' });
+    toast('✅ ' + data.message); loadDashboard();
+  } catch(err) { toast('❌ ' + err.message, false); }
+  finally { btn.disabled = false; btn.textContent = '🚀 Activate (KES 700)'; }
+});
+
+document.getElementById('convertPointsBtn')?.addEventListener('click', async () => {
+  const btn = document.getElementById('convertPointsBtn');
+  if (!confirm('Convert all eligible points to KES?')) return;
+  btn.disabled = true; btn.textContent = 'Converting...';
+  try { const data = await apiFetch('/api/wallets/convert-points', { method: 'POST' }); toast('✅ ' + data.message); loadDashboard(); }
+  catch(err) { toast('❌ ' + err.message, false); }
+  finally { btn.disabled = false; btn.textContent = 'Convert Now'; }
+});
+
+// ============ TOAST ============
+function toast(msg, ok=true) {
+  let t = document.getElementById('_toast');
+  if (!t) { t = document.createElement('div'); t.id='_toast'; t.style.cssText='position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;background:#111;color:#fff;padding:.65rem 1.25rem;border-radius:.6rem;font-size:.88rem;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.35);transition:.3s;opacity:0;pointer-events:none;max-width:90vw;text-align:center'; document.body.appendChild(t); }
+  t.textContent = msg; t.style.background = ok ? '#16a34a' : '#ef4444'; t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity='0'; }, 3500);
 }
 
 // ============ BLOGS ============
-async function createBlog() {
-  try {
-    await aFetch('/api/admin/blogs/create', { method: 'POST', body: JSON.stringify({
-      title: document.getElementById('blogTitle').value,
-      description: document.getElementById('blogDescription').value,
-      content: document.getElementById('blogContent').value,
-      category: document.getElementById('blogCategory').value || 'general',
-      maxBidders: parseInt(document.getElementById('blogMaxBidders').value),
-      reward: parseInt(document.getElementById('blogReward').value)
-    })});
-    showMsg('createBlogMsg', '✅ Blog task created!', true);
-    ['blogTitle','blogDescription','blogContent'].forEach(id => document.getElementById(id).value = '');
-    loadAdminBlogs();
-  } catch(err) { showMsg('createBlogMsg', '❌ ' + err.message, false); }
+function taskCardHtml(item, type, userStatus) {
+  const submitted = item.currentBidders || item.currentWorkers || 0;
+  const approved = item.approvedCount || 0;
+  const pending = item.pendingCount || 0;
+  const statusBadge = item.status === 'open' || !item.status
+    ? '<span style="background:#dcfce7;color:#16a34a;padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:700">open</span>'
+    : '<span style="background:#f3f4f6;color:#6b7280;padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:700">'+item.status+'</span>';
+  const deadline = item.deadline ? `<p style="font-size:.72rem;color:#b45309;margin:.2rem 0">⏰ Due: ${new Date(item.deadline).toLocaleDateString()}</p>` : '';
+  const wordCount = item.wordCount ? `<p style="font-size:.72rem;color:#1e40af;margin:.2rem 0">📝 ${item.wordCount}</p>` : '';
+  const template = item.templateUrl ? `<p style="font-size:.72rem;margin:.2rem 0"><a href="${item.templateUrl}" target="_blank" style="color:var(--primary)">📥 Download Template</a></p>` : '';
+  const openFn = {blogs:`openBlogModal('${item.id}')`,surveys:`openSurveyModal('${item.id}')`,writing:`openWritingModal('${item.id}')`,transcription:`openTranscriptionModal('${item.id}')`,dataentry:`openDataentryModal('${item.id}')`}[type];
+  const btnLabel = {blogs:'✍️ Write',surveys:'📋 Take Survey',writing:'📤 Apply & Submit',transcription:'🎙️ Transcribe',dataentry:'📋 Submit Work'}[type];
+  const slotsLeft = (item.maxBidders || item.maxWorkers || 0) - submitted;
+  let actionBtn = '';
+  if (userStatus) { actionBtn = `<span style="background:#dbeafe;color:#1e40af;padding:.2rem .6rem;border-radius:999px;font-size:.72rem;font-weight:600">Your status: ${userStatus}</span>`; }
+  else if (slotsLeft > 0 || (!item.maxBidders && !item.maxWorkers)) { actionBtn = `<button onclick="${openFn}" class="btn btn-primary btn-sm">${btnLabel}</button>`; }
+  else { actionBtn = `<span style="color:#ef4444;font-size:.75rem;font-weight:600">Slots Full</span>`; }
+  return `<div class="card" style="overflow:hidden;border-top:3px solid var(--primary)">
+    <div style="padding:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.35rem">
+        <h4 style="font-size:.92rem;font-weight:800;margin:0;line-height:1.3">${item.title}</h4>
+        <div style="display:flex;align-items:center;gap:.3rem;flex-shrink:0;margin-left:.4rem">${statusBadge}<span style="background:#f0fdf4;color:#16a34a;padding:.15rem .5rem;border-radius:999px;font-size:.72rem;font-weight:800;border:1px solid #bbf7d0">⭐${item.reward||0}pts</span></div>
+      </div>
+      <p style="color:var(--gray-500);font-size:.78rem;margin:0 0 .4rem;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${item.description||''}</p>
+      ${wordCount}${deadline}${template}
+      ${item.audioUrl ? `<audio src="${item.audioUrl}" controls style="width:100%;height:28px;margin:.3rem 0"></audio>` : ''}
+      <div style="display:flex;gap:.75rem;padding:.45rem 0;margin:.3rem 0;border-top:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100)">
+        <div style="text-align:center"><div style="font-weight:800;font-size:.9rem;color:#3b82f6">📝 ${submitted}</div><div style="font-size:.65rem;color:var(--gray-500)">submitted</div></div>
+        <div style="text-align:center"><div style="font-weight:800;font-size:.9rem;color:#16a34a">✅ ${approved}</div><div style="font-size:.65rem;color:var(--gray-500)">approved</div></div>
+        <div style="text-align:center"><div style="font-weight:800;font-size:.9rem;color:#f59e0b">⏳ ${pending}</div><div style="font-size:.65rem;color:var(--gray-500)">pending</div></div>
+        <div style="text-align:center;margin-left:auto"><div style="font-size:.7rem;color:var(--gray-500)">${submitted}/${item.maxBidders||item.maxWorkers||'∞'}</div><div style="font-size:.65rem;color:var(--gray-500)">slots</div></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:.5rem">${actionBtn}</div>
+    </div>
+  </div>`;
 }
 
-async function loadAdminBlogs() {
-  const el = document.getElementById('adminBlogsList');
+async function loadBlogs() {
   try {
-    const data = await aFetch('/api/admin/blogs/all');
-    const blogs = data.blogs || [];
-    if (!blogs.length) { el.innerHTML = '<p style="color:var(--gray-500)">No blogs yet.</p>'; return; }
-    el.innerHTML = blogs.map(b => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:.4rem">
-        <div><strong>${b.title}</strong> <span class="badge ${b.status==='open'?'badge-green':'badge-gray'}">${b.status}</span>
-          <div style="font-size:.75rem;color:var(--gray-500);margin-top:.1rem">${b.currentBidders}/${b.maxBidders} writers · ${b.pendingReview||0} pending · ${b.reward}pts</div>
-        </div>
-        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
-          ${(b.pendingReview||0)>0?`<button onclick="loadBlogSubmissions('${b.id}','${b.title}')" class="btn btn-primary btn-sm">Review (${b.pendingReview})</button>`:''}
-          <button onclick="editBlog('${b.id}')" class="btn btn-ghost btn-sm">✏️ Edit</button>
-          <button onclick="deleteBlog('${b.id}')" class="btn btn-danger btn-sm">🗑️</button>
-        </div>
-      </div>`).join('');
-    // Auto-load pending
-    const pending = blogs.filter(b => (b.pendingReview||0)>0);
-    if (pending.length) loadBlogSubmissions(pending[0].id, pending[0].title);
-    else document.getElementById('adminBlogSubmissions').innerHTML = '<p style="color:var(--gray-500)">No pending blog reviews.</p>';
-  } catch(err) { el.innerHTML = `<p style="color:#dc2626">${err.message}</p>`; }
+    const [dashData, blogsData] = await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null), apiFetch('/api/blogs')]);
+    if (dashData) document.getElementById('blogsDaily').textContent = `📅 Today: ${dashData.dailyProgress.blogsLeft}/2 remaining | ⭐ Each = 100 points`;
+    const list = document.getElementById('blogsList');
+    if (!blogsData.blogs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No blogs available right now.</p>'; return; }
+    list.innerHTML = blogsData.blogs.map(b => taskCardHtml(b, 'blogs', b.userBidStatus)).join('');
+  } catch(err) { document.getElementById('blogsList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
 }
 
-async function loadBlogSubmissions(blogId, title) {
-  const el = document.getElementById('adminBlogSubmissions');
-  el.innerHTML = 'Loading...';
+async function openBlogModal(blogId) {
   try {
-    const data = await aFetch(`/api/admin/blogs/${blogId}/submissions`);
-    const pending = (data.submissions||[]).filter(s => s.status==='submitted');
-    if (!pending.length) { el.innerHTML = `<p style="color:var(--gray-500)">No pending submissions for "${title||''}".</p>`; return; }
-    el.innerHTML = `<p style="font-weight:700;margin-bottom:.75rem">📝 ${title||'Blog'} — ${pending.length} pending</p>` + pending.map(s => `
-      <div class="review-box" style="border-left-color:#f59e0b">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem">
-          <div><strong>${s.username}</strong> <span style="font-size:.75rem;color:var(--gray-500)">(${s.email})</span></div>
-          <span style="font-size:.72rem;color:var(--gray-500)">${new Date(s.submittedAt).toLocaleString()}</span>
-        </div>
-        <details style="margin:.4rem 0"><summary style="cursor:pointer;font-size:.82rem;color:#f59e0b;font-weight:600">View Submission</summary>
-          <p style="margin:.4rem 0;font-size:.82rem;background:var(--gray-50);padding:.65rem;border-radius:.35rem;white-space:pre-wrap">${s.content||'(no content)'}</p>
-        </details>
-        <div style="display:flex;gap:.4rem;margin-top:.5rem">
-          <button onclick="adminApproveBlog('${blogId}','${s.userId}')" class="btn btn-primary btn-sm">✅ Approve</button>
-          <button onclick="adminRejectBlog('${blogId}','${s.userId}')" class="btn btn-danger btn-sm">❌ Reject</button>
-        </div>
-      </div>`).join('');
-  } catch(err) { el.innerHTML = `<p style="color:#dc2626">${err.message}</p>`; }
+    const data = await apiFetch(`/api/blogs/${blogId}`);
+    const b = data.blog; activeBlogId = blogId;
+    document.getElementById('blogModalTitle').textContent = b.title;
+    document.getElementById('blogModalDesc').textContent = b.description;
+    document.getElementById('blogModalContent').innerHTML = b.content.replace(/\n/g,'<br>');
+    document.getElementById('blogWriteContent').value = '';
+    document.getElementById('blogCharCount').textContent = '0 chars';
+    showModal('blogModal');
+  } catch(err) { toast('Error: ' + err.message, false); }
 }
-
-async function adminApproveBlog(blogId, userId) {
-  try { await aFetch(`/api/admin/blogs/${blogId}/approve/${userId}`, {method:'POST'}); alert('✅ Approved!'); loadAdminBlogs(); } catch(err) { alert('❌ '+err.message); }
-}
-async function adminRejectBlog(blogId, userId) {
-  const notes = prompt('Reason for rejection:') || 'Rejected';
-  try { await aFetch(`/api/admin/blogs/${blogId}/reject/${userId}`, {method:'POST', body:JSON.stringify({reviewNotes:notes})}); alert('Rejected.'); loadAdminBlogs(); } catch(err) { alert('❌ '+err.message); }
-}
-function editBlog(id) { alert('Edit functionality — POST to /api/admin/blogs/'+id+'/edit'); }
-async function deleteBlog(id) {
-  if (!confirm('Delete this blog?')) return;
-  try { await aFetch(`/api/admin/blogs/${id}`, {method:'DELETE'}); loadAdminBlogs(); } catch(err) { alert('❌ '+err.message); }
-}
+function closeBlogModal() { hideModal('blogModal'); activeBlogId = null; }
+document.getElementById('blogWriteContent').addEventListener('input', function() { document.getElementById('blogCharCount').textContent = this.value.length + ' chars'; });
+document.getElementById('blogSubmitBtn').addEventListener('click', async () => {
+  if (!activeBlogId) return;
+  const content = document.getElementById('blogWriteContent').value.trim();
+  if (content.length < 100) { alert('Min 100 characters.'); return; }
+  const btn = document.getElementById('blogSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+  try { await apiFetch(`/api/blogs/${activeBlogId}/submit`, { method: 'POST', body: JSON.stringify({ submissionContent: content }) }); toast('✅ Blog submitted! Awaiting review.'); closeBlogModal(); loadBlogs(); }
+  catch(err) { toast('❌ ' + err.message, false); }
+  finally { btn.disabled = false; btn.textContent = 'Submit Blog'; }
+});
 
 // ============ SURVEYS ============
-function addQuestion() {
-  const i = questionCount++;
-  const div = document.createElement('div');
-  div.id = `question_${i}`;
-  div.style.cssText = 'border:1px solid var(--gray-200);padding:.75rem;border-radius:.45rem;margin-bottom:.5rem';
-  div.innerHTML = `<div style="display:flex;justify-content:space-between;margin-bottom:.5rem"><strong style="font-size:.82rem">Question ${i+1}</strong><button type="button" onclick="removeQuestion(${i})" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:.8rem">Remove</button></div>
-  <div class="form-group"><input type="text" name="qtext_${i}" class="form-control" placeholder="Question text" required></div>
-  <div class="form-group"><select name="qtype_${i}" class="form-control" onchange="toggleOptions(${i},this.value)"><option value="text">Text Answer</option><option value="multiple_choice">Multiple Choice</option><option value="rating">Rating 1-5</option><option value="yes_no">Yes/No</option></select></div>
-  <div id="qoptions_${i}" style="display:none"><label class="form-label">Options (one per line)</label><textarea name="qoptions_${i}" class="form-control" rows="3" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea></div>`;
-  document.getElementById('questionsList').appendChild(div);
-}
-function removeQuestion(i) { const el = document.getElementById(`question_${i}`); if(el) el.remove(); }
-function toggleOptions(i, type) { document.getElementById(`qoptions_${i}`).style.display = type==='multiple_choice'?'block':'none'; }
-
-async function createSurvey() {
-  const questions = [];
-  document.querySelectorAll('[id^="question_"]').forEach(div => {
-    const i = div.id.split('_')[1];
-    const text = div.querySelector(`[name="qtext_${i}"]`)?.value.trim();
-    const type = div.querySelector(`[name="qtype_${i}"]`)?.value;
-    const optRaw = div.querySelector(`[name="qoptions_${i}"]`)?.value||'';
-    const options = optRaw.split('\n').map(s=>s.trim()).filter(Boolean);
-    if (text) questions.push({question:text,type,options,required:true});
-  });
-  if (!questions.length) { showMsg('createSurveyMsg','❌ Add at least one question.',false); return; }
+async function loadSurveys() {
   try {
-    await aFetch('/api/admin/surveys/create', {method:'POST', body:JSON.stringify({
-      title: document.getElementById('surveyTitle').value,
-      description: document.getElementById('surveyDescription').value,
-      questions,
-      maxResponses: parseInt(document.getElementById('surveyMaxResponses').value),
-      reward: parseInt(document.getElementById('surveyReward').value||'100')
-    })});
-    showMsg('createSurveyMsg','✅ Survey created!',true);
-    document.getElementById('surveyTitle').value=''; document.getElementById('surveyDescription').value='';
-    document.getElementById('questionsList').innerHTML=''; questionCount=0;
-    loadAdminSurveys();
-  } catch(err) { showMsg('createSurveyMsg','❌ '+err.message,false); }
+    const [dashData, surveysData] = await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null), apiFetch('/api/surveys')]);
+    if (dashData) document.getElementById('surveysDaily').textContent = `📅 Today: ${dashData.dailyProgress.surveysLeft}/2 remaining | ⭐ Each = 100 points`;
+    const list = document.getElementById('surveysList');
+    if (!surveysData.surveys.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No surveys available right now.</p>'; return; }
+    list.innerHTML = surveysData.surveys.map(s => taskCardHtml(s, 'surveys', s.userBidStatus)).join('');
+  } catch(err) { document.getElementById('surveysList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
 }
 
-async function loadAdminSurveys() {
-  const el = document.getElementById('adminSurveysList');
+async function openSurveyModal(surveyId) {
   try {
-    const data = await aFetch('/api/admin/surveys/all');
-    const surveys = data.surveys||[];
-    if (!surveys.length) { el.innerHTML='<p style="color:var(--gray-500)">No surveys yet.</p>'; return; }
-    el.innerHTML = surveys.map(s => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:.4rem">
-        <div><strong>${s.title}</strong> <span class="badge ${s.status==='open'?'badge-green':'badge-gray'}">${s.status}</span>
-          <div style="font-size:.75rem;color:var(--gray-500)">${s.currentResponses}/${s.maxResponses} responses · ${s.pendingReview||0} pending · ${s.reward}pts</div>
-        </div>
-        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
-          ${(s.pendingReview||0)>0?`<button onclick="loadSurveySubmissions('${s.id}','${s.title}')" class="btn btn-primary btn-sm">Review (${s.pendingReview})</button>`:''}
-          <button onclick="deleteSurvey('${s.id}')" class="btn btn-danger btn-sm">🗑️</button>
-        </div>
+    const data = await apiFetch(`/api/surveys/${surveyId}`);
+    const survey = data.survey;
+    if (survey.alreadySubmitted) { alert('Already submitted.'); return; }
+    activeSurveyId = surveyId;
+    document.getElementById('surveyModalTitle').textContent = survey.title;
+    document.getElementById('surveyModalDesc').textContent = survey.description;
+    const qEl = document.getElementById('surveyModalQuestions');
+    qEl.innerHTML = survey.questions.map((q,i) => `
+      <div style="margin-bottom:1.1rem">
+        <label style="font-weight:600;display:block;margin-bottom:.4rem;font-size:.9rem">${i+1}. ${q.question}${q.required?' <span style="color:red">*</span>':''}</label>
+        ${q.type==='multiple_choice'?q.options.map(opt=>`<label style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem;cursor:pointer;font-size:.88rem"><input type="radio" name="q${i}" value="${opt}" ${q.required?'required':''}> ${opt}</label>`).join(''):
+          q.type==='yes_no'?`<label style="margin-right:1rem;font-size:.88rem;cursor:pointer"><input type="radio" name="q${i}" value="Yes" required> Yes</label><label style="font-size:.88rem;cursor:pointer"><input type="radio" name="q${i}" value="No" required> No</label>`:
+          q.type==='rating'?`<div style="display:flex;gap:.4rem">${[1,2,3,4,5].map(n=>`<label style="text-align:center;cursor:pointer;font-size:.85rem"><input type="radio" name="q${i}" value="${n}" ${q.required?'required':''} style="display:block;margin:0 auto">${n}</label>`).join('')}</div>`:
+          `<textarea name="q${i}" class="form-control" rows="2" ${q.required?'required':''}></textarea>`}
       </div>`).join('');
-    const pending = surveys.filter(s=>(s.pendingReview||0)>0);
-    if (pending.length) loadSurveySubmissions(pending[0].id, pending[0].title);
-    else document.getElementById('adminSurveySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending reviews.</p>';
-  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
+    showModal('surveyModal');
+  } catch(err) { toast('Error: ' + err.message, false); }
+}
+function closeSurveyModal() { hideModal('surveyModal'); activeSurveyId = null; }
+document.getElementById('surveySubmitBtn').addEventListener('click', async () => {
+  if (!activeSurveyId) return;
+  const responses = [];
+  let i = 0;
+  while (true) {
+    const radio = document.querySelector(`input[name="q${i}"]:checked`);
+    const textarea = document.querySelector(`textarea[name="q${i}"]`);
+    if (!radio && !textarea) break;
+    if (radio) responses.push(radio.value);
+    else if (textarea) responses.push(textarea.value.trim());
+    else responses.push('');
+    i++;
+  }
+  if (!responses.length) { alert('Please answer at least one question.'); return; }
+  const btn = document.getElementById('surveySubmitBtn');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+  try { await apiFetch(`/api/surveys/${activeSurveyId}/submit`, { method: 'POST', body: JSON.stringify({ responses }) }); toast('✅ Survey submitted! Awaiting review.'); closeSurveyModal(); loadSurveys(); }
+  catch(err) { toast('❌ ' + err.message, false); }
+  finally { btn.disabled = false; btn.textContent = 'Submit Survey'; }
+});
+
+// ============ WRITING ============
+async function loadWriting() {
+  try {
+    const data = await apiFetch('/api/writing');
+    const list = document.getElementById('writingList');
+    if (!data.jobs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No writing jobs available right now.</p>'; return; }
+    list.innerHTML = data.jobs.map(job => taskCardHtml(job, 'writing', job.userSubmission ? ('Your status: ' + job.userSubmission.status + (job.userSubmission.reviewNotes ? ' — ' + job.userSubmission.reviewNotes : '')) : null)).join('');
+  } catch(err) { document.getElementById('writingList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
 }
 
-async function loadSurveySubmissions(surveyId, title) {
-  const el = document.getElementById('adminSurveySubmissions');
-  el.innerHTML = 'Loading...';
+async function openWritingModal(jobId) {
   try {
-    const data = await aFetch(`/api/admin/surveys/${surveyId}/submissions`);
-    const pending = (data.submissions||[]).filter(s=>s.status==='submitted');
-    if (!pending.length) { el.innerHTML=`<p style="color:var(--gray-500)">No pending submissions for "${title||''}".</p>`; return; }
-    el.innerHTML = `<p style="font-weight:700;margin-bottom:.75rem">📋 ${title||'Survey'} — ${pending.length} pending</p>` + pending.map(s => `
-      <div class="review-box" style="border-left-color:#3b82f6">
-        <strong>${s.username}</strong> <span style="font-size:.75rem;color:var(--gray-500)">(${s.email})</span>
-        <details style="margin:.4rem 0"><summary style="cursor:pointer;font-size:.82rem;color:#3b82f6;font-weight:600">View Responses</summary>
-          <div style="margin:.4rem 0;font-size:.82rem;background:var(--gray-50);padding:.65rem;border-radius:.35rem">
-            ${Array.isArray(s.responses)?s.responses.map((r,i)=>`<p style="margin:.2rem 0"><strong>Q${i+1}:</strong> ${r||'—'}</p>`).join(''):'No responses'}
+    const data = await apiFetch(`/api/writing/${jobId}`);
+    const job = data.job; activeWritingJobId = jobId;
+    document.getElementById('writingModalTitle').textContent = job.title;
+    document.getElementById('writingModalDesc').textContent = job.description;
+    document.getElementById('writingModalInstructions').textContent = job.instructions;
+    document.getElementById('writingFileInput').value = '';
+    showModal('writingModal');
+  } catch(err) { toast('Error: ' + err.message, false); }
+}
+function closeWritingModal() { hideModal('writingModal'); activeWritingJobId = null; }
+document.getElementById('writingSubmitBtn').addEventListener('click', async () => {
+  if (!activeWritingJobId) return;
+  const file = document.getElementById('writingFileInput').files[0];
+  if (!file) { alert('Select a file.'); return; }
+  const btn = document.getElementById('writingSubmitBtn'); btn.disabled = true; btn.textContent = 'Uploading...';
+  try {
+    const fd = new FormData(); fd.append('file', file);
+    const res = await fetch(`/api/writing/${activeWritingJobId}/submit`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: fd });
+    const data = await res.json(); if (!res.ok) throw new Error(data.error||'Upload failed');
+    toast('✅ ' + data.message); closeWritingModal(); loadWriting();
+  } catch(err) { toast('❌ ' + err.message, false); }
+  finally { btn.disabled = false; btn.textContent = 'Submit Writing Job'; }
+});
+
+// ============ TRANSCRIPTION ============
+async function loadTranscription() {
+  try {
+    const data = await apiFetch('/api/transcriptions');
+    const list = document.getElementById('transcriptionList');
+    if (!data.jobs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No transcription jobs available right now.</p>'; return; }
+    list.innerHTML = data.jobs.map(job => taskCardHtml(job, 'transcription', job.userSubmission ? ('Status: ' + job.userSubmission.status) : null)).join('');
+  } catch(err) { document.getElementById('transcriptionList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
+}
+
+async function openTranscriptionModal(jobId) {
+  try {
+    const data = await apiFetch(`/api/transcriptions/${jobId}`);
+    const job = data.job; activeTranscriptionJobId = jobId;
+    document.getElementById('transcriptionModalTitle').textContent = job.title;
+    document.getElementById('transcriptionModalDesc').textContent = job.description;
+    document.getElementById('transcriptionModalInstructions').textContent = job.instructions;
+    document.getElementById('transcriptionAudio').src = job.audioUrl;
+    document.getElementById('transcriptionText').value = '';
+    document.getElementById('transcriptionCharCount').textContent = '0 chars';
+    showModal('transcriptionModal');
+  } catch(err) { toast('Error: ' + err.message, false); }
+}
+function closeTranscriptionModal() { hideModal('transcriptionModal'); activeTranscriptionJobId = null; }
+document.getElementById('transcriptionText').addEventListener('input', function() { document.getElementById('transcriptionCharCount').textContent = this.value.length + ' chars'; });
+document.getElementById('transcriptionSubmitBtn').addEventListener('click', async () => {
+  if (!activeTranscriptionJobId) return;
+  const content = document.getElementById('transcriptionText').value.trim();
+  if (content.length < 20) { alert('Too short (min 20 chars).'); return; }
+  const btn = document.getElementById('transcriptionSubmitBtn'); btn.disabled = true; btn.textContent = 'Submitting...';
+  try { await apiFetch(`/api/transcriptions/${activeTranscriptionJobId}/submit`, { method: 'POST', body: JSON.stringify({ content }) }); toast('✅ Submitted!'); closeTranscriptionModal(); loadTranscription(); }
+  catch(err) { toast('❌ ' + err.message, false); }
+  finally { btn.disabled = false; btn.textContent = 'Submit Transcription'; }
+});
+
+// ============ DATA ENTRY ============
+async function loadDataentry() {
+  try {
+    const data = await apiFetch('/api/dataentry');
+    const list = document.getElementById('dataentryList');
+    if (!data.jobs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No data entry jobs available right now.</p>'; return; }
+    list.innerHTML = data.jobs.map(job => taskCardHtml(job, 'dataentry', job.userSubmission ? ('Status: ' + job.userSubmission.status) : null)).join('');
+  } catch(err) { document.getElementById('dataentryList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
+}
+
+async function openDataentryModal(jobId) {
+  try {
+    const data = await apiFetch(`/api/dataentry/${jobId}`);
+    const job = data.job; activeDataentryJobId = jobId;
+    document.getElementById('dataentryModalTitle').textContent = job.title;
+    document.getElementById('dataentryModalDesc').textContent = job.description;
+    document.getElementById('dataentryModalInstructions').textContent = job.instructions;
+    const tpl = document.getElementById('dataentryTemplateSection');
+    if (job.templateUrl) { tpl.style.display = 'block'; document.getElementById('dataentryTemplateLink').href = job.templateUrl; } else tpl.style.display = 'none';
+    document.getElementById('dataentryFileInput').value = '';
+    showModal('dataentryModal');
+  } catch(err) { toast('Error: ' + err.message, false); }
+}
+function closeDataentryModal() { hideModal('dataentryModal'); activeDataentryJobId = null; }
+document.getElementById('dataentrySubmitBtn').addEventListener('click', async () => {
+  if (!activeDataentryJobId) return;
+  const file = document.getElementById('dataentryFileInput').files[0];
+  if (!file) { alert('Select a file.'); return; }
+  const btn = document.getElementById('dataentrySubmitBtn'); btn.disabled = true; btn.textContent = 'Uploading...';
+  try {
+    const fd = new FormData(); fd.append('file', file);
+    const res = await fetch(`/api/dataentry/${activeDataentryJobId}/submit`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: fd });
+    const data = await res.json(); if (!res.ok) throw new Error(data.error||'Upload failed');
+    toast('✅ ' + data.message); closeDataentryModal(); loadDataentry();
+  } catch(err) { toast('❌ ' + err.message, false); }
+  finally { btn.disabled = false; btn.textContent = 'Submit Data Entry'; }
+});
+
+// ============ REFERRALS ============
+async function loadReferrals() {
+  try {
+    const [stats, link] = await Promise.all([apiFetch('/api/referrals/stats'), apiFetch('/api/referrals/link')]);
+    const cleanLink = `${window.location.origin}/index.html?ref=${link.inviteCode}`;
+    document.getElementById('referralLink').value = cleanLink;
+    ['1','2','3','4'].forEach(l => {
+      const cnt = stats.levels['level'+l];
+      const total = cnt ? (cnt.count||0) : 0;
+      const active = cnt ? (cnt.active||0) : 0;
+      document.getElementById('level'+l+'Count').textContent = total;
+      document.getElementById('lvl'+l+'Status').textContent = `Active: ${active} | Inactive: ${total-active}`;
+      // Show member boxes
+      const el = document.getElementById('level'+l+'Members');
+      if (el && cnt && cnt.members && cnt.members.length) {
+        el.innerHTML = cnt.members.slice(0,5).map(m => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-top:1px solid var(--gray-100);font-size:.78rem">
+            <span>${m.username}</span>
+            <span class="mbadge ${m.packageType!=='not_active'?'active':'inactive'}">${m.packageType!=='not_active'?'Active':'Inactive'}</span>
+          </div>`).join('');
+        if (cnt.count > 5) el.innerHTML += `<p style="font-size:.72rem;color:var(--gray-500);margin:.25rem 0 0">+${cnt.count-5} more</p>`;
+      }
+    });
+    document.getElementById('totalCommission').textContent = 'KES ' + (stats.summary?.totalCommission||0);
+    document.getElementById('commission1').textContent = 'KES ' + (stats.summary?.commissionByLevel?.level1||0);
+    document.getElementById('commission2').textContent = 'KES ' + (stats.summary?.commissionByLevel?.level2||0);
+    document.getElementById('commission3').textContent = 'KES ' + (stats.summary?.commissionByLevel?.level3||0);
+    document.getElementById('commission4').textContent = 'KES ' + (stats.summary?.commissionByLevel?.level4||0);
+  } catch(err) { console.error('Referrals:', err); }
+}
+
+document.getElementById('copyReferralBtn').addEventListener('click', () => {
+  const el = document.getElementById('referralLink'); el.select(); document.execCommand('copy'); alert('✅ Referral link copied!');
+});
+
+// ============ WITHDRAW ============
+async function loadWithdraw() {
+  try {
+    const profile = await apiFetch('/api/users/profile');
+    const user = profile.user;
+    document.getElementById('withdrawBalance').textContent = 'KES ' + user.primaryWallet.balance;
+    document.getElementById('withdrawPoints').textContent = user.pointsWallet.points;
+    const pKES = Math.floor(user.pointsWallet.points/100)*10;
+    document.getElementById('withdrawPointsKES').textContent = `≈ KES ${pKES} · Tuesdays`;
+    document.getElementById('pointsConvertHint').textContent = user.canWithdrawPoints ? '✅ Eligible to withdraw points (Tuesdays)!' : 'Need 4 active referrals + 2,000 points. KES wallet: Thursdays only.';
+    const eatTime = new Date(new Date().getTime()+3*3600000);
+    const dayIndex = eatTime.getUTCDay();
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const msg = document.getElementById('thursdayMsg');
+    if (dayIndex===2) { msg.textContent = `✅ Today is ${days[dayIndex]} — POINTS withdrawals OPEN!`; msg.style.background='#f0fdf4'; msg.style.color='#16a34a'; msg.style.borderColor='#16a34a'; }
+    else if (dayIndex===4) { msg.textContent = `✅ Today is ${days[dayIndex]} — KES wallet withdrawals OPEN!`; msg.style.background='#f0fdf4'; msg.style.color='#16a34a'; msg.style.borderColor='#16a34a'; }
+    else { msg.textContent = `⏰ Today is ${days[dayIndex]}. Points: Tuesdays | KES wallet: Thursdays.`; }
+    const hist = await apiFetch('/api/withdrawals/my').catch(()=>null);
+    const histEl = document.getElementById('withdrawHistory');
+    if (hist && hist.withdrawals.length) {
+      histEl.innerHTML = hist.withdrawals.map(w => `
+        <div style="padding:.65rem 0;border-bottom:1px solid var(--gray-100)">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem">
+            <div>
+              <strong>${w.type==='points'?`${w.pointsRedeemed}pts → `:''}KES ${w.amount}</strong>
+              <span style="font-size:.72rem;background:${w.type==='kes'?'#dbeafe':'#fef9c3'};color:${w.type==='kes'?'#1d4ed8':'#854d0e'};padding:.1rem .4rem;border-radius:4px;margin-left:.3rem">${(w.type||'').toUpperCase()}</span>
+              <p style="margin:.15rem 0 0;font-size:.78rem;color:var(--gray-500)">${new Date(w.requestedAt).toLocaleDateString()} | ${(w.paymentMethod||'').toUpperCase()}</p>
+              ${w.adminNotes?`<p style="margin:.1rem 0 0;font-size:.75rem;color:var(--gray-500)">${w.adminNotes}</p>`:''}
+            </div>
+            <span style="padding:.15rem .6rem;border-radius:999px;font-size:.75rem;font-weight:700;background:${w.status==='completed'?'#dcfce7':w.status==='pending'?'#fef3c7':'#fee2e2'};color:${w.status==='completed'?'#16a34a':w.status==='pending'?'#b45309':'#dc2626'}">${(w.status||'').toUpperCase()}</span>
           </div>
-        </details>
-        <div style="display:flex;gap:.4rem;margin-top:.5rem">
-          <button onclick="adminApproveSurvey('${surveyId}','${s.userId}')" class="btn btn-primary btn-sm">✅ Approve</button>
-          <button onclick="adminRejectSurvey('${surveyId}','${s.userId}')" class="btn btn-danger btn-sm">❌ Reject</button>
-        </div>
-      </div>`).join('');
-  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
+        </div>`).join('');
+    } else { histEl.innerHTML = '<p style="color:var(--gray-500);font-size:.88rem">No withdrawal history yet.</p>'; }
+  } catch(err) { console.error('Withdraw:', err); }
 }
 
-async function adminApproveSurvey(surveyId, userId) {
-  try { await aFetch(`/api/admin/surveys/${surveyId}/approve/${userId}`,{method:'POST'}); alert('✅ Approved!'); loadAdminSurveys(); } catch(err) { alert('❌ '+err.message); }
-}
-async function adminRejectSurvey(surveyId, userId) {
-  const notes = prompt('Reason:') || 'Rejected';
-  try { await aFetch(`/api/admin/surveys/${surveyId}/reject/${userId}`,{method:'POST',body:JSON.stringify({reviewNotes:notes})}); alert('Rejected.'); loadAdminSurveys(); } catch(err) { alert('❌ '+err.message); }
-}
-async function deleteSurvey(id) {
-  if (!confirm('Delete survey?')) return;
-  try { await aFetch(`/api/admin/surveys/${id}`,{method:'DELETE'}); loadAdminSurveys(); } catch(err) { alert('❌ '+err.message); }
-}
+document.getElementById('paymentMethod').addEventListener('change', e => {
+  document.getElementById('mpesaSection').style.display = e.target.value==='mpesa' ? 'block' : 'none';
+  document.getElementById('bankSection').style.display = e.target.value==='bank' ? 'block' : 'none';
+});
 
-// ============ WRITING JOBS ============
-async function createWritingJob() {
+document.getElementById('withdrawalForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('withdrawBtn'); btn.disabled = true; btn.textContent = 'Submitting...';
   try {
-    await aFetch('/api/admin/writing/create', {method:'POST', body:JSON.stringify({
-      title: document.getElementById('writingJobTitle').value,
-      description: document.getElementById('writingJobDesc').value,
-      instructions: document.getElementById('writingJobInstructions').value,
-      wordCount: document.getElementById('writingJobWordCount').value||null,
-      maxWorkers: parseInt(document.getElementById('writingJobMaxWorkers').value),
-      reward: parseInt(document.getElementById('writingJobReward').value),
-      deadline: document.getElementById('writingJobDeadline').value||null
-    })});
-    showMsg('createWritingMsg','✅ Writing job created!',true);
-    ['writingJobTitle','writingJobDesc','writingJobInstructions','writingJobWordCount'].forEach(id=>document.getElementById(id).value='');
-    loadAdminWritingJobs();
-  } catch(err) { showMsg('createWritingMsg','❌ '+err.message,false); }
-}
+    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    let paymentDetails = {};
+    if (paymentMethod==='mpesa') { paymentDetails = { mpesaPhone: document.getElementById('mpesaPhone').value.trim() }; }
+    else if (paymentMethod==='bank') { paymentDetails = { bankName: document.getElementById('bankName').value, accountNumber: document.getElementById('accountNumber').value, accountName: document.getElementById('accountName').value }; }
+    await apiFetch('/api/withdrawals/kes', { method: 'POST', body: JSON.stringify({ amount, paymentMethod, paymentDetails }) });
+    alert('✅ Withdrawal submitted! Admin will process it.');
+    e.target.reset(); document.getElementById('mpesaSection').style.display='none'; document.getElementById('bankSection').style.display='none';
+    loadWithdraw();
+  } catch(err) { toast('❌ ' + err.message, false); }
+  finally { btn.disabled = false; btn.textContent = 'Request Withdrawal'; }
+});
 
-async function loadAdminWritingJobs() {
-  const el = document.getElementById('adminWritingJobsList');
+// ============ PROFILE ============
+async function loadProfile() {
   try {
-    const data = await aFetch('/api/admin/writing/all');
-    const jobs = data.jobs||[];
-    if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No writing jobs yet.</p>'; document.getElementById('adminWritingSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending reviews.</p>'; return; }
-    el.innerHTML = jobs.map(job => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:.4rem">
-        <div><strong>${job.title}</strong> <span class="badge ${job.status==='open'?'badge-green':'badge-gray'}">${job.status}</span>
-          ${job.wordCount?`<span style="font-size:.72rem;color:#1e40af"> | ${job.wordCount}</span>`:''}
-          ${job.deadline?`<span style="font-size:.72rem;color:#b45309"> | Due: ${new Date(job.deadline).toLocaleDateString()}</span>`:''}
-          <div style="font-size:.75rem;color:var(--gray-500)">${job.currentWorkers}/${job.maxWorkers} slots · ${job.pending||0} pending · ${job.reward}pts</div>
-        </div>
-        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
-          ${(job.pending||0)>0?`<button onclick="loadWritingSubmissions('${job.id}','${job.title}')" class="btn btn-primary btn-sm">Review (${job.pending})</button>`:''}
-          <button onclick="editWritingJob('${job.id}')" class="btn btn-ghost btn-sm">✏️</button>
-          <button onclick="markWritingComplete('${job.id}')" class="btn btn-warning btn-sm">✅ Complete</button>
-          <button onclick="deleteWritingJob('${job.id}')" class="btn btn-danger btn-sm">🗑️</button>
-        </div>
-      </div>`).join('');
-    const pending = jobs.filter(j=>(j.pending||0)>0);
-    if (pending.length) loadWritingSubmissions(pending[0].id, pending[0].title);
-    else document.getElementById('adminWritingSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending writing reviews.</p>';
-  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
+    const data = await apiFetch('/api/users/profile');
+    const user = data.user;
+    document.getElementById('profileUsername').textContent = user.username;
+    document.getElementById('profileEmail').textContent = user.email;
+    document.getElementById('profilePhone').textContent = user.phone;
+    document.getElementById('profileJoinDate').textContent = new Date(user.createdAt).toLocaleDateString();
+    document.getElementById('profilePackage').textContent = user.packageType==='not_active'?'❌ Not Activated':'✅ Active';
+    document.getElementById('profileStatus').textContent = user.status;
+    document.getElementById('profileInviteCode').value = `${window.location.origin}/index.html?ref=${user.inviteCode}`;
+  } catch(err) { console.error('Profile:', err); }
 }
 
-async function loadWritingSubmissions(jobId, title) {
-  const el = document.getElementById('adminWritingSubmissions');
-  el.innerHTML = 'Loading...';
-  try {
-    const data = await aFetch(`/api/admin/writing/${jobId}/submissions`);
-    const pending = (data.submissions||[]).filter(s=>s.status==='submitted');
-    if (!pending.length) { el.innerHTML=`<p style="color:var(--gray-500)">No pending for "${title||''}".</p>`; return; }
-    el.innerHTML = `<p style="font-weight:700;margin-bottom:.75rem">✍️ ${title||'Writing'} — ${pending.length} pending</p>` + pending.map(s=>`
-      <div class="review-box">
-        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:.3rem;margin-bottom:.4rem">
-          <div><strong>${s.username}</strong> <span style="font-size:.75rem;color:var(--gray-500)">(${s.email})</span></div>
-          <span style="font-size:.72rem;color:var(--gray-500)">${new Date(s.submittedAt).toLocaleString()}</span>
-        </div>
-        <p style="font-size:.82rem;margin:.2rem 0">📎 <a href="${s.fileUrl}" target="_blank" style="color:var(--primary)">View File — ${s.fileName||'download'}</a></p>
-        <div style="display:flex;gap:.4rem;margin-top:.5rem">
-          <button onclick="approveWriting('${jobId}','${s.userId}')" class="btn btn-primary btn-sm">✅ Approve</button>
-          <button onclick="rejectWriting('${jobId}','${s.userId}')" class="btn btn-danger btn-sm">❌ Reject</button>
-        </div>
-      </div>`).join('');
-  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
-}
-
-async function approveWriting(jobId, userId) {
-  const notes = prompt('Notes (optional):') || '';
-  try { await aFetch(`/api/admin/writing/${jobId}/approve/${userId}`,{method:'POST',body:JSON.stringify({notes})}); alert('✅ Approved!'); loadAdminWritingJobs(); } catch(err) { alert('❌ '+err.message); }
-}
-async function rejectWriting(jobId, userId) {
-  const reason = prompt('Reason:') || 'Did not meet requirements';
-  try { await aFetch(`/api/admin/writing/${jobId}/reject/${userId}`,{method:'POST',body:JSON.stringify({reason})}); alert('Rejected.'); loadAdminWritingJobs(); } catch(err) { alert('❌ '+err.message); }
-}
-function editWritingJob(id) { const r = parseInt(prompt('New reward (points):')||'0'); if(!r) return; aFetch(`/api/admin/writing/${id}`,{method:'PUT',body:JSON.stringify({reward:r})}).then(()=>loadAdminWritingJobs()).catch(e=>alert('❌ '+e.message)); }
-async function markWritingComplete(id) { try { await aFetch(`/api/admin/writing/${id}/close`,{method:'POST'}); loadAdminWritingJobs(); } catch(err) { alert('❌ '+err.message); } }
-async function deleteWritingJob(id) { if(!confirm('Delete this writing job?')) return; try { await aFetch(`/api/admin/writing/${id}`,{method:'DELETE'}); loadAdminWritingJobs(); } catch(err) { alert('❌ '+err.message); } }
-
-// ============ TRANSCRIPTION JOBS ============
-async function createTranscriptionJob() {
-  const audioFile = document.getElementById('transcriptionJobAudio').files[0];
-  if (!audioFile) { showMsg('createTranscriptionMsg','❌ Audio file required.',false); return; }
-  const msgEl = document.getElementById('createTranscriptionMsg');
-  msgEl.textContent = 'Uploading audio...'; msgEl.className = 'msg msg-ok'; msgEl.style.display = 'block';
-  try {
-    const fd = new FormData();
-    fd.append('audio', audioFile);
-    fd.append('title', document.getElementById('transcriptionJobTitle').value);
-    fd.append('description', document.getElementById('transcriptionJobDesc').value);
-    fd.append('instructions', document.getElementById('transcriptionJobInstructions').value);
-    fd.append('reward', document.getElementById('transcriptionJobReward').value);
-    fd.append('maxWorkers', document.getElementById('transcriptionJobMaxWorkers').value);
-    const deadline = document.getElementById('transcriptionJobDeadline').value;
-    if (deadline) fd.append('deadline', deadline);
-    const res = await fetch('/api/admin/transcription/create', { method: 'POST', headers: { 'Authorization': `Bearer ${_adminToken}` }, body: fd });
-    const data = await res.json(); if (!res.ok) throw new Error(data.error||'Failed');
-    showMsg('createTranscriptionMsg','✅ Transcription job created!',true);
-    ['transcriptionJobTitle','transcriptionJobDesc','transcriptionJobInstructions'].forEach(id=>document.getElementById(id).value='');
-    loadAdminTranscriptionJobs();
-  } catch(err) { showMsg('createTranscriptionMsg','❌ '+err.message,false); }
-}
-
-async function loadAdminTranscriptionJobs() {
-  const el = document.getElementById('adminTranscriptionJobsList');
-  try {
-    const data = await aFetch('/api/admin/transcription/all');
-    const jobs = data.jobs||[];
-    if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No transcription jobs yet.</p>'; document.getElementById('adminTranscriptionSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
-    el.innerHTML = jobs.map(job => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:.4rem">
-        <div><strong>${job.title}</strong> <span class="badge ${job.status==='open'?'badge-green':'badge-gray'}">${job.status}</span>
-          <div style="font-size:.75rem;color:var(--gray-500)">${job.currentWorkers}/${job.maxWorkers} · ${job.pending||0} pending · ${job.reward}pts</div>
-          <audio src="${job.audioUrl}" controls style="height:26px;margin-top:.2rem"></audio>
-        </div>
-        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
-          ${(job.pending||0)>0?`<button onclick="loadTranscriptionSubmissions('${job.id}','${job.title}')" class="btn btn-primary btn-sm">Review (${job.pending})</button>`:''}
-          <button onclick="markTranscriptionComplete('${job.id}')" class="btn btn-warning btn-sm">✅ Close</button>
-          <button onclick="deleteTranscriptionJob('${job.id}')" class="btn btn-danger btn-sm">🗑️</button>
-        </div>
-      </div>`).join('');
-    const pending = jobs.filter(j=>(j.pending||0)>0);
-    if (pending.length) loadTranscriptionSubmissions(pending[0].id, pending[0].title);
-    else document.getElementById('adminTranscriptionSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>';
-  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
-}
-
-async function loadTranscriptionSubmissions(jobId, title) {
-  const el = document.getElementById('adminTranscriptionSubmissions');
-  el.innerHTML='Loading...';
-  try {
-    const data = await aFetch(`/api/admin/transcription/${jobId}/submissions`);
-    const pending = (data.submissions||[]).filter(s=>s.status==='submitted');
-    if (!pending.length) { el.innerHTML=`<p style="color:var(--gray-500)">No pending for "${title||''}".</p>`; return; }
-    el.innerHTML = `<p style="font-weight:700;margin-bottom:.75rem">🎙️ ${title||'Transcription'} — ${pending.length} pending</p>` + pending.map(s=>`
-      <div class="review-box" style="border-left-color:#6366f1">
-        <strong>${s.username}</strong> <span style="font-size:.75rem;color:var(--gray-500)">(${s.email})</span>
-        <details style="margin:.4rem 0"><summary style="cursor:pointer;font-size:.82rem;color:#6366f1;font-weight:600">View Transcription</summary>
-          <p style="margin:.4rem 0;font-size:.82rem;background:var(--gray-50);padding:.65rem;border-radius:.35rem;white-space:pre-wrap">${s.content||'(empty)'}</p>
-        </details>
-        <div style="display:flex;gap:.4rem;margin-top:.5rem">
-          <button onclick="approveTranscription('${jobId}','${s.userId}')" class="btn btn-primary btn-sm">✅ Approve</button>
-          <button onclick="rejectTranscription('${jobId}','${s.userId}')" class="btn btn-danger btn-sm">❌ Reject</button>
-        </div>
-      </div>`).join('');
-  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
-}
-
-async function approveTranscription(jobId, userId) { try { await aFetch(`/api/admin/transcription/${jobId}/approve/${userId}`,{method:'POST',body:JSON.stringify({notes:''})}); alert('✅'); loadAdminTranscriptionJobs(); } catch(err) { alert('❌ '+err.message); } }
-async function rejectTranscription(jobId, userId) { const r=prompt('Reason:')||''; try { await aFetch(`/api/admin/transcription/${jobId}/reject/${userId}`,{method:'POST',body:JSON.stringify({reason:r})}); loadAdminTranscriptionJobs(); } catch(err) { alert('❌ '+err.message); } }
-async function markTranscriptionComplete(id) { try { await aFetch(`/api/admin/transcription/${id}/close`,{method:'POST'}); loadAdminTranscriptionJobs(); } catch(err) { alert('❌ '+err.message); } }
-async function deleteTranscriptionJob(id) { if(!confirm('Delete?')) return; try { await aFetch(`/api/admin/transcription/${id}`,{method:'DELETE'}); loadAdminTranscriptionJobs(); } catch(err) { alert('❌ '+err.message); } }
-
-// ============ DATA ENTRY JOBS ============
-async function createDataentryJob() {
-  const fd = new FormData();
-  fd.append('title', document.getElementById('dataentryJobTitle').value);
-  fd.append('description', document.getElementById('dataentryJobDesc').value);
-  fd.append('instructions', document.getElementById('dataentryJobInstructions').value);
-  fd.append('reward', document.getElementById('dataentryJobReward').value);
-  fd.append('maxWorkers', document.getElementById('dataentryJobMaxWorkers').value);
-  const deadline = document.getElementById('dataentryJobDeadline').value;
-  if (deadline) fd.append('deadline', deadline);
-  const tplFile = document.getElementById('dataentryJobTemplate').files[0];
-  if (tplFile) fd.append('template', tplFile);
-  try {
-    const res = await fetch('/api/admin/dataentry/create', { method:'POST', headers:{'Authorization':`Bearer ${_adminToken}`}, body:fd });
-    const data = await res.json(); if (!res.ok) throw new Error(data.error||'Failed');
-    showMsg('createDataentryMsg','✅ Data entry job created!',true);
-    ['dataentryJobTitle','dataentryJobDesc','dataentryJobInstructions'].forEach(id=>document.getElementById(id).value='');
-    loadAdminDataentryJobs();
-  } catch(err) { showMsg('createDataentryMsg','❌ '+err.message,false); }
-}
-
-async function loadAdminDataentryJobs() {
-  const el = document.getElementById('adminDataentryJobsList');
-  try {
-    const data = await aFetch('/api/admin/dataentry/all');
-    const jobs = data.jobs||[];
-    if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No data entry jobs yet.</p>'; document.getElementById('adminDataentrySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
-    el.innerHTML = jobs.map(job=>`
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;gap:.4rem">
-        <div><strong>${job.title}</strong> <span class="badge ${job.status==='open'?'badge-green':'badge-gray'}">${job.status}</span>
-          ${job.templateUrl?`<a href="${job.templateUrl}" target="_blank" style="font-size:.72rem;color:var(--primary);margin-left:.3rem">📥 Template</a>`:''}
-          <div style="font-size:.75rem;color:var(--gray-500)">${job.currentWorkers}/${job.maxWorkers} · ${job.pending||0} pending · ${job.reward}pts</div>
-        </div>
-        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
-          ${(job.pending||0)>0?`<button onclick="loadDataentrySubmissions('${job.id}','${job.title}')" class="btn btn-primary btn-sm">Review (${job.pending})</button>`:''}
-          <button onclick="markDataentryComplete('${job.id}')" class="btn btn-warning btn-sm">✅ Close</button>
-          <button onclick="deleteDataentryJob('${job.id}')" class="btn btn-danger btn-sm">🗑️</button>
-        </div>
-      </div>`).join('');
-    const pending = jobs.filter(j=>(j.pending||0)>0);
-    if (pending.length) loadDataentrySubmissions(pending[0].id, pending[0].title);
-    else document.getElementById('adminDataentrySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>';
-  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
-}
-
-async function loadDataentrySubmissions(jobId, title) {
-  const el = document.getElementById('adminDataentrySubmissions');
-  el.innerHTML='Loading...';
-  try {
-    const data = await aFetch(`/api/admin/dataentry/${jobId}/submissions`);
-    const pending = (data.submissions||[]).filter(s=>s.status==='submitted');
-    if (!pending.length) { el.innerHTML=`<p style="color:var(--gray-500)">No pending for "${title||''}".</p>`; return; }
-    el.innerHTML = `<p style="font-weight:700;margin-bottom:.75rem">📂 ${title||'Data Entry'} — ${pending.length} pending</p>` + pending.map(s=>`
-      <div class="review-box" style="border-left-color:#f59e0b">
-        <strong>${s.username}</strong> <span style="font-size:.75rem;color:var(--gray-500)">(${s.email})</span>
-        <p style="font-size:.82rem;margin:.25rem 0">📎 <a href="${s.fileUrl}" target="_blank" style="color:var(--primary)">View File — ${s.fileName||'download'}</a></p>
-        <div style="display:flex;gap:.4rem;margin-top:.5rem">
-          <button onclick="approveDataentry('${jobId}','${s.userId}')" class="btn btn-primary btn-sm">✅ Approve</button>
-          <button onclick="rejectDataentry('${jobId}','${s.userId}')" class="btn btn-danger btn-sm">❌ Reject</button>
-        </div>
-      </div>`).join('');
-  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
-}
-
-async function approveDataentry(jobId, userId) { const n=prompt('Notes:')||''; try { await aFetch(`/api/admin/dataentry/${jobId}/approve/${userId}`,{method:'POST',body:JSON.stringify({notes:n})}); alert('✅'); loadAdminDataentryJobs(); } catch(err) { alert('❌ '+err.message); } }
-async function rejectDataentry(jobId, userId) { const r=prompt('Reason:')||''; try { await aFetch(`/api/admin/dataentry/${jobId}/reject/${userId}`,{method:'POST',body:JSON.stringify({reason:r})}); loadAdminDataentryJobs(); } catch(err) { alert('❌ '+err.message); } }
-async function markDataentryComplete(id) { try { await aFetch(`/api/admin/dataentry/${id}/close`,{method:'POST'}); loadAdminDataentryJobs(); } catch(err) { alert('❌ '+err.message); } }
-async function deleteDataentryJob(id) { if(!confirm('Delete?')) return; try { await aFetch(`/api/admin/dataentry/${id}`,{method:'DELETE'}); loadAdminDataentryJobs(); } catch(err) { alert('❌ '+err.message); } }
-
-// ============ WITHDRAWALS ============
-async function loadAdminWithdrawals() {
-  const status = document.getElementById('withdrawFilterStatus')?.value||'pending';
-  const el = document.getElementById('adminWithdrawalsList');
-  el.innerHTML = 'Loading...';
-  try {
-    const data = await aFetch(`/api/withdrawals/admin/all?status=${status}`);
-    const wds = data.withdrawals||[];
-    if (!wds.length) { el.innerHTML=`<p style="color:var(--gray-500)">No ${status} withdrawals.</p>`; return; }
-    el.innerHTML = `<p style="font-size:.8rem;color:var(--gray-500);margin-bottom:.75rem">${wds.length} ${status} withdrawal(s)</p><div class="wd-grid">` +
-    wds.map(w=>`
-      <div class="wd-box ${w.status}">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
-          <div><strong>${w.username}</strong> <span style="font-size:1.1rem;font-weight:800;color:var(--primary)">KES ${w.amount}</span>
-            ${w.type?`<span class="badge badge-blue" style="margin-left:.25rem">${w.type.toUpperCase()}</span>`:''}
-          </div>
-          <span class="badge ${w.status==='completed'?'badge-green':w.status==='pending'?'badge-yellow':'badge-red'}">${w.status}</span>
-        </div>
-        <p style="font-size:.78rem;color:var(--gray-500);margin:.2rem 0">${w.email} | ${w.phone}</p>
-        <p style="font-size:.78rem;margin:.2rem 0"><strong>Method:</strong> ${(w.paymentMethod||'').toUpperCase()}
-          ${w.paymentDetails?.mpesaPhone?` | 📱 ${w.paymentDetails.mpesaPhone}`:''}
-          ${w.paymentDetails?.accountNumber?` | 🏦 ${w.paymentDetails.accountNumber} (${w.paymentDetails.accountName})`:''}</p>
-        <p style="font-size:.72rem;color:var(--gray-500);margin:.2rem 0">${new Date(w.requestedAt).toLocaleString()}</p>
-        ${w.adminNotes?`<p style="font-size:.75rem;color:var(--gray-700);margin:.2rem 0">📝 ${w.adminNotes}</p>`:''}
-        ${w.status==='pending'?`<div style="display:flex;gap:.4rem;margin-top:.6rem">
-          <button onclick="completeWithdrawal('${w.id}')" class="btn btn-primary btn-sm">✅ Mark Paid</button>
-          <button onclick="rejectWithdrawal('${w.id}')" class="btn btn-danger btn-sm">❌ Reject</button>
-        </div>`:''}
-      </div>`).join('') + '</div>';
-  } catch(err) { el.innerHTML=`<p style="color:#dc2626">${err.message}</p>`; }
-}
-
-async function completeWithdrawal(id) {
-  const notes = prompt('Notes (e.g. M-Pesa ID):') || 'Paid';
-  try { await aFetch(`/api/withdrawals/admin/${id}/complete`,{method:'POST',body:JSON.stringify({adminNotes:notes})}); alert('✅ Marked complete.'); loadAdminWithdrawals(); } catch(err) { alert('❌ '+err.message); }
-}
-async function rejectWithdrawal(id) {
-  const notes = prompt('Reason:') || 'Rejected';
-  try { await aFetch(`/api/withdrawals/admin/${id}/reject`,{method:'POST',body:JSON.stringify({adminNotes:notes})}); loadAdminWithdrawals(); } catch(err) { alert('❌ '+err.message); }
-}
-
-// ============ INIT ============
-loadAdminDashboard();
+document.getElementById('changePasswordForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('changePwdBtn');
+  const errEl = document.getElementById('pwdError'); const succEl = document.getElementById('pwdSuccess');
+  errEl.style.display='none'; succEl.style.display='none';
+  const newPwd = document.getElementById('newPassword').value;
+  if (newPwd !== document.getElementById('confirmPassword').value) { errEl.textContent='Passwords do not match.'; errEl.style.display='block'; return; }
+  btn.disabled=true; btn.textContent='Changing...';
+  try { await apiFetch('/api/users/change-password', { method:'PUT', body:JSON.stringify({ currentPassword: document.getElementById('currentPassword').value, newPassword: newPwd }) }); succEl.style.display='block'; e.target.reset(); }
+  catch(err) { errEl.textContent=err.message; errEl.style.display='block'; }
+  finally { btn.disabled=false; btn.textContent='Change Password'; }
+});
 </script>
 </body>
 </html>
