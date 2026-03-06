@@ -7,6 +7,17 @@ const { uploadDocument, deleteFile } = require('../config/cloudinary');
 const { authMiddleware, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
+// ── Safe side-effect helpers: notification/commission failures never crash approvals ──
+async function safeNotify(payload) {
+  try { await Notification.create(payload); }
+  catch (e) { console.error('⚠️  Notification skipped:', e.message); }
+}
+async function safeCommission(payload) {
+  try { await Commission.create(payload); }
+  catch (e) { console.error('⚠️  Commission log skipped:', e.message); }
+}
+
+
 
 // ─────────────────────────────────────────────────────────────
 // USER ROUTES
@@ -220,15 +231,13 @@ router.post('/admin/:id/approve/:userId', authMiddleware, requireAdmin, async (r
       }
     });
 
-    await Commission.create({
-      fromUserId: req.params.userId,
-      toUserId:   req.params.userId,
-      level: 1, amount: job.reward,
-      type: 'task_earning', status: 'completed',
+    await safeCommission({
+      fromUserId: req.params.userId, toUserId: req.params.userId,
+      level: 1, amount: job.reward, type: 'task_earning', status: 'completed',
       description: `Data entry approved: ${job.title}`
     });
 
-    await Notification.create({
+    await safeNotify({
       userId:  req.params.userId,
       type:    'task_approved',
       title:   '✅ Data Entry Approved!',
@@ -259,7 +268,7 @@ router.post('/admin/:id/reject/:userId', authMiddleware, requireAdmin, async (re
     submission.reviewNotes = reason || 'Did not meet requirements';
     await job.save();
 
-    await Notification.create({
+    await safeNotify({
       userId:  req.params.userId,
       type:    'task_rejected',
       title:   '❌ Data Entry Rejected',
@@ -310,19 +319,3 @@ router.delete('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
 });
 
 module.exports = router;
-// GET /api/dataentry/file/signed — generate signed download URL for a file
-// Query: ?publicId=xxx&fileName=xxx
-router.get('/file/signed', authMiddleware, async (req, res) => {
-  try {
-    const { publicId, fileName } = req.query;
-    if (!publicId) return res.status(400).json({ error: 'publicId required' });
-    
-    const { getSignedDownloadUrl } = require('../config/cloudinary');
-    const signedUrl = getSignedDownloadUrl(publicId, 'raw', 3600);
-    
-    if (!signedUrl) return res.status(500).json({ error: 'Could not generate download URL' });
-    res.json({ url: signedUrl, fileName: fileName || 'download' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
