@@ -85,6 +85,7 @@
       .ref-grid{grid-template-columns:1fr 1fr}
       .task-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
     }
+  @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -522,17 +523,39 @@ let currentUser = null;
 let activeBlogId = null, activeSurveyId = null, activeWritingJobId = null, activeTranscriptionJobId = null, activeDataentryJobId = null;
 
 // ============ HELPERS ============
-function apiHeaders() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` }; }
 async function apiFetch(url, opts = {}) {
-  const res = await fetch(url, { ...opts, headers: apiHeaders() });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Request failed');
-  return data;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000); // 20s timeout
+  try {
+    // Only set Content-Type for JSON — let browser set it for FormData
+    const isFormData = opts.body instanceof FormData;
+    const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
+    if (!isFormData) headers['Content-Type'] = 'application/json';
+    const res = await fetch(url, { ...opts, headers, signal: controller.signal });
+    clearTimeout(timer);
+    let data;
+    try { data = await res.json(); } catch(e) { data = {}; }
+    if (res.status === 401) { logout(); throw new Error('Session expired. Please log in again.'); }
+    if (!res.ok) throw new Error(data.error || data.message || `Error ${res.status}`);
+    return data;
+  } catch(err) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') throw new Error('Request timed out. Check your connection and try again.');
+    throw err;
+  }
 }
 function logout() { localStorage.clear(); window.location.href = '/index.html'; }
 function toggleSidenav() { document.getElementById('sidenav').classList.toggle('open'); }
 function showModal(id) { document.getElementById(id).style.display = 'block'; }
 function hideModal(id) { document.getElementById(id).style.display = 'none'; }
+function setLoading(elId, msg='Loading…') {
+  const el = document.getElementById(elId);
+  if (el) el.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2.5rem;color:var(--gray-500)"><div style="display:inline-block;width:28px;height:28px;border:3px solid #e5e7eb;border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:.75rem"></div><p style="margin:0;font-size:.85rem">${msg}</p></div>`;
+}
+function setError(elId, errMsg, retryFn) {
+  const el = document.getElementById(elId);
+  if (el) el.innerHTML = `<div style="grid-column:1/-1;background:#fee2e2;border:1px solid #fca5a5;border-radius:.5rem;padding:1rem 1.25rem;color:#dc2626;font-size:.83rem">⚠️ ${errMsg}${retryFn ? ` <button onclick="${retryFn}()" style="margin-left:.5rem;background:#dc2626;color:#fff;border:none;padding:.2rem .6rem;border-radius:.3rem;cursor:pointer;font-size:.78rem">Retry</button>` : ''}</div>`;
+}
 
 // ============ ROUTING ============
 const ACTIVE_ONLY = ['blogs','surveys','writing','transcription','dataentry','referrals','withdraw','profile'];
@@ -613,6 +636,10 @@ async function doActivation() {
 
 // ============ DASHBOARD ============
 async function loadDashboard() {
+  // Show loading state on wallet displays
+  ['dashMainWallet','dashPoints','dashTotalEarnings','dashActiveReferrals'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.textContent = '…';
+  });
   try {
     const data = await apiFetch('/api/users/dashboard');
     currentUser = data;
@@ -635,7 +662,24 @@ async function loadDashboard() {
     }
     loadDashboardReferrals();
     loadInactiveReferrals();
-  } catch(err) { if (err.message.toLowerCase().includes('token')) logout(); }
+  } catch(err) {
+    console.error('Dashboard load error:', err.message);
+    if (err.message.toLowerCase().includes('session') || err.message.toLowerCase().includes('token') || err.message.toLowerCase().includes('401')) {
+      logout();
+    } else {
+      // Show error on page so user knows what happened
+      const dashEl = document.getElementById('pg-dashboard');
+      if (dashEl) {
+        const errDiv = document.getElementById('dashLoadError') || (() => {
+          const d = document.createElement('div');
+          d.id = 'dashLoadError';
+          d.style.cssText = 'background:#fee2e2;border:1px solid #fca5a5;border-radius:.5rem;padding:1rem;margin:1rem 0;color:#dc2626;font-size:.85rem';
+          dashEl.prepend(d); return d;
+        })();
+        errDiv.innerHTML = `⚠️ Failed to load dashboard: <strong>${err.message}</strong> &nbsp;<button onclick="loadDashboard()" style="background:#dc2626;color:#fff;border:none;padding:.25rem .7rem;border-radius:.35rem;cursor:pointer;font-size:.8rem">Retry</button>`;
+      }
+    }
+  }
 }
 
 async function loadDashboardReferrals() {
@@ -755,13 +799,14 @@ function taskCardHtml(item, type, userStatus) {
 }
 
 async function loadBlogs() {
+  setLoading('blogsList', 'Loading blogs…');
   try {
     const [dashData, blogsData] = await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null), apiFetch('/api/blogs')]);
     if (dashData) document.getElementById('blogsDaily').textContent = `📅 Today: ${dashData.dailyProgress.blogsLeft}/2 remaining | ⭐ Each = 100 points`;
     const list = document.getElementById('blogsList');
     if (!blogsData.blogs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No blogs available right now.</p>'; return; }
     list.innerHTML = blogsData.blogs.map(b => taskCardHtml(b, 'blogs', b.userBidStatus)).join('');
-  } catch(err) { document.getElementById('blogsList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
+  } catch(err) { setError('blogsList', err.message, 'loadBlogs'); }
 }
 
 async function openBlogModal(blogId) {
@@ -791,13 +836,14 @@ document.getElementById('blogSubmitBtn').addEventListener('click', async () => {
 
 // ============ SURVEYS ============
 async function loadSurveys() {
+  setLoading('surveysList', 'Loading surveys…');
   try {
     const [dashData, surveysData] = await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null), apiFetch('/api/surveys')]);
     if (dashData) document.getElementById('surveysDaily').textContent = `📅 Today: ${dashData.dailyProgress.surveysLeft}/2 remaining | ⭐ Each = 100 points`;
     const list = document.getElementById('surveysList');
     if (!surveysData.surveys.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No surveys available right now.</p>'; return; }
     list.innerHTML = surveysData.surveys.map(s => taskCardHtml(s, 'surveys', s.userBidStatus)).join('');
-  } catch(err) { document.getElementById('surveysList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
+  } catch(err) { setError('surveysList', err.message, 'loadSurveys'); }
 }
 
 async function openSurveyModal(surveyId) {
@@ -844,12 +890,13 @@ document.getElementById('surveySubmitBtn').addEventListener('click', async () =>
 
 // ============ WRITING ============
 async function loadWriting() {
+  setLoading('writingList', 'Loading writing jobs…');
   try {
     const data = await apiFetch('/api/writing');
     const list = document.getElementById('writingList');
     if (!data.jobs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No writing jobs available right now.</p>'; return; }
     list.innerHTML = data.jobs.map(job => taskCardHtml(job, 'writing', job.userSubmission ? ('Your status: ' + job.userSubmission.status + (job.userSubmission.reviewNotes ? ' — ' + job.userSubmission.reviewNotes : '')) : null)).join('');
-  } catch(err) { document.getElementById('writingList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
+  } catch(err) { setError('writingList', err.message, 'loadWriting'); }
 }
 
 async function openWritingModal(jobId) {
@@ -867,12 +914,11 @@ function closeWritingModal() { hideModal('writingModal'); activeWritingJobId = n
 document.getElementById('writingSubmitBtn').addEventListener('click', async () => {
   if (!activeWritingJobId) return;
   const file = document.getElementById('writingFileInput').files[0];
-  if (!file) { alert('Select a file.'); return; }
+  if (!file) { toast('Select a file first.', false); return; }
   const btn = document.getElementById('writingSubmitBtn'); btn.disabled = true; btn.textContent = 'Uploading...';
   try {
     const fd = new FormData(); fd.append('file', file);
-    const res = await fetch(`/api/writing/${activeWritingJobId}/submit`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: fd });
-    const data = await res.json(); if (!res.ok) throw new Error(data.error||'Upload failed');
+    const data = await apiFetch(`/api/writing/${activeWritingJobId}/submit`, { method: 'POST', body: fd });
     toast('✅ ' + data.message); closeWritingModal(); loadWriting();
   } catch(err) { toast('❌ ' + err.message, false); }
   finally { btn.disabled = false; btn.textContent = 'Submit Writing Job'; }
@@ -880,12 +926,13 @@ document.getElementById('writingSubmitBtn').addEventListener('click', async () =
 
 // ============ TRANSCRIPTION ============
 async function loadTranscription() {
+  setLoading('transcriptionList', 'Loading transcription jobs…');
   try {
     const data = await apiFetch('/api/transcriptions');
     const list = document.getElementById('transcriptionList');
     if (!data.jobs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No transcription jobs available right now.</p>'; return; }
     list.innerHTML = data.jobs.map(job => taskCardHtml(job, 'transcription', job.userSubmission ? ('Status: ' + job.userSubmission.status) : null)).join('');
-  } catch(err) { document.getElementById('transcriptionList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
+  } catch(err) { setError('transcriptionList', err.message, 'loadTranscription'); }
 }
 
 async function openTranscriptionModal(jobId) {
@@ -915,12 +962,13 @@ document.getElementById('transcriptionSubmitBtn').addEventListener('click', asyn
 
 // ============ DATA ENTRY ============
 async function loadDataentry() {
+  setLoading('dataentryList', 'Loading data entry jobs…');
   try {
     const data = await apiFetch('/api/dataentry');
     const list = document.getElementById('dataentryList');
     if (!data.jobs.length) { list.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem">No data entry jobs available right now.</p>'; return; }
     list.innerHTML = data.jobs.map(job => taskCardHtml(job, 'dataentry', job.userSubmission ? ('Status: ' + job.userSubmission.status) : null)).join('');
-  } catch(err) { document.getElementById('dataentryList').innerHTML = `<p style="color:red;grid-column:1/-1">Error: ${err.message}</p>`; }
+  } catch(err) { setError('dataentryList', err.message, 'loadDataentry'); }
 }
 
 async function openDataentryModal(jobId) {
@@ -940,12 +988,11 @@ function closeDataentryModal() { hideModal('dataentryModal'); activeDataentryJob
 document.getElementById('dataentrySubmitBtn').addEventListener('click', async () => {
   if (!activeDataentryJobId) return;
   const file = document.getElementById('dataentryFileInput').files[0];
-  if (!file) { alert('Select a file.'); return; }
+  if (!file) { toast('Select a file first.', false); return; }
   const btn = document.getElementById('dataentrySubmitBtn'); btn.disabled = true; btn.textContent = 'Uploading...';
   try {
     const fd = new FormData(); fd.append('file', file);
-    const res = await fetch(`/api/dataentry/${activeDataentryJobId}/submit`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: fd });
-    const data = await res.json(); if (!res.ok) throw new Error(data.error||'Upload failed');
+    const data = await apiFetch(`/api/dataentry/${activeDataentryJobId}/submit`, { method: 'POST', body: fd });
     toast('✅ ' + data.message); closeDataentryModal(); loadDataentry();
   } catch(err) { toast('❌ ' + err.message, false); }
   finally { btn.disabled = false; btn.textContent = 'Submit Data Entry'; }
