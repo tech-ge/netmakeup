@@ -7,6 +7,17 @@ const { uploadDocument, deleteFile } = require('../config/cloudinary');
 const { authMiddleware, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
+// ── Safe side-effect helpers ──────────────────────────────────────────────────
+async function safeNotify(payload) {
+  try { await Notification.create(payload); }
+  catch (e) { console.error('⚠️  Notification skipped:', e.message); }
+}
+async function safeCommission(payload) {
+  try { await Commission.create(payload); }
+  catch (e) { console.error('⚠️  Commission log skipped:', e.message); }
+}
+
+
 
 // ─────────────────────────────────────────────────────────────
 // USER ROUTES
@@ -216,18 +227,13 @@ router.post('/admin/:id/approve/:userId', authMiddleware, requireAdmin, async (r
       }
     });
 
-    await Commission.create({
-      fromUserId: req.params.userId,
-      toUserId:   req.params.userId,
-      level: 1, amount: job.reward,
-      type: 'task_earning', status: 'completed',
+    await safeCommission({
+      fromUserId: req.params.userId, toUserId: req.params.userId,
+      level: 1, amount: job.reward, type: 'task_earning', status: 'completed',
       description: `Writing job approved: ${job.title}`
     });
-
-    await Notification.create({
-      userId:  req.params.userId,
-      type:    'task_approved',
-      title:   '✅ Writing Job Approved!',
+    await safeNotify({
+      userId: req.params.userId, type: 'task_approved', title: '✅ Writing Job Approved!',
       message: `Your submission for "${job.title}" was approved. You earned ${job.reward} points!`,
       metadata: { taskId: job._id, taskType: 'writing', points: job.reward }
     });
@@ -255,10 +261,8 @@ router.post('/admin/:id/reject/:userId', authMiddleware, requireAdmin, async (re
     submission.reviewNotes = reason || 'Did not meet requirements';
     await job.save();
 
-    await Notification.create({
-      userId:  req.params.userId,
-      type:    'task_rejected',
-      title:   '❌ Writing Job Rejected',
+    await safeNotify({
+      userId: req.params.userId, type: 'task_rejected', title: '❌ Writing Job Rejected',
       message: `Your submission for "${job.title}" was rejected. Reason: ${submission.reviewNotes}`,
       metadata: { taskId: job._id, taskType: 'writing', reason: submission.reviewNotes }
     });
@@ -305,11 +309,3 @@ router.delete('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
 });
 
 module.exports = router;
-// POST /api/writing/admin/:id/close
-router.post('/admin/:id/close', authMiddleware, requireAdmin, async (req, res) => {
-  try {
-    const job = await WritingJob.findByIdAndUpdate(req.params.id, { status: 'closed' }, { new: true });
-    if (!job) return res.status(404).json({ error: 'Job not found' });
-    res.json({ message: '✅ Writing job closed.' });
-  } catch(err) { res.status(500).json({ error: err.message }); }
-});
