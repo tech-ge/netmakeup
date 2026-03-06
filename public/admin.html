@@ -432,12 +432,25 @@ if (!_at || !_au || !_au.isAdmin) { window.location.href = '/index.html'; }
 if (_au) document.getElementById('adminName').textContent = '👤 ' + _au.username;
 
 function adminLogout() { localStorage.clear(); window.location.href = '/index.html'; }
-function aH() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_at}` }; }
 async function aF(url, opts={}) {
-  const res = await fetch(url, { ...opts, headers: aH() });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || data.message || `${res.status} error`);
-  return data;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000);
+  try {
+    const isFormData = opts.body instanceof FormData;
+    const headers = { 'Authorization': `Bearer ${_at}` };
+    if (!isFormData) headers['Content-Type'] = 'application/json';
+    const res = await fetch(url, { ...opts, headers, signal: controller.signal });
+    clearTimeout(timer);
+    let data;
+    try { data = await res.json(); } catch(e) { data = {}; }
+    if (res.status === 401) { adminLogout(); throw new Error('Session expired.'); }
+    if (!res.ok) throw new Error(data.error || data.message || `Error ${res.status}`);
+    return data;
+  } catch(err) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') throw new Error('Request timed out. Check your connection.');
+    throw err;
+  }
 }
 function msg(id, txt, ok=true) {
   const el = document.getElementById(id);
@@ -949,8 +962,7 @@ async function createTranscriptionJob() {
   const dl=document.getElementById('transcriptionJobDeadline').value;
   if(dl) fd.append('deadline',dl);
   try {
-    const res=await fetch('/api/transcriptions/admin/create',{method:'POST',headers:{'Authorization':`Bearer ${_at}`},body:fd});
-    const data=await res.json(); if(!res.ok) throw new Error(data.error||'Upload failed');
+    const data = await aF('/api/transcriptions/admin/create', { method: 'POST', body: fd });
     msg('createTranscriptionMsg','✅ Transcription job created!',true);
     ['transcriptionJobTitle','transcriptionJobDesc','transcriptionJobInstructions'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('transcriptionJobAudio').value='';
@@ -989,8 +1001,7 @@ async function createDataentryJob() {
   const tf=document.getElementById('dataentryJobTemplate').files[0];
   if(tf) fd.append('template',tf);
   try {
-    const res=await fetch('/api/dataentry/admin/create',{method:'POST',headers:{'Authorization':`Bearer ${_at}`},body:fd});
-    const data=await res.json(); if(!res.ok) throw new Error(data.error||'Failed');
+    const data = await aF('/api/dataentry/admin/create', { method: 'POST', body: fd });
     msg('createDataentryMsg','✅ Data entry job created!',true);
     ['dataentryJobTitle','dataentryJobDesc','dataentryJobInstructions'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('dataentryJobTemplate').value='';
