@@ -7,6 +7,17 @@ const { uploadAudio, deleteFile } = require('../config/cloudinary');
 const { authMiddleware, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
+// ── Safe side-effect helpers: notification/commission failures never crash approvals ──
+async function safeNotify(payload) {
+  try { await Notification.create(payload); }
+  catch (e) { console.error('⚠️  Notification skipped:', e.message); }
+}
+async function safeCommission(payload) {
+  try { await Commission.create(payload); }
+  catch (e) { console.error('⚠️  Commission log skipped:', e.message); }
+}
+
+
 
 // ─────────────────────────────────────────────────────────────
 // USER ROUTES
@@ -238,18 +249,14 @@ router.post('/admin/:id/approve/:userId', authMiddleware, requireAdmin, async (r
 
     // Log commission
     const user = await User.findById(req.params.userId);
-    await Commission.create({
-      fromUserId: req.params.userId,
-      toUserId:   req.params.userId,
-      level: 1,
-      amount: job.reward,
-      type: 'task_earning',
-      status: 'completed',
+    await safeCommission({
+      fromUserId: req.params.userId, toUserId: req.params.userId,
+      level: 1, amount: job.reward, type: 'task_earning', status: 'completed',
       description: `Transcription approved: ${job.title}`
     });
 
     // Notify user
-    await Notification.create({
+    await safeNotify({
       userId:  req.params.userId,
       type:    'task_approved',
       title:   '✅ Transcription Approved!',
@@ -281,7 +288,7 @@ router.post('/admin/:id/reject/:userId', authMiddleware, requireAdmin, async (re
     await job.save();
 
     // Notify user
-    await Notification.create({
+    await safeNotify({
       userId:  req.params.userId,
       type:    'task_rejected',
       title:   '❌ Transcription Rejected',
@@ -335,11 +342,3 @@ router.delete('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
 });
 
 module.exports = router;
-// POST /api/transcriptions/admin/:id/close
-router.post('/admin/:id/close', authMiddleware, requireAdmin, async (req, res) => {
-  try {
-    const job = await Transcription.findByIdAndUpdate(req.params.id, { status: 'closed' }, { new: true });
-    if (!job) return res.status(404).json({ error: 'Job not found' });
-    res.json({ message: '✅ Transcription job closed.' });
-  } catch(err) { res.status(500).json({ error: err.message }); }
-});
