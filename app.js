@@ -67,13 +67,12 @@ app.use('/api/withdrawals', withdrawalLimiter, require('./api/withdrawal'));
 app.use('/api/blogs',    taskSubmitLimiter, require('./api/blog'));
 app.use('/api/surveys',  taskSubmitLimiter, require('./api/surveys'));
 
-['transcriptions', 'writing', 'dataentry'].forEach(route => {
-  try {
-    app.use(`/api/${route}`, taskSubmitLimiter, require(`./api/${route}`));
-  } catch (_) {
-    console.warn(`Route file ./api/${route} not found — skipping`);
-  }
-});
+// Writing jobs: file is writingJobs.js, mounted at /api/writing
+app.use('/api/writing',        taskSubmitLimiter, require('./api/writingJobs'));
+// Transcription: file is transcription.js, mounted at /api/transcriptions
+app.use('/api/transcriptions', taskSubmitLimiter, require('./api/transcription'));
+// Data entry: file is dataEntry.js (capital E), mounted at /api/dataentry
+app.use('/api/dataentry',      taskSubmitLimiter, require('./api/dataEntry'));
 
 // ─── Admin routes ────────────────────────────────────────────────────────────
 app.use('/api/admin', adminLimiter, require('./api/admin'));
