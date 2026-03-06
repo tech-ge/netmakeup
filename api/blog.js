@@ -283,3 +283,54 @@ router.get('/admin/pending-submissions', authMiddleware, requireAdmin, async (re
 });
 
 module.exports = router;
+// GET /api/blogs/admin/all — all blogs with stats (admin)
+router.get('/admin/all', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const Blog = require('../models/Blog');
+    const blogs = await Blog.find().sort({ createdAt: -1 });
+    res.json({ blogs: blogs.map(b => ({
+      id: b._id, title: b.title, description: b.description,
+      reward: b.reward || 100, status: b.status || 'open',
+      maxBidders: b.maxBidders, currentBidders: b.bidders ? b.bidders.length : 0,
+      submitted: b.bidders ? b.bidders.filter(x=>x.status==='submitted').length : 0,
+      approved: b.bidders ? b.bidders.filter(x=>x.status==='approved').length : 0,
+      pending: b.bidders ? b.bidders.filter(x=>x.status==='submitted').length : 0,
+      rejected: b.bidders ? b.bidders.filter(x=>x.status==='rejected').length : 0,
+      createdAt: b.createdAt
+    }))});
+  } catch(err) { res.status(500).json({ error: err.message }); }
+});
+
+// PUT /api/blogs/admin/:id — edit blog
+router.put('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const Blog = require('../models/Blog');
+    const { reward, maxBidders, status } = req.body;
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    if (reward) blog.reward = parseInt(reward);
+    if (maxBidders) blog.maxBidders = parseInt(maxBidders);
+    if (status) blog.status = status;
+    await blog.save();
+    res.json({ message: '✅ Blog updated.' });
+  } catch(err) { res.status(500).json({ error: err.message }); }
+});
+
+// POST /api/blogs/admin/:id/close — close blog
+router.post('/admin/:id/close', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const Blog = require('../models/Blog');
+    const blog = await Blog.findByIdAndUpdate(req.params.id, { status: 'closed' }, { new: true });
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    res.json({ message: '✅ Blog closed.' });
+  } catch(err) { res.status(500).json({ error: err.message }); }
+});
+
+// DELETE /api/blogs/admin/:id — delete blog
+router.delete('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const Blog = require('../models/Blog');
+    await Blog.findByIdAndDelete(req.params.id);
+    res.json({ message: '✅ Blog deleted.' });
+  } catch(err) { res.status(500).json({ error: err.message }); }
+});
