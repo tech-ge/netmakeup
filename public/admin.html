@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechGeo</title>
+  <title>TechGeo — Admin Panel</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <style>
@@ -147,30 +147,75 @@
     <div class="sb" style="cursor:pointer" onclick="switchTab('dataentry')"><div class="sv" style="color:#14b8a6" id="ovDataentry">0</div><div class="sl">📂 Data Entry</div></div>
   </div>
 
-  <!-- P&L GRAPHS -->
+  <!-- P&L PANELS -->
   <div class="gg">
-    <!-- WALLET P&L -->
+
+    <!-- 💰 WALLET P&L -->
     <div class="pnl-box">
-      <div class="pnl-title">💰 Wallet P&L — Money Flow</div>
-      <div class="pnl-row"><span>Total Deposited (activation payments)</span><span class="pnl-pos" id="plWalletIn">KES 0</span></div>
-      <div class="pnl-row"><span>Activation cost deducted</span><span class="pnl-neg" id="plWalletCost">- KES 0</span></div>
-      <div class="pnl-row"><span>Commissions paid out</span><span class="pnl-neg" id="plCommissions">- KES 0</span></div>
-      <div class="pnl-row"><span>Withdrawals paid</span><span class="pnl-neg" id="plWithdrawals">- KES 0</span></div>
-      <div class="pnl-row" style="margin-top:.25rem"><span>💼 Net Profit</span><span id="plWalletNet" class="pnl-pos">KES 0</span></div>
-      <div class="chart-wrap" style="margin-top:.75rem"><canvas id="walletChart"></canvas></div>
-    </div>
-    <!-- POINTS P&L -->
-    <div class="pnl-box">
-      <div class="pnl-title">⭐ Points P&L — Task Economy</div>
-      <div class="pnl-row"><span>Points awarded (from profits)</span><span class="pnl-pos" id="plPtsAwarded">0 pts</span></div>
-      <div class="pnl-row"><span>Points pending withdrawal</span><span class="pnl-neg" id="plPtsPending">0 pts</span></div>
-      <div class="pnl-row"><span>Points already withdrawn</span><span class="pnl-neg" id="plPtsWithdrawn">0 pts</span></div>
-      <div class="pnl-row" style="margin-top:.25rem"><span>⭐ Net Points Float</span><span id="plPtsNet" class="pnl-pos">0 pts</span></div>
-      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.4rem;padding:.6rem .8rem;margin-top:.75rem;font-size:.78rem;color:#166534">
-        💡 Task rewards come from wallet profits. Every KES spent on activations funds the task reward pool.
+      <div class="pnl-title">💰 Activation Wallet — Profit & Loss</div>
+
+      <!-- Formula explainer -->
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.45rem;padding:.65rem .85rem;margin-bottom:.85rem;font-size:.78rem;color:#166534;line-height:1.6">
+        <strong>Formula:</strong> Every activated user pays <b>KES 700</b>.<br>
+        Business keeps <b>KES 250</b> profit · KES 450 goes to commissions.<br>
+        <span style="color:#15803d">Profit = Active Users × KES 250</span>
       </div>
-      <div class="chart-wrap" style="margin-top:.75rem"><canvas id="pointsChart"></canvas></div>
+
+      <div class="pnl-row">
+        <span>Active users</span>
+        <span id="plActiveCount" style="font-weight:800">0 users</span>
+      </div>
+      <div class="pnl-row">
+        <span>Total collected (× KES 700 each)</span>
+        <span class="pnl-pos" id="plWalletIn">KES 0</span>
+      </div>
+      <div class="pnl-row">
+        <span style="color:#6b7280">− Commissions paid out (× KES 450 each)</span>
+        <span class="pnl-neg" id="plCommissions">− KES 0</span>
+      </div>
+      <div class="pnl-row" style="border-top:2px solid #16a34a;margin-top:.5rem;padding-top:.6rem">
+        <span style="font-weight:800;font-size:.9rem">💼 Net Wallet Profit</span>
+        <span id="plWalletNet" class="pnl-pos" style="font-size:1.1rem">KES 0</span>
+      </div>
+
+      <div class="chart-wrap" style="margin-top:1rem;height:180px"><canvas id="walletChart"></canvas></div>
     </div>
+
+    <!-- ⭐ POINTS P&L -->
+    <div class="pnl-box">
+      <div class="pnl-title">⭐ Points Wallet — Profit Balance</div>
+
+      <!-- Formula explainer -->
+      <div style="background:#fefce8;border:1px solid #fde047;border-radius:.45rem;padding:.65rem .85rem;margin-bottom:.85rem;font-size:.78rem;color:#854d0e;line-height:1.6">
+        <strong>Formula:</strong> Points come from task profits.<br>
+        Users redeem points → withdraw as KES on Tuesdays (separate from main wallet).<br>
+        <span style="color:#b45309">Profit Balance = Wallet Profit − Points Redeemed (KES value) − Unpaid Redeemed</span>
+      </div>
+
+      <div class="pnl-row">
+        <span>Wallet net profit (source pool)</span>
+        <span class="pnl-pos" id="plPtsSrcProfit">KES 0</span>
+      </div>
+      <div class="pnl-row">
+        <span>Total points held by users (unredeemed)</span>
+        <span id="plPtsHeld" style="color:#6b7280;font-weight:700">0 pts = KES 0</span>
+      </div>
+      <div class="pnl-row">
+        <span style="color:#6b7280">− Points redeemed &amp; already paid (Tuesdays)</span>
+        <span class="pnl-neg" id="plPtsAlreadyPaid">− KES 0</span>
+      </div>
+      <div class="pnl-row">
+        <span style="color:#ef4444">− Points redeemed but NOT yet paid</span>
+        <span class="pnl-neg" id="plPtsUnpaid">− KES 0</span>
+      </div>
+      <div class="pnl-row" style="border-top:2px solid #f59e0b;margin-top:.5rem;padding-top:.6rem">
+        <span style="font-weight:800;font-size:.9rem">⭐ Points Profit Balance</span>
+        <span id="plPtsNet" class="pnl-pos" style="font-size:1.1rem">KES 0</span>
+      </div>
+
+      <div class="chart-wrap" style="margin-top:1rem;height:180px"><canvas id="pointsChart"></canvas></div>
+    </div>
+
   </div>
 
   <!-- RECENT ACTIVITY -->
@@ -435,23 +480,52 @@ let walletChart, pointsChart;
 function initCharts(walletData, pointsData) {
   if (walletChart) walletChart.destroy();
   if (pointsChart) pointsChart.destroy();
+
+  // Wallet doughnut: collected → split into commissions vs profit
   const walletCtx = document.getElementById('walletChart').getContext('2d');
   walletChart = new Chart(walletCtx, {
     type: 'doughnut',
     data: {
-      labels: ['Commission Paid', 'Withdrawals', 'Net Profit'],
-      datasets: [{ data: [walletData.commissions, walletData.withdrawals, walletData.profit], backgroundColor: ['#fca5a5','#fdba74','#86efac'], borderWidth: 2 }]
+      labels: ['Commissions Paid (KES 450/user)', 'Business Profit (KES 250/user)'],
+      datasets: [{
+        data: [walletData.commissions, walletData.profit],
+        backgroundColor: ['#fca5a5', '#86efac'],
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
     },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8 } } } }
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 10 } },
+        tooltip: { callbacks: { label: (ctx) => ` KES ${ctx.parsed.toLocaleString()}` } }
+      },
+      cutout: '60%'
+    }
   });
+
+  // Points bar: profit balance vs paid vs pending
   const ptsCtx = document.getElementById('pointsChart').getContext('2d');
   pointsChart = new Chart(ptsCtx, {
     type: 'bar',
     data: {
-      labels: ['Awarded', 'Pending Withdrawal', 'Withdrawn'],
-      datasets: [{ label: 'Points', data: [pointsData.awarded, pointsData.pending, pointsData.withdrawn], backgroundColor: ['#86efac','#fde047','#fca5a5'], borderRadius: 4 }]
+      labels: ['Profit Balance', 'Pts Paid (KES)', 'Pts Pending (KES)'],
+      datasets: [{
+        label: 'KES',
+        data: [pointsData.balance, pointsData.paid, pointsData.pending],
+        backgroundColor: ['#86efac', '#fca5a5', '#fde047'],
+        borderRadius: 5,
+        borderSkipped: false
+      }]
     },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } } }
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { ticks: { font: { size: 10 }, callback: v => 'KES ' + v.toLocaleString() }, grid: { color: '#f3f4f6' } },
+        x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+      }
+    }
   });
 }
 
@@ -468,26 +542,77 @@ async function loadAdminDashboard() {
     document.getElementById('ovWriting').textContent = data.pendingReviews?.writing || 0;
     document.getElementById('ovTranscription').textContent = data.pendingReviews?.transcription || 0;
     document.getElementById('ovDataentry').textContent = data.pendingReviews?.dataEntry || 0;
-    // P&L calculations
-    const totalDeposited = ((data.stats?.totalActivated||data.users?.active||0) * 700);
-    const commissions = data.stats?.totalCommissionsPaid || 0;
-    const withdrawals = data.stats?.totalWithdrawals || 0;
-    const walletProfit = Math.max(0, totalDeposited - commissions - withdrawals);
-    document.getElementById('plWalletIn').textContent = fmtKES(totalDeposited);
-    document.getElementById('plWalletCost').textContent = '- ' + fmtKES(700 * (data.users?.active||0));
-    document.getElementById('plCommissions').textContent = '- ' + fmtKES(commissions);
-    document.getElementById('plWithdrawals').textContent = '- ' + fmtKES(withdrawals);
-    const netEl = document.getElementById('plWalletNet');
-    netEl.textContent = fmtKES(walletProfit);
-    netEl.className = walletProfit >= 0 ? 'pnl-pos' : 'pnl-neg';
-    const totalPtsAwarded = data.stats?.totalPointsAwarded || 0;
-    const ptsPending = data.stats?.totalPointsPending || 0;
-    const ptsWithdrawn = data.stats?.totalPointsWithdrawn || 0;
-    document.getElementById('plPtsAwarded').textContent = fmt(totalPtsAwarded) + ' pts';
-    document.getElementById('plPtsPending').textContent = fmt(ptsPending) + ' pts';
-    document.getElementById('plPtsWithdrawn').textContent = fmt(ptsWithdrawn) + ' pts';
-    document.getElementById('plPtsNet').textContent = fmt(totalPtsAwarded - ptsPending - ptsWithdrawn) + ' pts';
-    initCharts({ commissions, withdrawals, profit: walletProfit }, { awarded: totalPtsAwarded, pending: ptsPending, withdrawn: ptsWithdrawn });
+    // ── WALLET P&L ──────────────────────────────────────────────
+    // Each activated user:  KES 700 collected
+    //                       KES 450 → commissions (distributed 200+150+75+25)
+    //                       KES 250 → business profit
+    const activeUsers   = data.users?.active || 0;
+    const totalCollected = activeUsers * 700;          // all money received
+    const commissionsPaid = activeUsers * 450;         // what went to referral chain
+    const walletProfit  = activeUsers * 250;           // 700 - 450 = 250 per user
+
+    document.getElementById('plActiveCount').textContent = activeUsers + ' users';
+    document.getElementById('plWalletIn').textContent    = fmtKES(totalCollected);
+    document.getElementById('plCommissions').textContent = '− ' + fmtKES(commissionsPaid);
+    const wNetEl = document.getElementById('plWalletNet');
+    wNetEl.textContent = fmtKES(walletProfit);
+    wNetEl.className   = walletProfit >= 0 ? 'pnl-pos' : 'pnl-neg';
+
+        // ── POINTS P&L ──────────────────────────────────────────────
+    // Points are earned from doing tasks (funded by wallet profit).
+    // When a user redeems points they create a TUESDAY withdrawal request
+    // (separate from main KES wallet) → admin pays it out.
+    //
+    // Points Profit Balance = Wallet Net Profit
+    //                       − KES value of points redeemed but NOT YET paid (pending Tues)
+    //                       − KES value of points redeemed & already paid out
+    //
+    // To get real numbers we fetch:
+    //   1. All users → sum their pointsBalance (unredeemed pts sitting in wallets)
+    //   2. All POINTS withdrawals → split pending vs completed
+
+    // Fetch users to sum unredeemed points
+    let totalPtsHeld = 0;
+    try {
+      const usersData = await aF('/api/admin/users/all?status=all&limit=9999');
+      (usersData.users || []).forEach(u => { totalPtsHeld += (u.pointsBalance || 0); });
+    } catch(e) { /* use 0 if fails */ }
+
+    // Fetch all points-type withdrawals
+    let ptsPaidKES = 0, ptsPendingKES = 0;
+    try {
+      const [wdPending, wdDone] = await Promise.all([
+        aF('/api/withdrawals/admin/all?status=pending').catch(()=>({withdrawals:[]})),
+        aF('/api/withdrawals/admin/all?status=completed').catch(()=>({withdrawals:[]}))
+      ]);
+      // pending POINTS withdrawals = money owed but not yet paid
+      (wdPending.withdrawals || []).forEach(w => {
+        if (w.type === 'points' || w.type === 'POINTS') ptsPendingKES += (w.amount || 0);
+      });
+      // completed POINTS withdrawals = already paid out from profit pool
+      (wdDone.withdrawals || []).forEach(w => {
+        if (w.type === 'points' || w.type === 'POINTS') ptsPaidKES += (w.amount || 0);
+      });
+    } catch(e) { /* use 0 if fails */ }
+
+    // KES value of unredeemed points: 100 pts = KES 10 → divide by 10
+    const ptsHeldKES  = Math.round(totalPtsHeld / 10);
+    // Profit remaining after paying out (and owing) task earners
+    const ptsBalance  = walletProfit - ptsPaidKES - ptsPendingKES;
+
+    document.getElementById('plPtsSrcProfit').textContent   = fmtKES(walletProfit);
+    document.getElementById('plPtsHeld').textContent        = fmt(totalPtsHeld) + ' pts ≈ ' + fmtKES(ptsHeldKES);
+    document.getElementById('plPtsAlreadyPaid').textContent = '− ' + fmtKES(ptsPaidKES);
+    document.getElementById('plPtsUnpaid').textContent      = '− ' + fmtKES(ptsPendingKES);
+    const pNetEl = document.getElementById('plPtsNet');
+    pNetEl.textContent = fmtKES(ptsBalance);
+    pNetEl.className   = ptsBalance >= 0 ? 'pnl-pos' : 'pnl-neg';
+
+    // ── CHARTS ──────────────────────────────────────────────────
+    initCharts(
+      { commissions: commissionsPaid, profit: walletProfit },
+      { balance: Math.max(0, ptsBalance), paid: ptsPaidKES, pending: ptsPendingKES }
+    );
     // Recent users
     const rec = document.getElementById('ovRecentUsers');
     if (data.recentUsers && data.recentUsers.length) {
