@@ -6,6 +6,17 @@ const Notification = require('../models/Notification');
 const { authMiddleware, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
+// ── Safe side-effect helpers: notification/commission failures never crash approvals ──
+async function safeNotify(payload) {
+  try { await Notification.create(payload); }
+  catch (e) { console.error('⚠️  Notification skipped:', e.message); }
+}
+async function safeCommission(payload) {
+  try { await Commission.create(payload); }
+  catch (e) { console.error('⚠️  Commission log skipped:', e.message); }
+}
+
+
 
 // Get all available surveys
 router.get('/', authMiddleware, async (req, res) => {
@@ -404,7 +415,7 @@ router.post('/admin/:surveyId/approve/:userId', authMiddleware, requireAdmin, as
       description: `Survey approved: ${survey.title} (+${pointsEarned} pts)`
     }).save();
 
-    await Notification.create({ userId, type: 'task_approved', title: '✅ Survey Approved!', message: `Your survey submission for "${survey.title}" was approved. You earned ${pointsEarned} points!`, metadata: { taskId: survey._id, taskType: 'survey', points: pointsEarned } });
+    await safeNotify({ userId, type: 'task_approved', title: '✅ Survey Approved!', message: `Your survey submission for "${survey.title}" was approved. You earned ${pointsEarned} points!`, metadata: { taskId: survey._id, taskType: 'survey', points: pointsEarned } });
     res.json({ message: `Survey approved. ${pointsEarned} points awarded.`, pointsEarned, newPoints: user.pointsWallet.points });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -427,7 +438,7 @@ router.post('/admin/:surveyId/reject/:userId', authMiddleware, requireAdmin, asy
     userBid.reviewNotes = reviewNotes || 'Rejected';
     userBid.reviewedAt = new Date();
     await survey.save();
-    await Notification.create({ userId, type: 'task_rejected', title: '❌ Survey Rejected', message: `Your survey submission for "${survey.title}" was rejected. Reason: ${userBid.reviewNotes}`, metadata: { taskId: survey._id, taskType: 'survey', reason: userBid.reviewNotes } });
+    await safeNotify({ userId, type: 'task_rejected', title: '❌ Survey Rejected', message: `Your survey submission for "${survey.title}" was rejected. Reason: ${userBid.reviewNotes}`, metadata: { taskId: survey._id, taskType: 'survey', reason: userBid.reviewNotes } });
     res.json({ message: 'Submission rejected.' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -435,33 +446,3 @@ router.post('/admin/:surveyId/reject/:userId', authMiddleware, requireAdmin, asy
 });
 
 module.exports = router;
-// PUT /api/surveys/admin/:id — edit survey
-router.put('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
-  try {
-    const { reward, maxResponses, status } = req.body;
-    const survey = await Survey.findById(req.params.id);
-    if (!survey) return res.status(404).json({ error: 'Survey not found' });
-    if (reward) survey.reward = parseInt(reward);
-    if (maxResponses) survey.maxResponses = parseInt(maxResponses);
-    if (status) survey.status = status;
-    await survey.save();
-    res.json({ message: '✅ Survey updated.' });
-  } catch(err) { res.status(500).json({ error: err.message }); }
-});
-
-// POST /api/surveys/admin/:id/close — close survey
-router.post('/admin/:id/close', authMiddleware, requireAdmin, async (req, res) => {
-  try {
-    const survey = await Survey.findByIdAndUpdate(req.params.id, { status: 'closed' }, { new: true });
-    if (!survey) return res.status(404).json({ error: 'Survey not found' });
-    res.json({ message: '✅ Survey closed.' });
-  } catch(err) { res.status(500).json({ error: err.message }); }
-});
-
-// DELETE /api/surveys/admin/:id — delete survey
-router.delete('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
-  try {
-    await Survey.findByIdAndDelete(req.params.id);
-    res.json({ message: '✅ Survey deleted.' });
-  } catch(err) { res.status(500).json({ error: err.message }); }
-});
