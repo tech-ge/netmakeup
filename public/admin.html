@@ -764,7 +764,7 @@ function renderJobCard(job, type) {
     ${job.wordCount?`<div style="font-size:.72rem;color:#1e40af;margin-bottom:.2rem">📝 ${job.wordCount}</div>`:''}
     ${job.deadline?`<div style="font-size:.72rem;color:#b45309;margin-bottom:.2rem">⏰ Due: ${new Date(job.deadline).toLocaleDateString()}</div>`:''}
     ${job.audioUrl?`<audio src="${job.audioUrl}" controls style="width:100%;height:28px;margin:.3rem 0"></audio>`:''}
-    ${job.templateUrl?`<a href="${job.templateUrl}" target="_blank" style="font-size:.72rem;color:var(--g)">📥 Template</a>`:''}
+    ${job.templateUrl?`<a href="javascript:void(0)" onclick="smartDownload('${job.templateUrl}','${job.templatePublicId||''}','${escQ(job.title)}_template')" style="font-size:.72rem;color:var(--g);cursor:pointer">📥 Template</a>`:''}
     <div class="jcard-stats">
       <div class="jcs"><div class="jcs-n" style="color:#3b82f6">📝 ${submitted}</div><div class="jcs-l">submitted</div></div>
       <div class="jcs"><div class="jcs-n" style="color:#16a34a">✅ ${approved}</div><div class="jcs-l">approved</div></div>
@@ -797,7 +797,7 @@ async function saveEdit() {
   const reward = parseInt(document.getElementById('emReward').value);
   const max = parseInt(document.getElementById('emMax').value);
   const status = document.getElementById('emStatus').value;
-  const urls = {blogs:`/api/admin/blogs/${_editId}`,surveys:`/api/admin/surveys/${_editId}`,writing:`/api/admin/writing/${_editId}`,transcription:`/api/admin/transcription/${_editId}`,dataentry:`/api/admin/dataentry/${_editId}`};
+  const urls = {blogs:`/api/admin/blogs/${_editId}`,surveys:`/api/admin/surveys/${_editId}`,writing:`/api/writing/admin/${_editId}`,transcription:`/api/transcriptions/admin/${_editId}`,dataentry:`/api/dataentry/admin/${_editId}`};
   try {
     await aF(urls[_editType], {method:'PUT', body:JSON.stringify({reward, maxBidders:max, maxWorkers:max, status})});
     alert('✅ Updated!'); closeEditModal();
@@ -807,12 +807,12 @@ async function saveEdit() {
 }
 async function deleteJob(type, id) {
   if (!confirm('Delete this job? All submissions will be lost.')) return;
-  const urls = {blogs:`/api/admin/blogs/${id}`,surveys:`/api/admin/surveys/${id}`,writing:`/api/admin/writing/${id}`,transcription:`/api/admin/transcription/${id}`,dataentry:`/api/admin/dataentry/${id}`};
+  const urls = {blogs:`/api/admin/blogs/${id}`,surveys:`/api/admin/surveys/${id}`,writing:`/api/writing/admin/${id}`,transcription:`/api/transcriptions/admin/${id}`,dataentry:`/api/dataentry/admin/${id}`};
   try { await aF(urls[type], {method:'DELETE'}); const r={blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs}; r[type](); }
   catch(err) { alert('❌ '+err.message); }
 }
 async function closeJob(type, id) {
-  const urls = {blogs:`/api/admin/blogs/${id}/close`,surveys:`/api/admin/surveys/${id}/close`,writing:`/api/admin/writing/${id}/close`,transcription:`/api/admin/transcription/${id}/close`,dataentry:`/api/admin/dataentry/${id}/close`};
+  const urls = {blogs:`/api/admin/blogs/${id}/close`,surveys:`/api/admin/surveys/${id}/close`,writing:`/api/writing/admin/${id}/close`,transcription:`/api/transcriptions/admin/${id}/close`,dataentry:`/api/dataentry/admin/${id}/close`};
   try { await aF(urls[type], {method:'POST'}); const r={blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs}; r[type](); }
   catch(err) { alert('❌ '+err.message); }
 }
@@ -844,7 +844,7 @@ function renderReviewBoxes(submissions, type, jobId, titleEl, parentEl) {
       </div>
       ${s.content ? `<details><summary style="cursor:pointer;font-size:.78rem;color:#8b5cf6;font-weight:600;margin:.25rem 0">View Submission</summary>
         <p style="margin:.35rem 0;font-size:.8rem;background:var(--gray-50);padding:.6rem;border-radius:.35rem;white-space:pre-wrap;max-height:200px;overflow-y:auto">${s.content}</p></details>` : ''}
-      ${s.fileUrl ? `<p style="font-size:.78rem;margin:.25rem 0">📎 <a href="${s.fileUrl}" target="_blank" style="color:var(--g);font-weight:600">${s.fileName||'View File'}</a></p>` : ''}
+      ${s.fileUrl ? `<p style="font-size:.78rem;margin:.25rem 0">📎 <a href="javascript:void(0)" onclick="smartDownload('${s.fileUrl}','${s.filePublicId||s.fileUrl}','${s.fileName||'submission'}')" style="color:var(--g);font-weight:600;cursor:pointer">${s.fileName||'Download File'}</a></p>` : ''}
       ${Array.isArray(s.responses) ? `<details><summary style="cursor:pointer;font-size:.78rem;color:#3b82f6;font-weight:600;margin:.25rem 0">View Responses</summary>
         <div style="margin:.35rem 0;font-size:.78rem;background:var(--gray-50);padding:.6rem;border-radius:.35rem">${s.responses.map((r,i)=>`<p style="margin:.15rem 0"><strong>Q${i+1}:</strong> ${r||'—'}</p>`).join('')}</div></details>` : ''}
       <div style="display:flex;gap:.4rem;margin-top:.5rem">
@@ -859,9 +859,9 @@ async function adminApprove(type, jobId, userId) {
   const endpts = {
     blogs: `/api/admin/blogs/${jobId}/approve/${userId}`,
     surveys: `/api/admin/surveys/${jobId}/approve/${userId}`,
-    writing: `/api/admin/writing/${jobId}/approve/${userId}`,
-    transcription: `/api/admin/transcription/${jobId}/approve/${userId}`,
-    dataentry: `/api/admin/dataentry/${jobId}/approve/${userId}`
+    writing: `/api/writing/admin/${jobId}/approve/${userId}`,
+    transcription: `/api/transcriptions/admin/${jobId}/approve/${userId}`,
+    dataentry: `/api/dataentry/admin/${jobId}/approve/${userId}`
   };
   try { await aF(endpts[type], {method:'POST', body:JSON.stringify({notes:'Approved'})}); alert('✅ Approved! Points awarded.'); const r={blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs}; r[type](); }
   catch(err) { alert('❌ '+err.message); }
@@ -871,9 +871,9 @@ async function adminReject(type, jobId, userId) {
   const endpts = {
     blogs: `/api/admin/blogs/${jobId}/reject/${userId}`,
     surveys: `/api/admin/surveys/${jobId}/reject/${userId}`,
-    writing: `/api/admin/writing/${jobId}/reject/${userId}`,
-    transcription: `/api/admin/transcription/${jobId}/reject/${userId}`,
-    dataentry: `/api/admin/dataentry/${jobId}/reject/${userId}`
+    writing: `/api/writing/admin/${jobId}/reject/${userId}`,
+    transcription: `/api/transcriptions/admin/${jobId}/reject/${userId}`,
+    dataentry: `/api/dataentry/admin/${jobId}/reject/${userId}`
   };
   try { await aF(endpts[type], {method:'POST', body:JSON.stringify({reviewNotes:reason, reason})}); alert('Rejected.'); const r={blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs}; r[type](); }
   catch(err) { alert('❌ '+err.message); }
@@ -972,7 +972,7 @@ async function createWritingJob() {
   const t=document.getElementById('writingJobTitle').value.trim(); const d=document.getElementById('writingJobDesc').value.trim(); const ins=document.getElementById('writingJobInstructions').value.trim();
   if (!t||!d||!ins) { msg('createWritingMsg','❌ Title, description and instructions required.',false); return; }
   try {
-    await aF('/api/admin/writing/create',{method:'POST',body:JSON.stringify({title:t,description:d,instructions:ins,wordCount:document.getElementById('writingJobWordCount').value||null,maxWorkers:parseInt(document.getElementById('writingJobMaxWorkers').value)||50,reward:parseInt(document.getElementById('writingJobReward').value)||100,deadline:document.getElementById('writingJobDeadline').value||null})});
+    await aF('/api/writing/admin/create',{method:'POST',body:JSON.stringify({title:t,description:d,instructions:ins,wordCount:document.getElementById('writingJobWordCount').value||null,maxWorkers:parseInt(document.getElementById('writingJobMaxWorkers').value)||50,reward:parseInt(document.getElementById('writingJobReward').value)||100,deadline:document.getElementById('writingJobDeadline').value||null})});
     msg('createWritingMsg','✅ Writing job created!',true);
     ['writingJobTitle','writingJobDesc','writingJobInstructions','writingJobWordCount'].forEach(id=>document.getElementById(id).value='');
     loadAdminWritingJobs();
@@ -981,7 +981,7 @@ async function createWritingJob() {
 async function loadAdminWritingJobs() {
   const el=document.getElementById('adminWritingJobsList');
   try {
-    const data=await aF('/api/admin/writing/all');
+    const data=await aF('/api/writing/admin/all');
     const jobs=data.jobs||[];
     if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No writing jobs yet.</p>'; document.getElementById('adminWritingSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
     el.innerHTML='<div class="jgrid">'+jobs.map(j=>renderJobCard(j,'writing')).join('')+'</div>';
@@ -993,7 +993,7 @@ async function loadAdminWritingJobs() {
 async function loadWritingSubmissions(jobId,title) {
   const el=document.getElementById('adminWritingSubmissions');
   el.innerHTML='Loading...';
-  try { const data=await aF(`/api/admin/writing/${jobId}/submissions`); renderReviewBoxes(data.submissions||[],'writing',jobId,null,el); }
+  try { const data=await aF(`/api/writing/admin/${jobId}/submissions`); renderReviewBoxes(data.submissions||[],'writing',jobId,null,el); }
   catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
 }
 
@@ -1013,7 +1013,7 @@ async function createTranscriptionJob() {
   const dl=document.getElementById('transcriptionJobDeadline').value;
   if(dl) fd.append('deadline',dl);
   try {
-    const res=await fetch('/api/admin/transcription/create',{method:'POST',headers:{'Authorization':`Bearer ${_at}`},body:fd});
+    const res=await fetch('/api/transcriptions/admin/create',{method:'POST',headers:{'Authorization':`Bearer ${_at}`},body:fd});
     const data=await res.json(); if(!res.ok) throw new Error(data.error||'Upload failed');
     msg('createTranscriptionMsg','✅ Transcription job created!',true);
     ['transcriptionJobTitle','transcriptionJobDesc','transcriptionJobInstructions'].forEach(id=>document.getElementById(id).value='');
@@ -1024,7 +1024,7 @@ async function createTranscriptionJob() {
 async function loadAdminTranscriptionJobs() {
   const el=document.getElementById('adminTranscriptionJobsList');
   try {
-    const data=await aF('/api/admin/transcription/all');
+    const data=await aF('/api/transcriptions/admin/all');
     const jobs=data.jobs||[];
     if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No transcription jobs yet.</p>'; document.getElementById('adminTranscriptionSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
     el.innerHTML='<div class="jgrid">'+jobs.map(j=>renderJobCard(j,'transcription')).join('')+'</div>';
@@ -1036,7 +1036,7 @@ async function loadAdminTranscriptionJobs() {
 async function loadTranscriptionSubmissions(jobId,title) {
   const el=document.getElementById('adminTranscriptionSubmissions');
   el.innerHTML='Loading...';
-  try { const data=await aF(`/api/admin/transcription/${jobId}/submissions`); renderReviewBoxes(data.submissions||[],'transcription',jobId,null,el); }
+  try { const data=await aF(`/api/transcriptions/admin/${jobId}/submissions`); renderReviewBoxes(data.submissions||[],'transcription',jobId,null,el); }
   catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
 }
 
@@ -1053,7 +1053,7 @@ async function createDataentryJob() {
   const tf=document.getElementById('dataentryJobTemplate').files[0];
   if(tf) fd.append('template',tf);
   try {
-    const res=await fetch('/api/admin/dataentry/create',{method:'POST',headers:{'Authorization':`Bearer ${_at}`},body:fd});
+    const res=await fetch('/api/dataentry/admin/create',{method:'POST',headers:{'Authorization':`Bearer ${_at}`},body:fd});
     const data=await res.json(); if(!res.ok) throw new Error(data.error||'Failed');
     msg('createDataentryMsg','✅ Data entry job created!',true);
     ['dataentryJobTitle','dataentryJobDesc','dataentryJobInstructions'].forEach(id=>document.getElementById(id).value='');
@@ -1064,7 +1064,7 @@ async function createDataentryJob() {
 async function loadAdminDataentryJobs() {
   const el=document.getElementById('adminDataentryJobsList');
   try {
-    const data=await aF('/api/admin/dataentry/all');
+    const data=await aF('/api/dataentry/admin/all');
     const jobs=data.jobs||[];
     if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No data entry jobs yet.</p>'; document.getElementById('adminDataentrySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
     el.innerHTML='<div class="jgrid">'+jobs.map(j=>renderJobCard(j,'dataentry')).join('')+'</div>';
@@ -1076,7 +1076,7 @@ async function loadAdminDataentryJobs() {
 async function loadDataentrySubmissions(jobId,title) {
   const el=document.getElementById('adminDataentrySubmissions');
   el.innerHTML='Loading...';
-  try { const data=await aF(`/api/admin/dataentry/${jobId}/submissions`); renderReviewBoxes(data.submissions||[],'dataentry',jobId,null,el); }
+  try { const data=await aF(`/api/dataentry/admin/${jobId}/submissions`); renderReviewBoxes(data.submissions||[],'dataentry',jobId,null,el); }
   catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
 }
 
@@ -1124,6 +1124,48 @@ async function rejectWithdrawal(id) {
   const notes=prompt('Reason for rejection:')||'Rejected';
   try { await aF(`/api/withdrawals/admin/${id}/reject`,{method:'POST',body:JSON.stringify({adminNotes:notes})}); loadAdminWithdrawals(); }
   catch(err) { alert('❌ '+err.message); }
+}
+
+// ============ SMART FILE DOWNLOAD ============
+// Tries direct URL first; if Cloudinary returns 401, fetches a signed URL
+async function smartDownload(directUrl, publicId, fileName) {
+  if (!directUrl) { alert('No file available.'); return; }
+
+  // First try a HEAD request to see if direct URL works
+  try {
+    const probe = await fetch(directUrl, { method: 'HEAD' });
+    if (probe.ok) {
+      // Direct URL works — open in new tab
+      const a = document.createElement('a');
+      a.href = directUrl;
+      a.target = '_blank';
+      a.download = fileName || 'download';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      return;
+    }
+  } catch(e) { /* CORS on HEAD is fine — fall through to signed URL */ }
+
+  // Direct URL failed (401/403) — fetch a signed URL from backend
+  if (!publicId || publicId === directUrl) {
+    // No publicId stored — just open the URL directly and let browser handle it
+    window.open(directUrl, '_blank');
+    return;
+  }
+
+  try {
+    // Try signed URL endpoint on dataentry (works for all raw files)
+    const data = await aF(`/api/dataentry/file/signed?publicId=${encodeURIComponent(publicId)}&fileName=${encodeURIComponent(fileName||'download')}`);
+    if (data.url) {
+      window.open(data.url, '_blank');
+    } else {
+      window.open(directUrl, '_blank');
+    }
+  } catch(err) {
+    // Last resort — just try the direct URL
+    window.open(directUrl, '_blank');
+  }
 }
 
 // ============ INIT ============
