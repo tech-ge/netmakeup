@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TechGeo</title>
+<title>TechGeo — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -322,10 +322,10 @@ table.ref-table tr:hover td{background:var(--gray-50)}
     </div>
   </div>
   <div class="rlg">
-    <div class="card" style="border-top:4px solid var(--g)"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:var(--g);font-family:'DM Mono',monospace" id="level1Count">0</div><div style="font-weight:800;margin:.2rem 0">Level 1 — KES 200</div><div style="font-size:.78rem;color:var(--gray-400)">Direct Referrals</div><div style="font-size:.75rem;color:var(--gray-500);margin:.4rem 0" id="lvl1Status">Inctive: 0 | active: 0</div><div id="level1Members" style="margin-top:.5rem"></div></div></div>
-    <div class="card" style="border-top:4px solid #22c55e"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#22c55e;font-family:'DM Mono',monospace" id="level2Count">0</div><div style="font-weight:800;margin:.2rem 0">Level 2 — KES 150</div><div style="font-size:.78rem;color:var(--gray-400)">2nd level</div><div style="font-size:.75rem;color:var(--gray-500);margin:.4rem 0" id="lvl2Status">Inactive: 0 | Active: 0</div><div id="level2Members" style="margin-top:.5rem"></div></div></div>
-    <div class="card" style="border-top:4px solid #4ade80"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#4ade80;font-family:'DM Mono',monospace" id="level3Count">0</div><div style="font-weight:800;margin:.2rem 0">Level 3 — KES 75</div><div style="font-size:.78rem;color:var(--gray-400)">3rd level</div><div style="font-size:.75rem;color:var(--gray-500);margin:.4rem 0" id="lvl3Status">Inactive: 0 | Active: 0</div><div id="level3Members" style="margin-top:.5rem"></div></div></div>
-    <div class="card" style="border-top:4px solid #86efac"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#86efac;font-family:'DM Mono',monospace" id="level4Count">0</div><div style="font-weight:800;margin:.2rem 0">Level 4 — KES 25</div><div style="font-size:.78rem;color:var(--gray-400)">4th level</div><div style="font-size:.75rem;color:var(--gray-500);margin:.4rem 0" id="lvl4Status">Inactive: 0 | Active: 0</div><div id="level4Members" style="margin-top:.5rem"></div></div></div>
+    <div class="card" style="border-top:4px solid var(--g)"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:var(--g);font-family:'DM Mono',monospace" id="level1Count">0</div><div style="font-weight:800;margin:.2rem 0">Level 1 — KES 200</div><div style="font-size:.78rem;color:var(--gray-400)">Direct Referrals</div><div style="font-size:.75rem;color:var(--gray-500);margin:.4rem 0" id="lvl1Status">Active: 0 | Inactive: 0</div><div id="level1Members" style="margin-top:.5rem"></div></div></div>
+    <div class="card" style="border-top:4px solid #22c55e"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#22c55e;font-family:'DM Mono',monospace" id="level2Count">0</div><div style="font-weight:800;margin:.2rem 0">Level 2 — KES 150</div><div style="font-size:.78rem;color:var(--gray-400)">2nd level</div><div style="font-size:.75rem;color:var(--gray-500);margin:.4rem 0" id="lvl2Status">Active: 0 | Inactive: 0</div><div id="level2Members" style="margin-top:.5rem"></div></div></div>
+    <div class="card" style="border-top:4px solid #4ade80"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#4ade80;font-family:'DM Mono',monospace" id="level3Count">0</div><div style="font-weight:800;margin:.2rem 0">Level 3 — KES 75</div><div style="font-size:.78rem;color:var(--gray-400)">3rd level</div><div style="font-size:.75rem;color:var(--gray-500);margin:.4rem 0" id="lvl3Status">Active: 0 | Inactive: 0</div><div id="level3Members" style="margin-top:.5rem"></div></div></div>
+    <div class="card" style="border-top:4px solid #86efac"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#86efac;font-family:'DM Mono',monospace" id="level4Count">0</div><div style="font-weight:800;margin:.2rem 0">Level 4 — KES 25</div><div style="font-size:.78rem;color:var(--gray-400)">4th level</div><div style="font-size:.75rem;color:var(--gray-500);margin:.4rem 0" id="lvl4Status">Active: 0 | Inactive: 0</div><div id="level4Members" style="margin-top:.5rem"></div></div></div>
   </div>
   <div class="card">
     <div class="ch">Commission Totals</div>
@@ -403,7 +403,7 @@ table.ref-table tr:hover td{background:var(--gray-50)}
         <div style="font-weight:700;font-size:.88rem;color:var(--gray-900);margin-bottom:.75rem;border-top:1px solid var(--gray-200);padding-top:.85rem">Inactive Referrals</div>
         <div class="tbl-wrap">
           <table class="ref-table">
-            <thead><tr><th>#</th><th>Username</th><th>Phone</th><th>Level</th><th>Joined</th><th>Status</th></tr></thead>
+            <thead><tr><th>#</th><th>Username</th><th>Phone</th><th>Joined</th><th>Status</th></tr></thead>
             <tbody id="profileInactiveList"><tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:1.5rem">Loading…</td></tr></tbody>
           </table>
         </div>
@@ -622,10 +622,20 @@ document.getElementById('convertPointsBtn')?.addEventListener('click',async()=>{
 async function loadDashboardReferrals(){
   try{
     const s=await apiFetch('/api/referrals/stats');
-    let totalInactive=0;
-    ['1','2','3','4'].forEach(l=>{const c=s.levels['level'+l];const t=c?.count||0,a=c?.active||0,inact=t-a;document.getElementById('dashRef'+l).textContent=t;document.getElementById('dashRef'+l+'s').textContent=a+' active';totalInactive+=inact;});
-    document.getElementById('dashTotalCommission').textContent='KES '+(s.summary?.totalCommission||0);
+    let totalActive=0,totalInactive=0;
+    ['1','2','3','4'].forEach(l=>{
+      const c=s.levels['level'+l];
+      const users=c?.users||[];
+      const t=users.length;
+      const a=users.filter(u=>u.packageType&&u.packageType!=='not_active').length;
+      const inact=t-a;
+      document.getElementById('dashRef'+l).textContent=t;
+      document.getElementById('dashRef'+l+'s').textContent=a+' active / '+inact+' inactive';
+      totalActive+=a; totalInactive+=inact;
+    });
+    document.getElementById('dashActiveReferrals').textContent=totalActive;
     document.getElementById('dashInactiveReferrals').textContent=totalInactive+' inactive';
+    document.getElementById('dashTotalCommission').textContent='KES '+(s.summary?.totalCommission||0);
   }catch(e){}
 }
 async function loadInactiveReferrals(){
@@ -635,7 +645,7 @@ async function loadInactiveReferrals(){
     const tbody=document.getElementById('inactiveReferralsList');
     if(!data.inactiveReferrals?.length){sec.style.display='none';return;}
     sec.style.display='block';
-    tbody.innerHTML=data.inactiveReferrals.map((u,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${u.name||u.username||'—'}</td><td style="font-family:'DM Mono',monospace">${u.phone||'—'}</td><td>${new Date(u.createdAt||Date.now()).toLocaleDateString()}</td><td><span class="bdg by">Inactive</span></td></tr>`).join('');
+    tbody.innerHTML=data.inactiveReferrals.map((u,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${u.name||'—'}</td><td style="font-family:'DM Mono',monospace">${u.phone||'—'}</td><td>${u.daysSinceJoined!==undefined?u.daysSinceJoined+'d ago':new Date(u.joinedAt||Date.now()).toLocaleDateString()}</td><td><span class="bdg by">Inactive</span></td></tr>`).join('');
   }catch(e){}
 }
 
@@ -797,8 +807,24 @@ async function loadReferrals(){
   document.getElementById('refLinkLocked').style.display=active?'none':'block';
   try{
     const[stats,link]=await Promise.all([apiFetch('/api/referrals/stats'),apiFetch('/api/referrals/link')]);
-    if(active)document.getElementById('referralLink').value=`${window.location.origin}/index.html#join?ref=${link.inviteCode}`;
-    ['1','2','3','4'].forEach(l=>{const c=stats.levels['level'+l];const t=c?.count||0,a=c?.active||0,inact=t-a;document.getElementById('level'+l+'Count').textContent=t;document.getElementById('lvl'+l+'Status').textContent=`Active: ${a} | Inactive: ${inact}`;const el=document.getElementById('level'+l+'Members');if(el&&c?.members?.length){el.innerHTML=c.members.slice(0,5).map(m=>{const isAct=m.packageType&&m.packageType!=='not_active';return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-top:1px solid var(--gray-100);font-size:.78rem"><span style="font-weight:600">${m.username}</span><span class="bdg ${isAct?'bg':'by'}">${isAct?'Active':'Inactive'}</span></div>`}).join('');if(c.count>5)el.innerHTML+=`<p style="font-size:.72rem;color:var(--gray-400);margin:.3rem 0 0">+${c.count-5} more</p>`;}});
+    if(active)document.getElementById('referralLink').value=link.inviteLink||`${window.location.origin}/index.html#join?ref=${link.inviteCode}`;
+    ['1','2','3','4'].forEach(l=>{
+      const c=stats.levels['level'+l];
+      const users=c?.users||[];
+      const t=users.length;
+      const a=users.filter(u=>u.packageType&&u.packageType!=='not_active').length;
+      const inact=t-a;
+      document.getElementById('level'+l+'Count').textContent=t;
+      document.getElementById('lvl'+l+'Status').textContent=`Active: ${a} | Inactive: ${inact}`;
+      const el=document.getElementById('level'+l+'Members');
+      if(el&&users.length){
+        el.innerHTML=users.slice(0,5).map(m=>{
+          const isAct=m.packageType&&m.packageType!=='not_active';
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-top:1px solid var(--gray-100);font-size:.78rem"><span style="font-weight:600">${m.username}</span><span class="bdg ${isAct?'bg':'by'}">${isAct?'Active':'Inactive'}</span></div>`;
+        }).join('');
+        if(users.length>5)el.innerHTML+=`<p style="font-size:.72rem;color:var(--gray-400);margin:.3rem 0 0">+${users.length-5} more</p>`;
+      }
+    });
     document.getElementById('totalCommission').textContent='KES '+(stats.summary?.totalCommission||0);
     ['1','2','3','4'].forEach(l=>document.getElementById('commission'+l).textContent='KES '+(stats.summary?.commissionByLevel?.['level'+l]||0));
   }catch(err){console.error('Referrals:',err);}
@@ -815,23 +841,39 @@ document.getElementById('paymentMethod').addEventListener('change',e=>{document.
 async function loadWithdraw(){
   try{
     const p=await apiFetch('/api/users/profile');const u=p.user;
-    const pts=u.pointsWallet?.points||0,pKES=Math.floor(pts/100)*10,bal=u.primaryWallet?.balance||0,refs=u.pointsWallet?.referralsSinceLastWithdrawal||0;
+    const pts=u.pointsWallet?.points||0;
+    const redeemablePts=Math.floor(pts/100)*100; // backend rounds down to nearest 100
+    const pKES=(redeemablePts/100)*10;
+    const bal=u.primaryWallet?.balance||0;
+    const refs=u.pointsWallet?.referralsSinceLastWithdrawal||0;
     document.getElementById('withdrawBalance').textContent='KES '+bal;
-    document.getElementById('withdrawPoints').textContent=pts;
-    document.getElementById('withdrawPointsKES').textContent=`= KES ${pKES} · Tuesdays`;
+    document.getElementById('withdrawPoints').textContent=pts+' pts';
+    document.getElementById('withdrawPointsKES').textContent=`= KES ${pKES} redeemable · Tuesdays`;
     const canPts=pts>=2000&&refs>=4;
-    document.getElementById('pointsEligibilityHint').textContent=canPts?`Eligible: ${pts} pts = KES ${pKES} · ${refs} referrals confirmed · Submit on Tuesday.`:`Points: ${pts}/2,000 · Referrals since last withdrawal: ${refs}/4`;
+    const ptsCheck=pts>=2000?'✓':'✗';
+    const refsCheck=refs>=4?'✓':'✗';
+    document.getElementById('pointsEligibilityHint').textContent=canPts
+      ?`Ready: ${redeemablePts} pts → KES ${pKES}. Referrals: ${refs}/4. Submit on Tuesday.`
+      :`Points: ${pts}/2,000 ${ptsCheck}   New referrals since last withdrawal: ${refs}/4 ${refsCheck}`;
+    document.getElementById('pointsEligibilityHint').style.background=canPts?'var(--gl)':'var(--ym)';
+    document.getElementById('pointsEligibilityHint').style.borderColor=canPts?'var(--g)':'var(--y)';
+    document.getElementById('pointsEligibilityHint').style.color=canPts?'#14532d':'#78350f';
     const day=getEATDay(),msg=document.getElementById('withdrawDayMsg');
     if(day===2){msg.textContent='Today is Tuesday — points withdrawals are open.';msg.style.cssText='border-left:4px solid var(--g);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:700;font-size:.9rem;background:var(--gl);color:var(--g)';}
     else if(day===4){msg.textContent='Today is Thursday — KES wallet withdrawals are open.';msg.style.cssText='border-left:4px solid var(--g);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:700;font-size:.9rem;background:var(--gl);color:var(--g)';}
     else{msg.textContent=`Today is ${DAYS[day]}. Points withdrawals: Tuesdays · KES withdrawals: Thursdays.`;msg.style.cssText='border-left:4px solid var(--b);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:600;font-size:.9rem;background:var(--bl);color:#1e40af';}
     const pb=document.getElementById('ptsWithdrawBtn'),kb=document.getElementById('kesWithdrawBtn');
-    if(day!==2){pb.disabled=true;pb.textContent='Opens on Tuesday';}else if(!canPts){pb.disabled=true;pb.textContent='Not eligible yet';}else{pb.disabled=false;pb.textContent=`Redeem ${pts} pts = KES ${pKES}`;}
+    if(day!==2){pb.disabled=true;pb.textContent='Opens on Tuesday';}else if(!canPts){pb.disabled=true;pb.textContent='Not eligible yet';}else{pb.disabled=false;pb.textContent=`Redeem ${redeemablePts} pts → KES ${pKES}`;}
     if(day!==4){kb.disabled=true;kb.textContent='Opens on Thursday';}else{kb.disabled=false;kb.textContent='Request KES Withdrawal';}
     const hist=await apiFetch('/api/withdrawals/my').catch(()=>null);
     const hel=document.getElementById('withdrawHistory');
-    if(hist?.withdrawals?.length){hel.innerHTML=hist.withdrawals.map(w=>`<div class="hrow"><div><div class="hm">${w.type==='points'?`${w.pointsRedeemed} pts = `:''}KES ${w.amount} <span class="bdg ${w.type==='kes'?'bb':'by'}">${(w.type||'').toUpperCase()}</span></div><div class="hs">${new Date(w.requestedAt).toLocaleDateString()} · ${(w.paymentMethod||'').toUpperCase()}${w.adminNotes?' · Note: '+w.adminNotes:''}${w.transactionReference?' · Ref: '+w.transactionReference:''}</div></div><span class="bdg ${w.status==='completed'?'bg':w.status==='pending'?'by':'br'}">${(w.status||'').toUpperCase()}</span></div>`).join('');}
-    else hel.innerHTML='<p style="color:var(--gray-400);text-align:center;padding:.75rem;font-size:.85rem">No withdrawal history yet.</p>';
+    if(hist?.withdrawals?.length){
+      hel.innerHTML=hist.withdrawals.map(w=>{
+        const isPoints=w.type==='points';
+        const label=isPoints?`${w.pointsRedeemed||0} pts → KES ${w.amount}`:`KES ${w.amount}`;
+        return `<div class="hrow"><div><div class="hm">${label} <span class="bdg ${isPoints?'by':'bb'}">${isPoints?'POINTS':'KES'}</span></div><div class="hs">${new Date(w.requestedAt).toLocaleDateString()} · ${(w.paymentMethod||'').toUpperCase()}${w.adminNotes?' · '+w.adminNotes:''}${w.transactionReference?' · Ref: '+w.transactionReference:''}</div></div><span class="bdg ${w.status==='completed'?'bg':w.status==='pending'?'by':'br'}">${(w.status||'').toUpperCase()}</span></div>`;
+      }).join('');
+    } else hel.innerHTML='<p style="color:var(--gray-400);text-align:center;padding:.75rem;font-size:.85rem">No withdrawal history yet.</p>';
   }catch(err){console.error('Withdraw:',err);}
 }
 async function submitPointsWithdrawal(){
@@ -874,7 +916,7 @@ async function loadProfile(){
     if(_isActive){
       document.getElementById('profileLinkSection').style.display='block';
       document.getElementById('profileLinkLocked').style.display='none';
-      document.getElementById('profileInviteCode').value=`${window.location.origin}/index.html#join?ref=${u.inviteCode}`;
+      document.getElementById('profileInviteCode').value=`${window.location.origin}/index.html#join?ref=${u.uniqueInviteCode||u.inviteCode}`;
     } else {
       document.getElementById('profileLinkSection').style.display='none';
       document.getElementById('profileLinkLocked').style.display='block';
@@ -888,18 +930,24 @@ async function loadProfile(){
 
     if(rd){
       let totalRefs=0,activeRefs=0;
-      ['1','2','3','4'].forEach(l=>{const c=rd.levels['level'+l];const cnt=c?.count||0,act=c?.active||0;totalRefs+=cnt;activeRefs+=act;});
+      ['1','2','3','4'].forEach(l=>{
+        const users=(rd.levels['level'+l]?.users)||[];
+        const a=users.filter(u=>u.packageType&&u.packageType!=='not_active').length;
+        totalRefs+=users.length; activeRefs+=a;
+      });
       document.getElementById('statTotalRefs').textContent=totalRefs;
       document.getElementById('statActiveRefs').textContent=activeRefs;
       document.getElementById('statInactiveRefs').textContent=totalRefs-activeRefs;
     }
 
-    // Total withdrawn
+    // Total withdrawn — use pre-computed summary from API
     try{
       const wh=await apiFetch('/api/withdrawals/my');
-      const completed=(wh.withdrawals||[]).filter(w=>w.status==='completed');
-      const totalWith=completed.reduce((sum,w)=>sum+(w.amount||0),0);
-      document.getElementById('statWithdrawn').textContent='KES '+totalWith;
+      // totalKesWithdrawn = completed KES wallet withdrawals
+      // totalPointsKesReceived = completed points-to-KES payouts
+      const kesW=wh.summary?.totalKesWithdrawn||0;
+      const ptsKesW=wh.summary?.totalPointsKesReceived||0;
+      document.getElementById('statWithdrawn').textContent='KES '+(kesW+ptsKesW);
     }catch(e){document.getElementById('statWithdrawn').textContent='KES 0';}
 
     // Email cooldown
@@ -915,9 +963,15 @@ async function loadProfileInactiveReferrals(){
   try{
     const data=await apiFetch('/api/users/inactive-referrals');
     const tbody=document.getElementById('profileInactiveList');
-    if(!data.inactiveReferrals?.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:1.5rem;font-size:.85rem">No inactive referrals.</td></tr>';return;}
-    tbody.innerHTML=data.inactiveReferrals.map((u,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${u.name||u.username||'—'}</td><td style="font-family:'DM Mono',monospace">${u.phone||'—'}</td><td><span class="bdg bgr">L${u.level||1}</span></td><td>${u.daysSinceJoined!==undefined?u.daysSinceJoined+'d ago':(u.createdAt?new Date(u.createdAt).toLocaleDateString():'—')}</td><td><span class="bdg by">Inactive</span></td></tr>`).join('');
-  }catch(e){document.getElementById('profileInactiveList').innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:1rem;font-size:.85rem">Could not load data.</td></tr>';}
+    if(!data.inactiveReferrals?.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:1.5rem;font-size:.85rem">No inactive referrals.</td></tr>';return;}
+    tbody.innerHTML=data.inactiveReferrals.map((u,i)=>`<tr>
+      <td>${i+1}</td>
+      <td style="font-weight:600">${u.name||'—'}</td>
+      <td style="font-family:'DM Mono',monospace">${u.phone||'—'}</td>
+      <td>${u.daysSinceJoined!==undefined?u.daysSinceJoined+'d ago':new Date(u.joinedAt||Date.now()).toLocaleDateString()}</td>
+      <td><span class="bdg by">Inactive</span></td>
+    </tr>`).join('');
+  }catch(e){document.getElementById('profileInactiveList').innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:1rem;font-size:.85rem">Could not load data.</td></tr>';}
 }
 
 // UPDATE EMAIL (weekly limit, email only)
