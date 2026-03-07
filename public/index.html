@@ -3,719 +3,864 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechGeo</title>
-  <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <title>TechGeo Network — Earn From Your Network</title>
+  <link rel="stylesheet" href="/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --g: #16a34a; --gd: #14532d; --gm: #dcfce7; --gl: #f0fdf4;
+      --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+      --gray-400: #9ca3af; --gray-500: #6b7280; --gray-700: #374151; --gray-900: #111827;
+      --radius: .75rem;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; color: var(--gray-700); background: #fff; line-height: 1.6; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(255,255,255,.97); backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--gray-200);
+      height: 64px;
+    }
+    .topbar-inner {
+      max-width: 1160px; margin: 0 auto; padding: 0 1.5rem;
+      height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .brand {
+      display: flex; align-items: center; gap: .5rem; text-decoration: none;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; color: var(--g);
+    }
+    .brand-dot { width: 8px; height: 8px; background: var(--g); border-radius: 50%; }
+    .topbar-nav { display: flex; align-items: center; gap: .5rem; }
+    .nav-link {
+      font-size: .88rem; font-weight: 500; color: var(--gray-500); text-decoration: none;
+      padding: .4rem .85rem; border-radius: .4rem; transition: color .15s;
+    }
+    .nav-link:hover { color: var(--g); }
+    .btn-nav {
+      background: var(--g); color: #fff; font-weight: 700; font-size: .88rem;
+      padding: .45rem 1.1rem; border-radius: .45rem; text-decoration: none;
+      transition: background .15s;
+    }
+    .btn-nav:hover { background: #15803d; }
+    .hamburger { display: none; background: none; border: none; cursor: pointer; padding: .25rem; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--gray-700); margin: 5px 0; border-radius: 2px; }
+
+    /* ── CONTAINER ── */
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #052e16 0%, #14532d 40%, #16a34a 100%);
+      color: #fff; padding: 5.5rem 0 4rem; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 1160px; margin: 0 auto; padding: 0 1.5rem; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px; padding: .3rem .85rem; font-size: .8rem; font-weight: 600;
+      letter-spacing: .04em; margin-bottom: 1.5rem;
+    }
+    .hero-tag-dot { width: 6px; height: 6px; background: #4ade80; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.3)} }
+    .hero h1 {
+      font-family: 'Syne', sans-serif; font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 800; line-height: 1.1; margin-bottom: 1.25rem; max-width: 700px;
+    }
+    .hero h1 span { color: #86efac; }
+    .hero p { font-size: 1.1rem; opacity: .85; max-width: 560px; margin-bottom: 2.25rem; line-height: 1.7; }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
+    .btn-hero-main {
+      background: #fff; color: var(--g); font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: 1rem; padding: .85rem 2rem;
+      border-radius: .55rem; text-decoration: none; transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 4px 20px rgba(0,0,0,.2);
+    }
+    .btn-hero-main:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,.3); }
+    .btn-hero-outline {
+      border: 1.5px solid rgba(255,255,255,.4); color: #fff; font-weight: 600;
+      font-size: .95rem; padding: .85rem 2rem; border-radius: .55rem; text-decoration: none;
+      transition: background .15s;
+    }
+    .btn-hero-outline:hover { background: rgba(255,255,255,.1); }
+    .hero-stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1rem; max-width: 640px;
+    }
+    .hstat {
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+      border-radius: .6rem; padding: .9rem 1rem;
+    }
+    .hstat-val { font-family: 'DM Mono', monospace; font-size: 1.6rem; font-weight: 700; line-height: 1; }
+    .hstat-lbl { font-size: .72rem; opacity: .7; margin-top: .25rem; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* ── SECTION HEADERS ── */
+    .sec { padding: 5rem 0; }
+    .sec-tag {
+      display: inline-block; background: var(--gl); color: var(--g);
+      font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+      padding: .3rem .85rem; border-radius: 999px; border: 1px solid var(--gm);
+      margin-bottom: .85rem;
+    }
+    .sec-title { font-family: 'Syne', sans-serif; font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 800; color: var(--gray-900); line-height: 1.2; }
+    .sec-sub { font-size: 1rem; color: var(--gray-500); margin-top: .6rem; max-width: 560px; line-height: 1.7; }
+    .centered { text-align: center; }
+    .centered .sec-sub { margin: .6rem auto 0; }
+
+    /* ── HOW IT WORKS ── */
+    .how-bg { background: var(--gray-50); }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.75rem; margin-top: 3rem; }
+    .step {
+      background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius);
+      padding: 1.75rem 1.5rem; position: relative;
+      box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.04);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .step:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,.1); }
+    .step-num {
+      font-family: 'DM Mono', monospace; font-size: .7rem; font-weight: 600;
+      color: var(--g); background: var(--gl); border: 1px solid var(--gm);
+      padding: .2rem .6rem; border-radius: 999px; display: inline-block; margin-bottom: 1rem;
+    }
+    .step-icon { font-size: 1.8rem; margin-bottom: .75rem; }
+    .step h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--gray-900); margin-bottom: .4rem; }
+    .step p { font-size: .88rem; color: var(--gray-500); line-height: 1.6; }
+
+    /* ── EARNINGS ── */
+    .earn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .earn-card {
+      border-radius: var(--radius); padding: 1.75rem; position: relative; overflow: hidden;
+    }
+    .earn-card.green { background: linear-gradient(135deg, #052e16, #15803d); color: #fff; }
+    .earn-card.light { background: #fff; border: 1px solid var(--gray-200); box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.04); }
+    .earn-icon { font-size: 1.6rem; margin-bottom: .85rem; }
+    .earn-card h3 { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: .35rem; }
+    .earn-card.green h3 { color: #fff; }
+    .earn-card.light h3 { color: var(--gray-900); }
+    .earn-card p { font-size: .875rem; line-height: 1.65; }
+    .earn-card.green p { color: rgba(255,255,255,.8); }
+    .earn-card.light p { color: var(--gray-500); }
+    .earn-list { list-style: none; margin-top: .75rem; display: flex; flex-direction: column; gap: .35rem; }
+    .earn-list li { font-size: .85rem; display: flex; align-items: flex-start; gap: .5rem; }
+    .earn-list li::before { content: '—'; color: #4ade80; font-weight: 700; flex-shrink: 0; margin-top: .05rem; }
+    .earn-card.light .earn-list li::before { color: var(--g); }
+
+    /* ── REFERRAL LEVELS ── */
+    .levels-bg { background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
+    .level-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-top: 3rem; }
+    .level-card {
+      background: #fff; border-radius: var(--radius); padding: 1.5rem 1.25rem; text-align: center;
+      border: 1px solid var(--gray-200); box-shadow: 0 1px 3px rgba(0,0,0,.05);
+      border-top: 4px solid var(--g); transition: transform .2s;
+    }
+    .level-card:nth-child(2) { border-top-color: #22c55e; }
+    .level-card:nth-child(3) { border-top-color: #4ade80; }
+    .level-card:nth-child(4) { border-top-color: #86efac; }
+    .level-card:hover { transform: translateY(-2px); }
+    .level-num { font-family: 'Syne', sans-serif; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--gray-400); margin-bottom: .3rem; }
+    .level-earn { font-family: 'DM Mono', monospace; font-size: 1.75rem; font-weight: 700; color: var(--g); }
+    .level-card:nth-child(2) .level-earn { color: #16a34a; }
+    .level-card:nth-child(3) .level-earn { color: #15803d; }
+    .level-card:nth-child(4) .level-earn { color: #166534; }
+    .level-desc { font-size: .82rem; color: var(--gray-500); margin-top: .3rem; }
+
+    /* ── TASKS ── */
+    .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-top: 3rem; }
+    .task-card {
+      background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius);
+      padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+      border-left: 4px solid var(--g); transition: transform .2s, box-shadow .2s;
+    }
+    .task-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+    .task-card h3 { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; color: var(--gray-900); margin-bottom: .4rem; }
+    .task-card p { font-size: .85rem; color: var(--gray-500); line-height: 1.6; }
+    .task-badge {
+      display: inline-block; background: var(--gl); color: var(--g);
+      font-size: .72rem; font-weight: 700; padding: .2rem .6rem; border-radius: 999px;
+      border: 1px solid var(--gm); margin-top: .65rem;
+    }
+
+    /* ── TESTIMONIALS ── */
+    .testi-bg { background: var(--gray-50); }
+    .testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .testi-card {
+      background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius);
+      padding: 1.75rem; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+      transition: transform .2s;
+    }
+    .testi-card:hover { transform: translateY(-2px); }
+    .testi-stars { color: #f59e0b; font-size: .9rem; margin-bottom: .85rem; letter-spacing: .05em; }
+    .testi-text { font-size: .93rem; color: var(--gray-700); line-height: 1.7; font-style: italic; margin-bottom: 1.1rem; }
+    .testi-author { display: flex; align-items: center; gap: .75rem; }
+    .testi-avatar {
+      width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--g), #15803d);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .testi-name { font-weight: 700; font-size: .88rem; color: var(--gray-900); }
+    .testi-location { font-size: .78rem; color: var(--gray-400); margin-top: .1rem; }
+
+    /* ── WHY US ── */
+    .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; margin-top: 3rem; }
+    .why-card {
+      border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 1.5rem;
+      background: #fff; transition: border-color .2s;
+    }
+    .why-card:hover { border-color: var(--g); }
+    .why-icon {
+      width: 40px; height: 40px; background: var(--gl); border-radius: .5rem;
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+      margin-bottom: .85rem; border: 1px solid var(--gm);
+    }
+    .why-card h3 { font-family: 'Syne', sans-serif; font-size: .95rem; font-weight: 700; color: var(--gray-900); margin-bottom: .35rem; }
+    .why-card p { font-size: .85rem; color: var(--gray-500); line-height: 1.6; }
+
+    /* ── FAQ ── */
+    .faq-bg { background: var(--gray-50); }
+    .faq-list { max-width: 760px; margin: 3rem auto 0; display: flex; flex-direction: column; gap: .75rem; }
+    .faq-item { background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; }
+    .faq-q {
+      width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+      padding: 1.1rem 1.25rem; font-family: 'DM Sans', sans-serif; font-size: .92rem;
+      font-weight: 600; color: var(--gray-900); display: flex; justify-content: space-between;
+      align-items: center; gap: .75rem; line-height: 1.4;
+    }
+    .faq-q:hover { background: var(--gray-50); }
+    .faq-arrow { font-size: .75rem; color: var(--g); flex-shrink: 0; transition: transform .2s; }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); }
+    .faq-a {
+      display: none; padding: 0 1.25rem 1.1rem; font-size: .88rem;
+      color: var(--gray-500); line-height: 1.7; border-top: 1px solid var(--gray-100);
+      padding-top: .85rem;
+    }
+    .faq-item.open .faq-a { display: block; }
+
+    /* ── CONTACT ── */
+    .contact-box {
+      background: linear-gradient(135deg, #052e16, #15803d);
+      border-radius: 1.25rem; padding: 3rem 2rem; color: #fff; text-align: center;
+      max-width: 640px; margin: 0 auto;
+    }
+    .contact-box h2 { font-family: 'Syne', sans-serif; font-size: 1.75rem; font-weight: 800; margin-bottom: .75rem; }
+    .contact-box p { opacity: .85; margin-bottom: 1.5rem; font-size: .95rem; line-height: 1.7; }
+    .contact-email {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(255,255,255,.12); border: 1.5px solid rgba(255,255,255,.25);
+      border-radius: .6rem; padding: .75rem 1.5rem; color: #fff; text-decoration: none;
+      font-family: 'DM Mono', monospace; font-size: .9rem; font-weight: 500;
+      transition: background .2s;
+    }
+    .contact-email:hover { background: rgba(255,255,255,.2); }
+
+    /* ── CTA ── */
+    .cta-sec { background: linear-gradient(135deg, #052e16, #16a34a); color: #fff; padding: 5rem 0; text-align: center; }
+    .cta-sec h2 { font-family: 'Syne', sans-serif; font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 800; margin-bottom: .85rem; }
+    .cta-sec p { font-size: 1.05rem; opacity: .85; max-width: 480px; margin: 0 auto 2rem; line-height: 1.7; }
+    .btn-cta {
+      display: inline-block; background: #fff; color: var(--g);
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+      padding: .9rem 2.5rem; border-radius: .55rem; text-decoration: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,.2); transition: transform .15s;
+    }
+    .btn-cta:hover { transform: translateY(-2px); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--gray-900); color: rgba(255,255,255,.6);
+      padding: 2rem 0; text-align: center; font-size: .83rem;
+    }
+    footer a { color: rgba(255,255,255,.6); text-decoration: none; }
+    footer a:hover { color: #fff; }
+
+    /* ── AUTH PAGES ── */
+    .auth-wrap {
+      min-height: calc(100vh - 64px);
+      background: var(--gray-50);
+      display: flex; align-items: flex-start; justify-content: center; padding: 2.5rem 1rem;
+    }
+    .auth-box {
+      background: #fff; border: 1px solid var(--gray-200); border-radius: 1rem;
+      padding: 2rem 2rem; max-width: 460px; width: 100%;
+      box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    }
+    .auth-back { display: inline-flex; align-items: center; gap: .35rem; color: var(--gray-400); text-decoration: none; font-size: .83rem; font-weight: 600; margin-bottom: 1.25rem; }
+    .auth-back:hover { color: var(--g); }
+    .auth-title { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--gray-900); }
+    .auth-sub { font-size: .85rem; color: var(--gray-500); margin-top: .2rem; margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: .9rem; }
+    .form-label { display: block; font-size: .8rem; font-weight: 600; color: var(--gray-700); margin-bottom: .3rem; }
+    .form-control {
+      width: 100%; padding: .6rem .85rem; border: 1.5px solid var(--gray-200);
+      border-radius: .45rem; font-size: .9rem; outline: none; font-family: inherit;
+      color: var(--gray-900); transition: border-color .15s;
+    }
+    .form-control:focus { border-color: var(--g); box-shadow: 0 0 0 3px rgba(22,163,74,.08); }
+    .btn-auth {
+      width: 100%; background: var(--g); color: #fff; border: none; cursor: pointer;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: .95rem;
+      padding: .7rem; border-radius: .45rem; transition: background .15s; margin-top: .5rem;
+    }
+    .btn-auth:hover { background: #15803d; }
+    .btn-auth:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
+    .auth-switch { text-align: center; margin-top: 1rem; font-size: .85rem; color: var(--gray-500); }
+    .auth-switch a { color: var(--g); font-weight: 600; text-decoration: none; }
+    .alert-err {
+      background: #fee2e2; border: 1px solid #fca5a5; border-radius: .45rem;
+      color: #b91c1c; font-size: .84rem; padding: .55rem .85rem; margin-bottom: .85rem; display: none;
+    }
+    .pw-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: .85rem; color: var(--gray-400); }
+    .strength-bar { height: 5px; background: var(--gray-100); border-radius: 3px; margin: .4rem 0 .2rem; }
+    .strength-fill { height: 100%; border-radius: 3px; transition: all .3s; width: 0; background: #ddd; }
+    .strength-text { font-size: .78rem; color: var(--gray-500); margin-bottom: .4rem; }
+    .strength-checks { list-style: none; padding: 0; font-size: .78rem; display: flex; flex-direction: column; gap: .15rem; }
+    .strength-checks li { display: flex; align-items: center; gap: .35rem; color: var(--gray-400); }
+    .strength-checks li.pass { color: var(--g); }
+    .strength-checks li::before { content: '○'; font-size: .65rem; flex-shrink: 0; }
+    .strength-checks li.pass::before { content: '●'; }
+
+    /* ── DIVIDER LINE ── */
+    .divider { height: 1px; background: var(--gray-200); margin: 0; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .hero { padding: 3.5rem 0 3rem; }
+      .sec { padding: 3.5rem 0; }
+      .topbar-nav .nav-link { display: none; }
+      .hamburger { display: block; }
+      .steps, .earn-grid, .task-grid, .testi-grid, .why-grid { gap: 1rem; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Public Header (home, login, join) -->
-  <header class="header" id="publicHeader">
-    <div class="header-content">
-      <a href="#home" class="logo nav-trigger" data-section="home">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M6 6L4 4M18 18l2 2M6 18l-2 2M18 6l2-2"/>
-          <circle cx="12" cy="12" r="4"/>
-        </svg>
-        <span>TechGeo</span>
-      </a>
-      <nav class="nav-menu">
-        <a href="#home" class="nav-link nav-trigger" data-section="home">Home</a>
-        <a href="#login" class="nav-link nav-trigger" data-section="login">Login</a>
-        <a href="#join" class="btn btn-primary nav-trigger" data-section="join">Join Now</a>
-      </nav>
-    </div>
-  </header>
+<!-- ===== TOPBAR ===== -->
+<header class="topbar" id="publicHeader">
+  <div class="topbar-inner">
+    <a href="#home" class="brand nav-trigger" data-section="home">
+      <span class="brand-dot"></span>TechGeo Network
+    </a>
+    <nav class="topbar-nav">
+      <a href="#home" class="nav-link nav-trigger" data-section="home">Home</a>
+      <a href="#login" class="nav-link nav-trigger" data-section="login">Login</a>
+      <a href="#join" class="btn-nav nav-trigger" data-section="join">Join Now</a>
+    </nav>
+    <button class="hamburger" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='flex'?'none':'flex'" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
 
+<main>
 
-  <main>
-    <!-- ==================== HOME ==================== -->
-    <!-- ==================== HOME ==================== -->
+<!-- ===== HOME SECTION ===== -->
 <section id="home" class="page-section">
 
-  <section style="background:linear-gradient(135deg,#16a34a,#15803d);color:white;padding:4rem 0;">
-    <div class="container" style="text-align:center;">
-      <h1 style="font-size:3rem;margin-bottom:1rem;">Build Your Network,<br>Earn Real Income</h1>
-      <p style="font-size:1.25rem;margin-bottom:2rem;opacity:0.9;">Join our 4-level referral system. Earn from blogs, surveys & referrals.</p>
-      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-        <a href="#join" class="btn btn-primary btn-lg nav-trigger" data-section="join" style="background:white;color:#16a34a;">Get Started — KES 700</a>
-        <a href="#features" class="btn btn-outline btn-lg" style="border-color:white;color:white;">How It Works</a>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag"><span class="hero-tag-dot"></span> Kenya's Digital Earning Network</div>
+      <h1>Turn Your Network<br>Into <span>Real Income</span></h1>
+      <p>TechGeo Network is a community-based earning platform where you grow a network, complete digital tasks, and earn consistent income — all from your phone.</p>
+      <div class="hero-actions">
+        <a href="#join" class="btn-hero-main nav-trigger" data-section="join">Create Free Account</a>
+        <a href="#how" class="btn-hero-outline">See How It Works</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><div class="hstat-val">4</div><div class="hstat-lbl">Earning Levels</div></div>
+        <div class="hstat"><div class="hstat-val">5</div><div class="hstat-lbl">Task Categories</div></div>
+        <div class="hstat"><div class="hstat-val">KES 200</div><div class="hstat-lbl">Per Direct Referral</div></div>
+        <div class="hstat"><div class="hstat-val">M-Pesa</div><div class="hstat-lbl">Instant Payouts</div></div>
       </div>
     </div>
-  </section>
-
-  <section style="padding:4rem 0;background:white;">
-    <div class="container">
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-icon success">💰</div><div class="stat-content"><div class="stat-label">Activation Fee</div><div class="stat-value">KES 700</div></div></div>
-        <div class="stat-card"><div class="stat-icon warning">👥</div><div class="stat-content"><div class="stat-label">Level 1 Earn</div><div class="stat-value">KES 200</div></div></div>
-        <div class="stat-card"><div class="stat-icon info">📝</div><div class="stat-content"><div class="stat-label">Per Blog/Survey</div><div class="stat-value">100 pts</div></div></div>
-        <div class="stat-card"><div class="stat-icon primary">📊</div><div class="stat-content"><div class="stat-label">Points Rate</div><div class="stat-value">300pts=KES10</div></div></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="features" style="padding:4rem 0;background:#f9fafb;">
-    <div class="container">
-      <h2 style="text-align:center;font-size:2.5rem;margin-bottom:3rem;">How To Earn</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;">
-        <div class="card" style="padding:2rem;text-align:center;">
-          <div style="font-size:3rem;margin-bottom:1rem;">🎯</div>
-          <h3>4-Level Referrals</h3>
-          <p style="color:var(--gray-500);margin-top:0.5rem;">Level 1: KES 200 · Level 2: KES 150 · Level 3: KES 75 · Level 4: KES 25</p>
-        </div>
-        <div class="card" style="padding:2rem;text-align:center;">
-          <div style="font-size:3rem;margin-bottom:1rem;">📝</div>
-          <h3>Blog Writing</h3>
-          <p style="color:var(--gray-500);margin-top:0.5rem;">Write 2 blogs per day. Each approved blog earns 100 points.</p>
-        </div>
-        <div class="card" style="padding:2rem;text-align:center;">
-          <div style="font-size:3rem;margin-bottom:1rem;">📊</div>
-          <h3>Surveys</h3>
-          <p style="color:var(--gray-500);margin-top:0.5rem;">Complete 2 surveys per day. Each approved survey earns 100 points.</p>
-        </div>
-        <div class="card" style="padding:2rem;text-align:center;">
-          <div style="font-size:3rem;margin-bottom:1rem;">💸</div>
-          <h3>Withdrawals</h3>
-          <p style="color:var(--gray-500);margin-top:0.5rem;">Min KES 300. Thursdays only. Points need 4 referrals + 12,000 pts.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section style="padding:4rem 0;background:linear-gradient(135deg,#15803d,#14532d);color:white;text-align:center;">
-    <div class="container">
-      <h2 style="font-size:2rem;margin-bottom:1rem;">Ready to Start?</h2>
-      <p style="font-size:1.25rem;margin-bottom:2rem;opacity:0.9;">You need a referral code from an existing member to join.</p>
-      <a href="#join" class="btn btn-primary btn-lg nav-trigger" data-section="join" style="background:white;color:#15803d;">Join Now</a>
-    </div>
-  </section>
-
-  <!-- ========== NEW SECTIONS ADDED BELOW ========== -->
-
-  <!-- Testimonials Section -->
-  <section style="padding:4rem 0;background:linear-gradient(135deg,#f0fdf4,#dcfce7);overflow:hidden;">
-    <div class="container">
-      <h2 style="text-align:center;font-size:2.5rem;margin-bottom:1rem;color:var(--primary-800);">What Our Members Say</h2>
-      <p style="text-align:center;font-size:1.1rem;margin-bottom:3rem;color:var(--gray-600);">Join thousands of happy earners in our community</p>
-      
-      <!-- Scrolling Marquee -->
-      <div style="position:relative;width:100%;overflow:hidden;padding:1rem 0;">
-        
-        <!-- First scrolling row (left to right) -->
-        <div style="display:flex;gap:1.5rem;animation:scrollLeft 30s linear infinite;margin-bottom:1.5rem;width:fit-content;">
-          <!-- Testimonial 1 -->
-          <div class="card" style="min-width:320px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;background:white;">
-            <img src="https://tech-ge.github.io/images/file3.jpeg" alt="Profile" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--primary-200);">
-            <div>
-              <h4 style="font-weight:700;color:var(--primary-700);margin-bottom:0.25rem;">Sarah M.</h4>
-              <p style="color:var(--gray-600);font-size:0.95rem;line-height:1.4;margin-bottom:0.5rem;">"I've earned over KES 5,000 in just 2 months. The referral system works great!"</p>
-              <div style="color:#fbbf24;">★★★★★</div>
-            </div>
-          </div>
-          
-          <!-- Testimonial 2 -->
-          <div class="card" style="min-width:320px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;background:white;">
-            <img src="https://tech-ge.github.io/images/fie.jpeg" alt="Profile" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--primary-200);">
-            <div>
-              <h4 style="font-weight:700;color:var(--primary-700);margin-bottom:0.25rem;">John K.</h4>
-              <p style="color:var(--gray-600);font-size:0.95rem;line-height:1.4;margin-bottom:0.5rem;">"Best decision ever! The blog writing is easy and payments are always on time."</p>
-              <div style="color:#fbbf24;">★★★★★</div>
-            </div>
-          </div>
-          
-          <!-- Testimonial 3 -->
-          <div class="card" style="min-width:320px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;background:white;">
-            <img src="https://tech-ge.github.io/images/file.jpeg" alt="Profile" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--primary-200);">
-            <div>
-              <h4 style="font-weight:700;color:var(--primary-700);margin-bottom:0.25rem;">Mercy A.</h4>
-              <p style="color:var(--gray-600);font-size:0.95rem;line-height:1.4;margin-bottom:0.5rem;">"My level 2 referrals are already earning me passive income. Love this platform!"</p>
-              <div style="color:#fbbf24;">★★★★★</div>
-            </div>
-          </div>
-          
-          <!-- Testimonial 4 -->
-          <div class="card" style="min-width:320px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;background:white;">
-            <img src="https://tech-ge.github.io/images/file1.jpeg" alt="Profile" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--primary-200);">
-            <div>
-              <h4 style="font-weight:700;color:var(--primary-700);margin-bottom:0.25rem;">David O.</h4>
-              <p style="color:var(--gray-600);font-size:0.95rem;line-height:1.4;margin-bottom:0.5rem;">"The surveys are interesting and pay well. Already cashed out 3 times!"</p>
-              <div style="color:#fbbf24;">★★★★★</div>
-            </div>
-          </div>
-          
-          <!-- Testimonial 5 -->
-          <div class="card" style="min-width:320px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;background:white;">
-            <img src="https://tech-ge.github.io/images/file2.jpeg" alt="Profile" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--primary-200);">
-            <div>
-              <h4 style="font-weight:700;color:var(--primary-700);margin-bottom:0.25rem;">Jane W.</h4>
-              <p style="color:var(--gray-600);font-size:0.95rem;line-height:1.4;margin-bottom:0.5rem;">"My team is growing fast! Level 4 referrals are adding up nicely."</p>
-              <div style="color:#fbbf24;">★★★★★</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Second scrolling row (right to left) -->
-        <div style="display:flex;gap:1.5rem;animation:scrollRight 30s linear infinite;width:fit-content;">
-          <!-- Testimonial 6 -->
-          <div class="card" style="min-width:320px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;background:white;">
-            <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Profile" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--primary-200);">
-            <div>
-              <h4 style="font-weight:700;color:var(--primary-700);margin-bottom:0.25rem;">Peter N.</h4>
-              <p style="color:var(--gray-600);font-size:0.95rem;line-height:1.4;margin-bottom:0.5rem;">"The 4-level system is brilliant. My downline is already 15 people strong!"</p>
-              <div style="color:#fbbf24;">★★★★★</div>
-            </div>
-          </div>
-          
-          <!-- Testimonial 7 -->
-          <div class="card" style="min-width:320px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;background:white;">
-            <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Profile" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--primary-200);">
-            <div>
-              <h4 style="font-weight:700;color:var(--primary-700);margin-bottom:0.25rem;">Lucy T.</h4>
-              <p style="color:var(--gray-600);font-size:0.95rem;line-height:1.4;margin-bottom:0.5rem;">"Withdrawals every Thursday! Made KES 1,200 last week alone."</p>
-              <div style="color:#fbbf24;">★★★★★</div>
-            </div>
-          </div>
-          
-          <!-- Testimonial 8 -->
-          <div class="card" style="min-width:320px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;background:white;">
-            <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Profile" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--primary-200);">
-            <div>
-              <h4 style="font-weight:700;color:var(--primary-700);margin-bottom:0.25rem;">Michael S.</h4>
-              <p style="color:var(--gray-600);font-size:0.95rem;line-height:1.4;margin-bottom:0.5rem;">"Perfect side hustle. I do blogs in the evening and the points add up fast."</p>
-              <div style="color:#fbbf24;">★★★★★</div>
-            </div>
-          </div>
-          
-          <!-- Testimonial 9 -->
-          <div class="card" style="min-width:320px;padding:1.5rem;display:flex;gap:1rem;align-items:flex-start;background:white;">
-            <img src="https://randomuser.me/api/portraits/women/17.jpg" alt="Profile" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--primary-200);">
-            <div>
-              <h4 style="font-weight:700;color:var(--primary-700);margin-bottom:0.25rem;">Agnes R.</h4>
-              <p style="color:var(--gray-600);font-size:0.95rem;line-height:1.4;margin-bottom:0.5rem;">"Referred 4 friends and now I qualify for withdrawals every week!"</p>
-              <div style="color:#fbbf24;">★★★★★</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Guide Section -->
-  <section style="padding:4rem 0;background:white;">
-    <div class="container">
-      <h2 style="text-align:center;font-size:2.5rem;margin-bottom:1rem;color:var(--primary-800);">Complete Platform Guide</h2>
-      <p style="text-align:center;font-size:1.1rem;margin-bottom:4rem;color:var(--gray-600);">Follow these simple steps to start earning</p>
-      
-      <!-- Guide Step 1: Login/Register -->
-      <div style="display:flex;align-items:center;gap:4rem;margin-bottom:6rem;">
-        <div style="flex:1;background:linear-gradient(135deg,var(--primary-100),var(--primary-200));border-radius:2rem;padding:2rem;text-align:center;box-shadow:var(--shadow-lg);">
-          <img src="https://tech-ge.github.io/images/login.png" alt="Login and Registration" style="width:100%;max-width:300px;height:auto;border-radius:1rem;box-shadow:var(--shadow);margin-bottom:1rem;">
-          <p style="color:var(--primary-700);font-weight:500;">Register · Login · Verify</p>
-        </div>
-        <div style="flex:1;">
-          <div style="display:inline-block;background:var(--primary-100);color:var(--primary-700);font-weight:700;padding:0.5rem 1rem;border-radius:2rem;margin-bottom:1rem;">STEP 01</div>
-          <h3 style="font-size:2rem;margin-bottom:1.5rem;color:var(--gray-800);">Create & Access Your Account</h3>
-          <ul style="list-style:none;padding:0;">
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Click "Join Now" and enter your details (name, email, phone)</span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Use a valid referral code from an existing member</span>
-            </li>
-           
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Login anytime using your credentials</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-      
-      <!-- Guide Step 2: Pay & Activate -->
-      <div style="display:flex;align-items:center;gap:4rem;margin-bottom:6rem;flex-direction:row-reverse;">
-        <div style="flex:1;background:linear-gradient(135deg,var(--primary-100),var(--primary-200));border-radius:2rem;padding:2rem;text-align:center;box-shadow:var(--shadow-lg);">
-          <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="M-PESA Payment" style="width:100%;max-width:300px;height:auto;border-radius:1rem;box-shadow:var(--shadow);margin-bottom:1rem;">
-          <div style="display:flex;justify-content:center;gap:1rem;">
-            <div style="background:white;padding:0.5rem 1rem;border-radius:1rem;box-shadow:var(--shadow);">
-              <span style="font-weight:700;color:var(--primary-700);">KES 700</span>
-            </div>
-            <div style="background:var(--primary-600);color:white;padding:0.5rem 1rem;border-radius:1rem;box-shadow:var(--shadow);">
-              <span>Activate</span>
-            </div>
-          </div>
-        </div>
-        <div style="flex:1;">
-          <div style="display:inline-block;background:var(--primary-100);color:var(--primary-700);font-weight:700;padding:0.5rem 1rem;border-radius:2rem;margin-bottom:1rem;">STEP 02</div>
-          <h3 style="font-size:2rem;margin-bottom:1.5rem;color:var(--gray-800);">Pay Activation Fee</h3>
-          <ul style="list-style:none;padding:0;">
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Pay one-time activation fee of <strong>KES 700</strong> via M-PESA</span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Send to paybill Number: <strong>247247</strong> account no:<b>153316</b></span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">send payment screenshot to your upline wait for balance to reflect</span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">activate account once payment reflects</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-      
-      <!-- Guide Step 3: Write Blogs -->
-      <div style="display:flex;align-items:center;gap:4rem;margin-bottom:6rem;">
-        <div style="flex:1;background:linear-gradient(135deg,var(--primary-100),var(--primary-200));border-radius:2rem;padding:2rem;text-align:center;box-shadow:var(--shadow-lg);">
-          <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Blog Writing" style="width:100%;max-width:300px;height:auto;border-radius:1rem;box-shadow:var(--shadow);margin-bottom:1rem;">
-          <div style="background:white;border-radius:1rem;padding:1rem;max-width:250px;margin:0 auto;">
-            <div style="height:8px;background:var(--gray-200);border-radius:4px;margin-bottom:0.5rem;"></div>
-            <div style="height:8px;background:var(--gray-200);border-radius:4px;width:80%;margin-bottom:0.5rem;"></div>
-            <div style="height:8px;background:var(--gray-200);border-radius:4px;width:60%;"></div>
-            <div style="display:flex;justify-content:space-between;margin-top:1rem;">
-              <span style="color:var(--primary-600);">+100 pts</span>
-              <span style="background:var(--primary-500);color:white;padding:0.25rem 0.5rem;border-radius:1rem;font-size:0.8rem;">daily</span>
-            </div>
-          </div>
-        </div>
-        <div style="flex:1;">
-          <div style="display:inline-block;background:var(--primary-100);color:var(--primary-700);font-weight:700;padding:0.5rem 1rem;border-radius:2rem;margin-bottom:1rem;">STEP 03</div>
-          <h3 style="font-size:2rem;margin-bottom:1.5rem;color:var(--gray-800);">Write Blogs & Earn Points</h3>
-          <ul style="list-style:none;padding:0;">
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Go to <strong>Blogs</strong> section from dashboard</span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Write up <strong> blogs</strong> (min 300 words each)</span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Each approved blog = <strong>100 points</strong> added to your wallet</span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Track your submissions and approval status</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-      
-      <!-- Guide Step 4: Complete Surveys -->
-      <div style="display:flex;align-items:center;gap:4rem;margin-bottom:6rem;flex-direction:row-reverse;">
-        <div style="flex:1;background:linear-gradient(135deg,var(--primary-100),var(--primary-200));border-radius:2rem;padding:2rem;text-align:center;box-shadow:var(--shadow-lg);">
-          <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Survey Completion" style="width:100%;max-width:300px;height:auto;border-radius:1rem;box-shadow:var(--shadow);margin-bottom:1rem;">
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;max-width:200px;margin:0 auto;">
-            <div style="background:white;height:8px;border-radius:4px;"></div>
-            <div style="background:white;height:8px;border-radius:4px;"></div>
-            <div style="background:white;height:8px;border-radius:4px;"></div>
-            <div style="background:var(--primary-400);height:8px;border-radius:4px;"></div>
-            <div style="background:var(--primary-400);height:8px;border-radius:4px;"></div>
-            <div style="background:var(--primary-400);height:8px;border-radius:4px;"></div>
-          </div>
-        </div>
-        <div style="flex:1;">
-          <div style="display:inline-block;background:var(--primary-100);color:var(--primary-700);font-weight:700;padding:0.5rem 1rem;border-radius:2rem;margin-bottom:1rem;">STEP 04</div>
-          <h3 style="font-size:2rem;margin-bottom:1.5rem;color:var(--gray-800);">Complete Surveys</h3>
-          <ul style="list-style:none;padding:0;">
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Navigate to <strong>Surveys</strong> section</span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Complete <strong> surveys per day</strong> (5-10 minutes each)</span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Each approved survey = <strong>100 points</strong></span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Quality answers get approved faster</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-      
-      <!-- Guide Step 5: Redeem Points -->
-      <div style="display:flex;align-items:center;gap:4rem;margin-bottom:6rem;">
-        <div style="flex:1;background:linear-gradient(135deg,var(--primary-100),var(--primary-200));border-radius:2rem;padding:2rem;text-align:center;box-shadow:var(--shadow-lg);">
-          <img src="https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Points Redemption" style="width:100%;max-width:300px;height:auto;border-radius:1rem;box-shadow:var(--shadow);margin-bottom:1rem;">
-          <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;">
-            <span style="background:white;padding:0.5rem 1rem;border-radius:1rem;font-weight:700;">12,000 pts</span>
-            <span style="font-size:2rem;">→</span>
-            <span style="background:var(--primary-600);color:white;padding:0.5rem 1rem;border-radius:1rem;font-weight:700;">KES 400</span>
-          </div>
-        </div>
-        <div style="flex:1;">
-          <div style="display:inline-block;background:var(--primary-100);color:var(--primary-700);font-weight:700;padding:0.5rem 1rem;border-radius:2rem;margin-bottom:1rem;">STEP 05</div>
-          <h3 style="font-size:2rem;margin-bottom:1.5rem;color:var(--gray-800);">Redeem Points</h3>
-          <ul style="list-style:none;padding:0;">
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);"><strong>300 points = KES 10</strong> conversion rate</span>
-            </li>
-            
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">redeem points anytime </span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Click "Redeem Points" in your dashboard</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-      
-      <!-- Guide Step 6: Withdraw Earnings -->
-      <div style="display:flex;align-items:center;gap:4rem;margin-bottom:2rem;flex-direction:row-reverse;">
-        <div style="flex:1;background:linear-gradient(135deg,var(--primary-100),var(--primary-200));border-radius:2rem;padding:2rem;text-align:center;box-shadow:var(--shadow-lg);">
-          <img src="https://tech-ge.github.io/images/withdraw.png" alt="M-PESA Withdrawal" style="width:100%;max-width:300px;height:auto;border-radius:1rem;box-shadow:var(--shadow);margin-bottom:1rem;">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
-            <span style="background:white;padding:0.5rem 1rem;border-radius:1rem;font-weight:700;">Thursday Only</span>
-            <span style="background:var(--primary-600);color:white;padding:0.5rem 1rem;border-radius:1rem;font-weight:700;">Min KES 300</span>
-          </div>
-        </div>
-        <div style="flex:1;">
-          <div style="display:inline-block;background:var(--primary-100);color:var(--primary-700);font-weight:700;padding:0.5rem 1rem;border-radius:2rem;margin-bottom:1rem;">STEP 06</div>
-          <h3 style="font-size:2rem;margin-bottom:1.5rem;color:var(--gray-800);">Withdraw to M-PESA</h3>
-          <ul style="list-style:none;padding:0;">
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Go to <strong>Withdraw</strong> section (available only on Thursdays)</span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Minimum withdrawal: <strong>KES 300</strong></span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Enter M-PESA number or bank details and amount</span>
-            </li>
-            <li style="margin-bottom:1rem;display:flex;align-items:center;gap:1rem;">
-              <span style="background:var(--primary-500);color:white;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.9rem;">✓</span>
-              <span style="color:var(--gray-600);">Money sent within 24 hours on withdrawal day</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Top Earners Section -->
-  <section style="padding:4rem 0;background:linear-gradient(135deg,#f0fdf4,#ffffff);">
-    <div class="container">
-      <h2 style="text-align:center;font-size:2.5rem;margin-bottom:1rem;color:var(--primary-800);">🏆 Top Earners This Month</h2>
-      <p style="text-align:center;font-size:1.1rem;margin-bottom:3rem;color:var(--gray-600);">Meet our community champions</p>
-      
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;">
-        <!-- 1st Place -->
-        <div class="card" style="padding:2rem;text-align:center;border:2px solid gold;transform:scale(1.05);">
-          <div style="font-size:3rem;margin-bottom:0.5rem;">🥇</div>
-          <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Top Earner" style="width:100px;height:100px;border-radius:50%;margin:0 auto 1rem;border:4px solid gold;">
-          <h3 style="font-size:1.5rem;margin-bottom:0.25rem;">Sarah Kimani</h3>
-          <p style="color:var(--gray-500);margin-bottom:1rem;">Level 4 · 45 referrals</p>
-          <div style="font-size:2rem;font-weight:700;color:var(--primary-600);">KES 12,450</div>
-          <p style="color:var(--gray-400);font-size:0.9rem;margin-top:0.5rem;">Earned this month</p>
-        </div>
-        
-        <!-- 2nd Place -->
-        <div class="card" style="padding:2rem;text-align:center;">
-          <div style="font-size:3rem;margin-bottom:0.5rem;">🥈</div>
-          <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Top Earner" style="width:90px;height:90px;border-radius:50%;margin:0 auto 1rem;border:4px solid silver;">
-          <h3 style="font-size:1.3rem;margin-bottom:0.25rem;">John Omondi</h3>
-          <p style="color:var(--gray-500);margin-bottom:1rem;">Level 3 · 32 referrals</p>
-          <div style="font-size:1.75rem;font-weight:700;color:var(--primary-600);">KES 8,230</div>
-        </div>
-        
-        <!-- 3rd Place -->
-        <div class="card" style="padding:2rem;text-align:center;">
-          <div style="font-size:3rem;margin-bottom:0.5rem;">🥉</div>
-          <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Top Earner" style="width:90px;height:90px;border-radius:50%;margin:0 auto 1rem;border:4px solid #cd7f32;">
-          <h3 style="font-size:1.3rem;margin-bottom:0.25rem;">Mercy Wanjiku</h3>
-          <p style="color:var(--gray-500);margin-bottom:1rem;">Level 3 · 28 referrals</p>
-          <div style="font-size:1.75rem;font-weight:700;color:var(--primary-600);">KES 6,750</div>
-        </div>
-      </div>
-      
-      <div style="text-align:center;margin-top:3rem;">
-        <a href="#join" class="btn btn-primary btn-lg nav-trigger" data-section="join">Join to See Yourself Here →</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ Section -->
-  <section style="padding:4rem 0;background:white;">
-    <div class="container">
-      <h2 style="text-align:center;font-size:2.5rem;margin-bottom:1rem;color:var(--primary-800);">Frequently Asked Questions</h2>
-      <p style="text-align:center;font-size:1.1rem;margin-bottom:3rem;color:var(--gray-600);">Everything you need to know</p>
-      
-      <div style="max-width:800px;margin:0 auto;">
-        <!-- FAQ 1 -->
-        <details style="margin-bottom:1rem;border:1px solid var(--gray-200);border-radius:1rem;padding:1rem;background:var(--gray-50);">
-          <summary style="font-weight:700;font-size:1.1rem;color:var(--primary-700);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">
-            How do I get a referral code to join?
-            <span style="font-size:1rem;color:green;">➕</span>
-          </summary>
-          <p style="margin-top:1rem;color:var(--gray-600);">You need a referral code from an existing member. Ask friends or find promoters on our social media pages. The code is required during registration.</p>
-        </details>
-        
-        <!-- FAQ 2 -->
-        <details style="margin-bottom:1rem;border:1px solid var(--gray-200);border-radius:1rem;padding:1rem;background:var(--gray-50);">
-          <summary style="font-weight:700;font-size:1.1rem;color:var(--primary-700);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">
-            When can I withdraw my earnings?
-            <span style="font-size:1rem;color:green;">➕</span>
-          </summary>
-          <p style="margin-top:1rem;color:var(--gray-600);">Withdrawals are processed every Thursday only. Minimum withdrawal is KES 300.</p>
-        </details>
-        
-        <!-- FAQ 3 -->
-        <details style="margin-bottom:1rem;border:1px solid var(--gray-200);border-radius:1rem;padding:1rem;background:var(--gray-50);">
-          <summary style="font-weight:700;font-size:1.1rem;color:var(--primary-700);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">
-            How are referral commissions calculated?
-            <span style="font-size:1rem;color:green;">➕</span>
-          </summary>
-          <p style="margin-top:1rem;color:var(--gray-600);">4-Level system: Level 1: KES 200, Level 2: KES 150, Level 3: KES 75, Level 4: KES 25 per active referral in your downline.</p>
-        </details>
-        
-        <!-- FAQ 4 -->
-        <details style="margin-bottom:1rem;border:1px solid var(--gray-200);border-radius:1rem;padding:1rem;background:var(--gray-50);">
-          <summary style="font-weight:700;font-size:1.1rem;color:var(--primary-700);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">
-            What happens if my blog or survey is rejected?
-            <span style="font-size:1rem;color:green;">➕</span>
-          </summary>
-          <p style="margin-top:1rem;color:var(--gray-600);">You can do others and submit. Make sure your content is original, meets word count, and follows guidelines. Quality submissions get approved faster.</p>
-        </details>
-        
-        <!-- FAQ 5 -->
-        <details style="margin-bottom:1rem;border:1px solid var(--gray-200);border-radius:1rem;padding:1rem;background:var(--gray-50);">
-          <summary style="font-weight:700;font-size:1.1rem;color:var(--primary-700);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">
-            Is the KES 700 activation fee refundable?
-            <span style="font-size:1rem;color:green;">➕</span>
-          </summary>
-          <p style="margin-top:1rem;color:var(--gray-600);">The activation fee is a one-time payment to activate your account and start earning. It is non-refundable but you earn it back through your first referrals.</p>
-        </details>
-      </div>
-    </div>
-  </section>
-
-  <!-- Recent Payouts Section -->
-  <section style="padding:4rem 0;background:linear-gradient(135deg,#f0fdf4,#ffffff);">
-    <div class="container">
-      <h2 style="text-align:center;font-size:2.5rem;margin-bottom:1rem;color:var(--primary-800);">💰 Recent Withdrawals</h2>
-      <p style="text-align:center;font-size:1.1rem;margin-bottom:3rem;color:var(--gray-600);">Real members getting paid every Thursday</p>
-      
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;">
-        <!-- Payout 1 -->
-        <div class="card" style="padding:1.5rem;display:flex;align-items:center;gap:1rem;">
-          <div style="background:var(--primary-100);border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary-700);">JM</div>
-          <div style="flex:1;">
-            <h4 style="font-weight:700;">James Mwangi</h4>
-            <p style="color:var(--gray-500);font-size:0.9rem;">Withdrawn thursday</p>
-          </div>
-          <div style="font-weight:700;color:var(--primary-600);">KES 1,200</div>
-        </div>
-        
-        <!-- Payout 2 -->
-        <div class="card" style="padding:1.5rem;display:flex;align-items:center;gap:1rem;">
-          <div style="background:var(--primary-100);border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary-700);">AW</div>
-          <div style="flex:1;">
-            <h4 style="font-weight:700;">Alice Wanjiru</h4>
-            <p style="color:var(--gray-500);font-size:0.9rem;">Withdrawn thursday</p>
-          </div>
-          <div style="font-weight:700;color:var(--primary-600);">KES 850</div>
-        </div>
-        
-        <!-- Payout 3 -->
-        <div class="card" style="padding:1.5rem;display:flex;align-items:center;gap:1rem;">
-          <div style="background:var(--primary-100);border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary-700);">PO</div>
-          <div style="flex:1;">
-            <h4 style="font-weight:700;">Peter Otieno</h4>
-            <p style="color:var(--gray-500);font-size:0.9rem;">Withdrawn thursday</p>
-          </div>
-          <div style="font-weight:700;color:var(--primary-600);">KES 2,300</div>
-        </div>
-        
-        <!-- Payout 4 -->
-        <div class="card" style="padding:1.5rem;display:flex;align-items:center;gap:1rem;">
-          <div style="background:var(--primary-100);border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary-700);">MK</div>
-          <div style="flex:1;">
-            <h4 style="font-weight:700;">Mary Kamau</h4>
-            <p style="color:var(--gray-500);font-size:0.9rem;">Withdrawn thursday</p>
-          </div>
-          <div style="font-weight:700;color:var(--primary-600);">KES 1,500</div>
-        </div>
-        
-        <!-- Payout 5 -->
-        <div class="card" style="padding:1.5rem;display:flex;align-items:center;gap:1rem;">
-          <div style="background:var(--primary-100);border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary-700);">DK</div>
-          <div style="flex:1;">
-            <h4 style="font-weight:700;">David Kipchoge</h4>
-            <p style="color:var(--gray-500);font-size:0.9rem;">Withdrawn thursday</p>
-          </div>
-          <div style="font-weight:700;color:var(--primary-600);">KES 3,100</div>
-        </div>
-        
-        <!-- Payout 6 -->
-        <div class="card" style="padding:1.5rem;display:flex;align-items:center;gap:1rem;">
-          <div style="background:var(--primary-100);border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary-700);">GN</div>
-          <div style="flex:1;">
-            <h4 style="font-weight:700;">Grace Nduta</h4>
-            <p style="color:var(--gray-500);font-size:0.9rem;">Withdrawn thursday</p>
-          </div>
-          <div style="font-weight:700;color:var(--primary-600);">KES 650</div>
-        </div>
-      </div>
-      
-      <div style="text-align:center;margin-top:2rem;">
-        <span style="color:var(--gray-500);">Total paid this month: </span>
-        <span style="font-weight:700;font-size:1.5rem;color:var(--primary-600);">KES 124,500+</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Why Choose Us Section -->
-  <section style="padding:4rem 0;background:white;">
-    <div class="container">
-      <h2 style="text-align:center;font-size:2.5rem;margin-bottom:1rem;color:var(--primary-800);">Why TechGeo?</h2>
-      <p style="text-align:center;font-size:1.1rem;margin-bottom:3rem;color:var(--gray-600);">The smart choice for online earners</p>
-      
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;">
-        <div class="card" style="padding:2rem;text-align:center;">
-          <div style="font-size:3rem;margin-bottom:1rem;">⚡</div>
-          <h3 style="margin-bottom:0.5rem;">Instant Activation</h3>
-          <p style="color:var(--gray-500);">Get activated within 12 hours of payment confirmation</p>
-        </div>
-        
-        <div class="card" style="padding:2rem;text-align:center;">
-          <div style="font-size:3rem;margin-bottom:1rem;">🛡️</div>
-          <h3 style="margin-bottom:0.5rem;">Secure Payments</h3>
-          <p style="color:var(--gray-500);">All withdrawals processed via M-PESA and banks</p>
-        </div>
-        
-        <div class="card" style="padding:2rem;text-align:center;">
-          <div style="font-size:3rem;margin-bottom:1rem;">📱</div>
-          <h3 style="margin-bottom:0.5rem;">Mobile Friendly</h3>
-          <p style="color:var(--gray-500);">Work from anywhere using your phone or laptop</p>
-        </div>
-        
-        <div class="card" style="padding:2rem;text-align:center;">
-          <div style="font-size:3rem;margin-bottom:1rem;">👥</div>
-          <h3 style="margin-bottom:0.5rem;">Active Community</h3>
-          <p style="color:var(--gray-500);">Join our WhatsApp group for tips and support</p>
-        </div>
-        
-        <div class="card" style="padding:2rem;text-align:center;">
-          <div style="font-size:3rem;margin-bottom:1rem;">⏰</div>
-          <h3 style="margin-bottom:0.5rem;">Flexible Hours</h3>
-          <p style="color:var(--gray-500);">Work anytime, no fixed schedule or deadlines</p>
-        </div>
-        
-        <div class="card" style="padding:2rem;text-align:center;">
-          <div style="font-size:3rem;margin-bottom:1rem;">📊</div>
-          <h3 style="margin-bottom:0.5rem;">Real-time Tracking</h3>
-          <p style="color:var(--gray-500);">Monitor your earnings and referrals in real-time</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Final CTA Banner -->
-  <section style="padding:5rem 0;background:linear-gradient(135deg,#3c5a47,#263b2f);color:white;text-align:center;">
-    <div class="container">
-      <h2 style="font-size:2.5rem;margin-bottom:1rem;">Ready to Start Earning?</h2>
-      <p style="font-size:1.25rem;margin-bottom:2rem;max-width:600px;margin-left:auto;margin-right:auto;">Join thousands of Kenyans earning daily through blogs, surveys and referrals</p>
-      
-      <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;">
-        <div style="text-align:center;">
-          <div style="font-size:2rem;font-weight:700;">1000+</div>
-          <p style="opacity:0.8;">Active Members</p>
-        </div>
-        <div style="width:1px;height:40px;background:rgba(255,255,255,0.3);"></div>
-        <div style="text-align:center;">
-          <div style="font-size:2rem;font-weight:700;">KES 300,000+</div>
-          <p style="opacity:0.8;">Total Paid Out</p>
-        </div>
-        <div style="width:1px;height:40px;background:rgba(255,255,255,0.3);"></div>
-        <div style="text-align:center;">
-          <div style="font-size:2rem;font-weight:700;">2+</div>
-          <p style="opacity:0.8;">months Active</p>
-        </div>
-      </div>
-      
-      <div style="margin-top:3rem;">
-        <a href="#join" class="btn btn-primary btn-lg nav-trigger" data-section="join" style="background:white;color:#15803d;font-size:1.25rem;padding:1rem 3rem;">Join Now </a>
-      </div>
-      
-      <p style="margin-top:2rem;font-size:0.9rem;opacity:0.7;">Need a referral code? Ask any existing member or contact support.</p>
-    </div>
-  </section>
-
-  <!-- Footer Copyright -->
-  <div style="border-top:1px solid var(--gray-800);padding-top:2rem;text-align:center;color:var(--gray-500);">
-    <p>© 2026 TechGeo. All rights reserved.</p>
   </div>
-</section>
 
-    <!-- ==================== LOGIN ==================== -->
-    <!-- ==================== LOGIN ==================== -->
-<section id="login" class="page-section" style="display:none;">
-  <div class="auth-container">
-    <div class="auth-card">
-      <a href="#home" class="nav-trigger" data-section="home" style="color:var(--primary-color);text-decoration:none;margin-bottom:1rem;display:inline-block;">← Back</a>
-      <div class="auth-header">
-        <h1 class="auth-title">Welcome Back</h1>
-        <p class="auth-subtitle">Login to your account</p>
+  <!-- HOW IT WORKS -->
+  <div class="sec how-bg" id="how">
+    <div class="wrap">
+      <div class="centered">
+        <div class="sec-tag">How It Works</div>
+        <h2 class="sec-title">Simple Steps to Start Earning</h2>
+        <p class="sec-sub">Getting started on TechGeo Network takes a few minutes. Here is everything you need to know before joining.</p>
       </div>
-      <div id="loginError" class="alert alert-danger" style="display:none;"></div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">Step 01</div>
+          <div class="step-icon">&#128100;</div>
+          <h3>Create Your Account</h3>
+          <p>Sign up using a referral code from an existing TechGeo member. Your account is created instantly with your name, email, and phone number.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">Step 02</div>
+          <div class="step-icon">&#9989;</div>
+          <h3>Activate Your Package</h3>
+          <p>Make a one-time activation payment to unlock full access to the platform, including all tasks, your referral link, and the ability to earn commissions.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">Step 03</div>
+          <div class="step-icon">&#128203;</div>
+          <h3>Complete Tasks Daily</h3>
+          <p>Log in every day to complete available tasks — blog writing, surveys, transcription, data entry, and writing jobs. Each completed and approved task earns you points.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">Step 04</div>
+          <div class="step-icon">&#128101;</div>
+          <h3>Grow Your Network</h3>
+          <p>Share your unique referral link with friends, family, and on social media. When someone you refer activates their account, you earn a direct commission instantly.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">Step 05</div>
+          <div class="step-icon">&#128176;</div>
+          <h3>Withdraw Your Earnings</h3>
+          <p>Withdraw your task earnings every Tuesday and your referral commission every Thursday directly to M-Pesa or your bank account. Minimum withdrawal amounts apply.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EARNINGS OVERVIEW -->
+  <div class="sec" id="earn">
+    <div class="wrap">
+      <div class="centered">
+        <div class="sec-tag">Your Earnings</div>
+        <h2 class="sec-title">Two Powerful Ways to Earn</h2>
+        <p class="sec-sub">TechGeo combines task-based income with a network commission structure so you can earn even while offline.</p>
+      </div>
+      <div class="earn-grid">
+        <div class="earn-card green">
+          <div class="earn-icon">&#128101;</div>
+          <h3>Referral Commissions</h3>
+          <p>Every time someone you refer — or someone in your extended network — activates their account, you earn a commission. This applies across 4 levels.</p>
+          <ul class="earn-list">
+            <li>Level 1 — KES 200 per activation (your direct referrals)</li>
+            <li>Level 2 — KES 150 per activation (referrals of your referrals)</li>
+            <li>Level 3 — KES 75 per activation (third level down)</li>
+            <li>Level 4 — KES 25 per activation (fourth level down)</li>
+            <li>Commissions are automatic and paid to your KES wallet instantly</li>
+          </ul>
+        </div>
+        <div class="earn-card light">
+          <div class="earn-icon">&#128221;</div>
+          <h3>Task Earnings</h3>
+          <p>Complete digital tasks posted on the platform and earn points for each approved submission. Points accumulate in your wallet and can be redeemed on withdrawal day.</p>
+          <ul class="earn-list">
+            <li>Blog writing tasks — earn points per approved article</li>
+            <li>Survey tasks — earn points per completed survey</li>
+            <li>Transcription tasks — earn points for typing audio content</li>
+            <li>Writing jobs — earn points for submitted written work</li>
+            <li>Data entry tasks — earn points for completed data files</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERRAL LEVELS -->
+  <div class="sec levels-bg" id="levels">
+    <div class="wrap">
+      <div class="centered">
+        <div class="sec-tag">4-Level Network</div>
+        <h2 class="sec-title">Earn Across Four Levels</h2>
+        <p class="sec-sub">When someone in your network activates, you earn. This includes not just the people you invite directly, but also the people they invite, and so on — four levels deep.</p>
+      </div>
+      <div class="level-grid">
+        <div class="level-card">
+          <div class="level-num">Level 1</div>
+          <div class="level-earn">KES 200</div>
+          <div class="level-desc">Per activation from people you personally invited</div>
+        </div>
+        <div class="level-card">
+          <div class="level-num">Level 2</div>
+          <div class="level-earn">KES 150</div>
+          <div class="level-desc">Per activation from people your referrals invited</div>
+        </div>
+        <div class="level-card">
+          <div class="level-num">Level 3</div>
+          <div class="level-earn">KES 75</div>
+          <div class="level-desc">Per activation from the third level of your network</div>
+        </div>
+        <div class="level-card">
+          <div class="level-num">Level 4</div>
+          <div class="level-earn">KES 25</div>
+          <div class="level-desc">Per activation from the fourth level of your network</div>
+        </div>
+      </div>
+      <div style="max-width:640px;margin:2rem auto 0;background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1.25rem 1.5rem">
+        <p style="font-size:.875rem;color:var(--gray-700);line-height:1.7"><strong style="color:var(--gray-900)">Example:</strong> You invite 5 people. Each of them invites 5 more. Each of those invites 5 more. That is 5 direct commissions at KES 200, 25 at KES 150, and 125 at KES 75 — all credited to your account automatically as each person activates.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASKS -->
+  <div class="sec" id="tasks">
+    <div class="wrap">
+      <div class="centered">
+        <div class="sec-tag">Available Tasks</div>
+        <h2 class="sec-title">Digital Tasks You Can Do Daily</h2>
+        <p class="sec-sub">All tasks are posted by the admin team. Once you submit a task and it is approved, the points are credited to your account.</p>
+      </div>
+      <div class="task-grid">
+        <div class="task-card">
+          <h3>Blog Writing</h3>
+          <p>Write original articles on assigned topics. A minimum word count applies. Submissions are reviewed and approved by the admin team before points are awarded.</p>
+          <span class="task-badge">Earn points per article</span>
+        </div>
+        <div class="task-card">
+          <h3>Surveys</h3>
+          <p>Answer survey questionnaires on various topics. Each survey has a set of questions you complete online. Points are awarded upon successful submission.</p>
+          <span class="task-badge">Earn points per survey</span>
+        </div>
+        <div class="task-card">
+          <h3>Transcription</h3>
+          <p>Listen to audio recordings and type out the spoken content accurately. A minimum character count is required. Audio files are provided on the platform.</p>
+          <span class="task-badge">Earn points per transcription</span>
+        </div>
+        <div class="task-card">
+          <h3>Writing Jobs</h3>
+          <p>Longer-form writing assignments with specific instructions. You download the brief, write your response, and upload your completed work as a PDF or Word file.</p>
+          <span class="task-badge">Earn points per submission</span>
+        </div>
+        <div class="task-card">
+          <h3>Data Entry</h3>
+          <p>Download a provided template, fill it in according to the instructions, and upload the completed file. Accuracy is key — only correct submissions are approved.</p>
+          <span class="task-badge">Earn points per file</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WITHDRAWAL -->
+  <div class="sec how-bg">
+    <div class="wrap">
+      <div class="centered">
+        <div class="sec-tag">Withdrawals</div>
+        <h2 class="sec-title">Regular, Structured Payouts</h2>
+        <p class="sec-sub">TechGeo processes withdrawals on fixed days each week to ensure reliable and orderly payments to all members.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-top:2.5rem">
+        <div style="background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1.75rem;border-top:4px solid #f59e0b">
+          <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--gray-900);margin-bottom:.5rem">Tuesday — Task Earnings</div>
+          <p style="font-size:.875rem;color:var(--gray-500);line-height:1.7">Redeem your accumulated task points for KES every Tuesday. You must have reached the minimum points threshold and have a qualifying number of new referrals since your last redemption.</p>
+        </div>
+        <div style="background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1.75rem;border-top:4px solid var(--g)">
+          <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--gray-900);margin-bottom:.5rem">Thursday — Referral Commissions</div>
+          <p style="font-size:.875rem;color:var(--gray-500);line-height:1.7">Withdraw your referral commission earnings every Thursday. Commissions accumulate in your KES wallet as your network grows. A minimum withdrawal amount applies.</p>
+        </div>
+        <div style="background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:1.75rem;border-top:4px solid #3b82f6">
+          <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--gray-900);margin-bottom:.5rem">Payment Methods</div>
+          <p style="font-size:.875rem;color:var(--gray-500);line-height:1.7">All payments are made via M-Pesa or direct bank transfer. You provide your payment details when submitting a withdrawal request. No delays — processed same day.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHY TECHGEO -->
+  <div class="sec">
+    <div class="wrap">
+      <div class="centered">
+        <div class="sec-tag">Why TechGeo</div>
+        <h2 class="sec-title">Built for Kenyan Earners</h2>
+        <p class="sec-sub">We built this platform specifically for the Kenyan market — simple, mobile-friendly, and designed to reward consistent effort.</p>
+      </div>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon">&#128247;</div>
+          <h3>Mobile First</h3>
+          <p>Everything works on your phone. No laptop required. Log in, complete tasks, and track your earnings from anywhere.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">&#128176;</div>
+          <h3>M-Pesa Payouts</h3>
+          <p>All withdrawals are processed to M-Pesa or bank. Fast, reliable, and familiar. No complicated payment processes.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">&#9989;</div>
+          <h3>Transparent Earnings</h3>
+          <p>Your dashboard shows every commission earned, every task point accumulated, and the full history of your referral network.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">&#128200;</div>
+          <h3>Grows With You</h3>
+          <p>The more you refer, the deeper your network grows. Commissions from 4 levels mean a large network multiplies your income significantly.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">&#128221;</div>
+          <h3>Daily Tasks Always Available</h3>
+          <p>Admin posts tasks regularly so there is always something to complete. You are not waiting — just log in and start earning points.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">&#128101;</div>
+          <h3>Community Support</h3>
+          <p>Your upline — the person who referred you — earns from your success, giving them a real incentive to guide and support you.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TESTIMONIALS -->
+  <div class="sec testi-bg">
+    <div class="wrap">
+      <div class="centered">
+        <div class="sec-tag">Member Stories</div>
+        <h2 class="sec-title">What Our Members Say</h2>
+        <p class="sec-sub">Real feedback from people who have been earning on TechGeo Network.</p>
+      </div>
+      <div class="testi-grid">
+        <div class="testi-card">
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testi-text">"I joined through a friend and honestly was not sure at first. After completing my first few tasks and seeing the points credited instantly, I was convinced. My referral commissions have grown steadily every week."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">SM</div>
+            <div><div class="testi-name">Sarah M.</div><div class="testi-location">Nairobi</div></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testi-text">"The transparency of the dashboard is what sold me. I can see exactly how many people are in my network at each level, what I have earned, and when my next withdrawal day is. No guessing."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">JO</div>
+            <div><div class="testi-name">James O.</div><div class="testi-location">Kisumu</div></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testi-text">"I do the blog writing tasks every morning before work. It takes about 30 minutes and the points add up. Combined with commissions from my level 1 and level 2 referrals, it has become a meaningful second income."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">GW</div>
+            <div><div class="testi-name">Grace W.</div><div class="testi-location">Mombasa</div></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
+          <p class="testi-text">"I was skeptical of online earning platforms but TechGeo is different. Everything is clearly explained, tasks are real work, and the withdrawals actually go through every week on schedule."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">MK</div>
+            <div><div class="testi-name">Michael K.</div><div class="testi-location">Nakuru</div></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testi-text">"The referral system is genuinely passive once your network is established. I barely need to do anything for my level 2 and level 3 commissions — my referrals are building their own networks."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">FN</div>
+            <div><div class="testi-name">Faith N.</div><div class="testi-location">Eldoret</div></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testi-text">"As a student, TechGeo has been a lifeline. I complete tasks between classes, and my small network of classmates has already generated commission income. M-Pesa payouts are fast and reliable."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">BM</div>
+            <div><div class="testi-name">Brian M.</div><div class="testi-location">Thika</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="sec faq-bg" id="faq">
+    <div class="wrap">
+      <div class="centered">
+        <div class="sec-tag">FAQ</div>
+        <h2 class="sec-title">Frequently Asked Questions</h2>
+        <p class="sec-sub">Everything you need to know about how TechGeo Network works.</p>
+      </div>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            What is TechGeo Network?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">TechGeo Network is a digital earning platform based in Kenya. It combines two income streams: a 4-level referral commission system and digital task-based earning. Members earn by building a network of referred members and by completing daily digital tasks such as blog writing, surveys, transcription, and data entry.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            How do I join TechGeo Network?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">To join, you need a referral code from an existing TechGeo member. This ensures you are part of a verified network. Create your account using the Join Now button, enter your details and the referral code provided by your inviter. After creating your account, you will need to activate your package to unlock all earning features.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            Do I need a referral code to join?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">Yes. A valid referral code from an existing active member is required to create an account. This is by design — TechGeo operates as a community where every new member is connected to the network through a verified member. If you do not have a code, contact us at techgeof@gmail.com or ask someone in the TechGeo community for an invite.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            What happens after I create my account?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">After signing up, your account will be in an inactive state. You can log in and view the platform, but to start completing tasks, earning task points, and sharing your referral link, you must first activate your package. Your upline (the person who referred you) can guide you through the activation process.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            What tasks are available on the platform?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">The admin team posts tasks across five categories: Blog Writing (write original articles on assigned topics), Surveys (answer questionnaires), Transcription (type out audio recordings), Writing Jobs (submit written work to a brief), and Data Entry (fill in and upload template files). New tasks are posted regularly and visible in your dashboard once activated.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            How are task submissions reviewed?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">Every task submission is reviewed by the admin team before points are awarded. Blog posts must meet a minimum word/character count. Transcriptions must meet a character threshold. Data entry files must be accurate and complete. Incomplete or low-quality submissions may be rejected. You will be notified of the outcome through your dashboard notifications.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            How does the 4-level referral system work?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">When you share your referral link and someone activates their account through it, you earn a Level 1 commission of KES 200. When that person refers someone who activates, you earn Level 2 (KES 150). When Level 2 refers someone who activates, you earn Level 3 (KES 75). When Level 3 refers someone, you earn Level 4 (KES 25). All commissions are credited to your KES wallet automatically and in real time.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            Can I earn from inactive referrals?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">No. Commission is only earned when a referred member activates their package. If someone signs up through your link but does not activate, no commission is earned. Your dashboard shows you a list of your inactive referrals so you can follow up with them and encourage activation.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            When and how do withdrawals work?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">There are two withdrawal days. Task point earnings are redeemed every Tuesday — you must meet the minimum points threshold and have a qualifying number of new referrals since your last redemption. Referral commission earnings (from your KES wallet) are withdrawn every Thursday — a minimum balance is required. Payments are sent to M-Pesa or a bank account that you specify at the time of your withdrawal request.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            Is there a minimum withdrawal amount?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">Yes. For KES wallet withdrawals (referral commissions), a minimum amount of KES 300 is required. For task point withdrawals, you must accumulate a minimum number of points before redemption is allowed. Both thresholds are visible in your dashboard withdrawal section.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            Can I refer someone who is not in Kenya?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">TechGeo Network is currently optimised for Kenya, with M-Pesa as the primary payment method. Members outside Kenya who have access to a Kenyan bank account or can receive payments by other supported methods may join. However, the platform is primarily designed for the Kenyan market at this stage.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            What if I do not have tasks to complete on a given day?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">Tasks are posted by the admin team and the availability may vary from day to day depending on current assignments. On days with fewer tasks, you can focus on growing your referral network, which earns commissions regardless of task availability. Your dashboard will always show what is currently available.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            How do I track my referrals and earnings?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">Your dashboard provides a full view of your network across all 4 levels, showing active and inactive referrals separately. Your KES wallet balance, points balance, total commission earned, and withdrawal history are all visible in real time. You also receive in-app notifications whenever a commission is credited or a withdrawal is processed.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            What should I do if I have a problem or question?
+            <span class="faq-arrow">&#9660;</span>
+          </button>
+          <div class="faq-a">First, contact your upline — the person who referred you. They are incentivised to help you succeed. For platform-level issues such as missing payments, account problems, or technical errors, contact the TechGeo support team directly at techgeof@gmail.com. Include your username and a clear description of the issue.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="sec">
+    <div class="wrap">
+      <div class="contact-box">
+        <h2>Need Help? We Are Here</h2>
+        <p>If you have questions about your account, a withdrawal, or anything about how the platform works, reach out to our support team directly. We aim to respond within 24 hours on business days.</p>
+        <a href="mailto:techgeof@gmail.com" class="contact-email">&#9993; techgeof@gmail.com</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-sec">
+    <div class="wrap">
+      <h2>Ready to Start Earning?</h2>
+      <p>Join TechGeo Network today with a referral code from an existing member and start building your income.</p>
+      <a href="#join" class="btn-cta nav-trigger" data-section="join">Create Your Account</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <p>&copy; 2025 TechGeo Network &mdash; All rights reserved &middot; Support: <a href="mailto:techgeof@gmail.com">techgeof@gmail.com</a></p>
+    </div>
+  </footer>
+
+</section><!-- /#home -->
+
+<!-- ===== LOGIN SECTION ===== -->
+<section id="login" class="page-section" style="display:none;">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <a href="#home" class="auth-back nav-trigger" data-section="home">&#8592; Back to Home</a>
+      <div class="auth-title">Welcome Back</div>
+      <div class="auth-sub">Sign in to your TechGeo account</div>
+      <div id="loginError" class="alert-err"></div>
       <form id="loginForm">
         <div class="form-group">
-          <label class="form-label">Email</label>
-          <input type="email" id="loginEmail" class="form-control" required autocomplete="email">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="loginEmail" class="form-control" required autocomplete="email" placeholder="you@example.com">
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
-          <div style="position: relative;">
-            <input type="password" id="loginPassword" class="form-control" required autocomplete="current-password" style="padding-right: 40px;">
-            <span id="toggleLoginPassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none;">👁️</span>
+          <div style="position:relative">
+            <input type="password" id="loginPassword" class="form-control" required autocomplete="current-password" style="padding-right:2.5rem" placeholder="Enter your password">
+            <span id="toggleLoginPassword" class="pw-toggle">&#128065;</span>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary w-full" id="loginBtn">Login</button>
+        <button type="submit" class="btn-auth" id="loginBtn">Login</button>
       </form>
-      <p style="text-align:center;margin-top:1rem;">No account? <a href="#join" class="nav-trigger" data-section="join" style="color:var(--primary-color);">Join Now</a></p>
+      <div class="auth-switch">No account? <a href="#join" class="nav-trigger" data-section="join">Join Now</a></div>
     </div>
   </div>
 </section>
 
-    <!-- ==================== JOIN ==================== -->
-<!-- ==================== JOIN ==================== -->
+<!-- ===== JOIN SECTION ===== -->
 <section id="join" class="page-section" style="display:none;">
-  <div class="auth-container">
-    <div class="auth-card">
-      <a href="#home" class="nav-trigger" data-section="home" style="color:var(--primary-color);text-decoration:none;margin-bottom:1rem;display:inline-block;">← Back</a>
-      <div class="auth-header">
-        <h1 class="auth-title">Create Account</h1>
-        <p class="auth-subtitle">You need a referral code to join</p>
-      </div>
-      <div id="joinError" class="alert alert-danger" style="display:none;"></div>
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <a href="#home" class="auth-back nav-trigger" data-section="home">&#8592; Back to Home</a>
+      <div class="auth-title">Create Account</div>
+      <div class="auth-sub">You need a referral code from an existing member to join</div>
+      <div id="joinError" class="alert-err"></div>
       <form id="signupForm">
         <div class="form-group">
           <label class="form-label">Username</label>
-          <input type="text" id="signupUsername" class="form-control" required minlength="3">
+          <input type="text" id="signupUsername" class="form-control" required minlength="3" placeholder="Choose a username">
         </div>
         <div class="form-group">
-          <label class="form-label">Email</label>
-          <input type="email" id="signupEmail" class="form-control" required autocomplete="email">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="signupEmail" class="form-control" required autocomplete="email" placeholder="you@example.com">
         </div>
         <div class="form-group">
           <label class="form-label">Phone (with country code)</label>
@@ -723,335 +868,188 @@
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
-          <div style="position: relative;">
-            <input type="password" id="signupPassword" class="form-control" required minlength="6" autocomplete="new-password" style="padding-right: 40px;">
-            <span id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none;">👁️</span>
+          <div style="position:relative">
+            <input type="password" id="signupPassword" class="form-control" required minlength="6" autocomplete="new-password" style="padding-right:2.5rem" placeholder="Create a password">
+            <span id="togglePassword" class="pw-toggle">&#128065;</span>
           </div>
+          <div class="strength-bar"><div class="strength-fill" id="strengthBar"></div></div>
+          <div class="strength-text" id="strengthText">Enter a password</div>
+          <ul class="strength-checks">
+            <li id="checkLength">At least 6 characters</li>
+            <li id="checkUppercase">At least one uppercase letter</li>
+            <li id="checkLowercase">At least one lowercase letter</li>
+            <li id="checkNumber">At least one number</li>
+            <li id="checkSpecial">At least one special character</li>
+          </ul>
         </div>
         <div class="form-group">
-          <div id="passwordStrength" style="margin-top: 5px; font-size: 0.85rem;">
-            <div style="height: 5px; background-color: #e5e7eb; border-radius: 3px; margin-bottom: 5px;">
-              <div id="strengthBar" style="height: 5px; width: 0%; background-color: #ddd; border-radius: 3px; transition: all 0.3s;"></div>
-            </div>
-            <div id="strengthText" style="color: var(--gray-600); margin-bottom: 5px;">Enter password</div>
-            <ul style="margin: 5px 0 0 0; padding-left: 20px; font-size: 0.8rem;">
-              <li id="checkLength" style="list-style-type: circle; transition: all 0.3s;">At least 6 characters</li>
-              <li id="checkUppercase" style="list-style-type: circle; transition: all 0.3s;">At least one uppercase letter</li>
-              <li id="checkLowercase" style="list-style-type: circle; transition: all 0.3s;">At least one lowercase letter</li>
-              <li id="checkNumber" style="list-style-type: circle; transition: all 0.3s;">At least one number</li>
-              <li id="checkSpecial" style="list-style-type: circle; transition: all 0.3s;">At least one special character (!@#$%^&*)</li>
-            </ul>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Referral Code <span style="color:red;">*Required</span></label>
+          <label class="form-label">Referral Code <span style="color:#ef4444;font-weight:400;font-size:.78rem">&nbsp;Required</span></label>
           <input type="text" id="referrerCode" class="form-control" placeholder="Enter your invite code" required>
-          <small style="color:var(--gray-500);">You cannot join without a valid referral code</small>
+          <p style="font-size:.78rem;color:var(--gray-400);margin-top:.3rem">You cannot join without a valid referral code from an existing member</p>
         </div>
-        <button type="submit" class="btn btn-primary w-full" id="signupBtn">Create Account</button>
+        <button type="submit" class="btn-auth" id="signupBtn">Create Account</button>
       </form>
-      <p style="text-align:center;margin-top:1rem;">Have account? <a href="#login" class="nav-trigger" data-section="login" style="color:var(--primary-color);">Login</a></p>
+      <div class="auth-switch">Already a member? <a href="#login" class="nav-trigger" data-section="login">Login</a></div>
     </div>
   </div>
 </section>
 
+</main>
 
 <script>
-// Password visibility toggles for both login and join
+// ── FAQ TOGGLE ──
+function toggleFaq(btn) {
+  var item = btn.parentElement;
+  var isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(function(el) { el.classList.remove('open'); });
+  if (!isOpen) item.classList.add('open');
+}
+
+// ── PASSWORD TOGGLES ──
 document.addEventListener('DOMContentLoaded', function() {
-  // Login password toggle
-  const toggleLoginPassword = document.getElementById('toggleLoginPassword');
-  const loginPasswordInput = document.getElementById('loginPassword');
-  
-  if (toggleLoginPassword && loginPasswordInput) {
-    toggleLoginPassword.addEventListener('click', function() {
-      const type = loginPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-      loginPasswordInput.setAttribute('type', type);
-      this.textContent = type === 'password' ? '👁️' : '🔒';
+  var toggleLogin = document.getElementById('toggleLoginPassword');
+  var loginPw = document.getElementById('loginPassword');
+  if (toggleLogin && loginPw) {
+    toggleLogin.addEventListener('click', function() {
+      var t = loginPw.type === 'password' ? 'text' : 'password';
+      loginPw.type = t;
+      this.textContent = t === 'password' ? '\u{1F441}' : '\u{1F512}';
     });
   }
-
-  // Join password toggle and strength checker
-  const toggleJoinPassword = document.getElementById('togglePassword');
-  const joinPasswordInput = document.getElementById('signupPassword');
-  
-  // Join password visibility toggle
-  if (toggleJoinPassword && joinPasswordInput) {
-    toggleJoinPassword.addEventListener('click', function() {
-      const type = joinPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-      joinPasswordInput.setAttribute('type', type);
-      this.textContent = type === 'password' ? '👁️' : '🔒';
+  var toggleJoin = document.getElementById('togglePassword');
+  var joinPw = document.getElementById('signupPassword');
+  if (toggleJoin && joinPw) {
+    toggleJoin.addEventListener('click', function() {
+      var t = joinPw.type === 'password' ? 'text' : 'password';
+      joinPw.type = t;
+      this.textContent = t === 'password' ? '\u{1F441}' : '\u{1F512}';
     });
-  }
-
-  // Join password strength checker
-  if (joinPasswordInput) {
-    joinPasswordInput.addEventListener('input', function() {
-      const password = this.value;
-      const strengthBar = document.getElementById('strengthBar');
-      const strengthText = document.getElementById('strengthText');
-      
-      if (!strengthBar || !strengthText) return;
-      
-      // Check criteria
-      const hasLength = password.length >= 6;
-      const hasUppercase = /[A-Z]/.test(password);
-      const hasLowercase = /[a-z]/.test(password);
-      const hasNumber = /[0-9]/.test(password);
-      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-      
-      // Update checklist
-      const checkLength = document.getElementById('checkLength');
-      const checkUppercase = document.getElementById('checkUppercase');
-      const checkLowercase = document.getElementById('checkLowercase');
-      const checkNumber = document.getElementById('checkNumber');
-      const checkSpecial = document.getElementById('checkSpecial');
-      
-      if (checkLength) {
-        checkLength.style.listStyleType = hasLength ? 'disc' : 'circle';
-        checkLength.style.color = hasLength ? 'green' : 'var(--gray-600)';
+    joinPw.addEventListener('input', function() {
+      var pw = this.value;
+      var hasLen = pw.length >= 6, hasUp = /[A-Z]/.test(pw), hasLo = /[a-z]/.test(pw);
+      var hasNum = /[0-9]/.test(pw), hasSp = /[!@#$%^&*(),.?":{}|<>]/.test(pw);
+      function upd(id, pass) {
+        var el = document.getElementById(id);
+        if (el) el.classList.toggle('pass', pass);
       }
-      
-      if (checkUppercase) {
-        checkUppercase.style.listStyleType = hasUppercase ? 'disc' : 'circle';
-        checkUppercase.style.color = hasUppercase ? 'green' : 'var(--gray-600)';
-      }
-      
-      if (checkLowercase) {
-        checkLowercase.style.listStyleType = hasLowercase ? 'disc' : 'circle';
-        checkLowercase.style.color = hasLowercase ? 'green' : 'var(--gray-600)';
-      }
-      
-      if (checkNumber) {
-        checkNumber.style.listStyleType = hasNumber ? 'disc' : 'circle';
-        checkNumber.style.color = hasNumber ? 'green' : 'var(--gray-600)';
-      }
-      
-      if (checkSpecial) {
-        checkSpecial.style.listStyleType = hasSpecial ? 'disc' : 'circle';
-        checkSpecial.style.color = hasSpecial ? 'green' : 'var(--gray-600)';
-      }
-      
-      // Calculate strength
-      const criteria = [hasLength, hasUppercase, hasLowercase, hasNumber, hasSpecial];
-      const strengthCount = criteria.filter(Boolean).length;
-      
-      // Update strength bar and text
-      let strengthPercentage = 0;
-      let strengthMessage = '';
-      let barColor = '#ddd';
-      
-      if (password.length === 0) {
-        strengthPercentage = 0;
-        strengthMessage = 'Enter password';
-        barColor = '#ddd';
-      } else if (strengthCount <= 2) {
-        strengthPercentage = 33;
-        strengthMessage = 'Weak password';
-        barColor = '#ff4444';
-      } else if (strengthCount <= 4) {
-        strengthPercentage = 66;
-        strengthMessage = 'Medium password';
-        barColor = '#ffbb33';
-      } else {
-        strengthPercentage = 100;
-        strengthMessage = 'Strong password';
-        barColor = '#00C851';
-      }
-      
-      strengthBar.style.width = strengthPercentage + '%';
-      strengthBar.style.backgroundColor = barColor;
-      strengthText.textContent = strengthMessage;
-      strengthText.style.color = barColor;
+      upd('checkLength', hasLen); upd('checkUppercase', hasUp); upd('checkLowercase', hasLo);
+      upd('checkNumber', hasNum); upd('checkSpecial', hasSp);
+      var cnt = [hasLen, hasUp, hasLo, hasNum, hasSp].filter(Boolean).length;
+      var bar = document.getElementById('strengthBar');
+      var txt = document.getElementById('strengthText');
+      if (!bar || !txt) return;
+      var pct = pw.length === 0 ? 0 : cnt <= 2 ? 33 : cnt <= 4 ? 66 : 100;
+      var col = pw.length === 0 ? '#ddd' : cnt <= 2 ? '#ef4444' : cnt <= 4 ? '#f59e0b' : '#16a34a';
+      var msg = pw.length === 0 ? 'Enter a password' : cnt <= 2 ? 'Weak' : cnt <= 4 ? 'Medium' : 'Strong';
+      bar.style.width = pct + '%'; bar.style.backgroundColor = col;
+      txt.textContent = msg; txt.style.color = col;
     });
   }
 });
-</script>
-<script>
-// ==================== STATE ====================
-let currentUser = null;
-let activeSurveyId = null;
-let activeBlogId = null;
 
-// ==================== NAVIGATION ====================
-
-// Pages only active accounts can access
+// ── STATE & HELPERS ──
 var ACTIVE_ONLY = [];
-
-function _getStoredUser() {
-  try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch(e) { return null; }
-}
-
+function _getStoredUser() { try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch(e) { return null; } }
 function _renderSection(id) {
   document.querySelectorAll('.page-section').forEach(function(s) { s.style.display = 'none'; });
-  var el = document.getElementById(id);
-  if (el) el.style.display = 'block';
+  var el = document.getElementById(id); if (el) el.style.display = 'block';
 }
-
 function showSection(name) {
   var parts = name.split('?');
-  var sectionName = parts[0];
+  var sn = parts[0];
   var token = localStorage.getItem('token');
-  var allProtected = ['dashboard','activation'].concat(ACTIVE_ONLY);
-
-  // Helper to set which header is visible
-  function setHeaders(showPublic, showMain) {
-    var pub = document.getElementById('publicHeader');
-    var main = document.getElementById('mainHeader');
-    if (pub)  pub.style.display  = showPublic ? 'block' : 'none';
-    if (main) main.style.display = showMain   ? 'block' : 'none';
+  var allProtected = ['dashboard', 'activation'].concat(ACTIVE_ONLY);
+  if (allProtected.indexOf(sn) !== -1 && !token) {
+    _renderSection('login'); window.history.pushState({}, '', '#login'); return;
   }
-
-  // No token → send to login
-  if (allProtected.indexOf(sectionName) !== -1 && !token) {
-    _renderSection('login');
-    setHeaders(true, false);
-    window.history.pushState({}, '', '#login');
-    return;
-  }
-
-  // Inactive account → force activation page
   var storedUser = _getStoredUser();
-  if (token && storedUser && sectionName !== 'login' && sectionName !== 'join' && sectionName !== 'home') {
-    window.location.href = '/dashboard.html';
-    return;
+  if (token && storedUser && sn !== 'login' && sn !== 'join' && sn !== 'home') {
+    window.location.href = '/dashboard.html'; return;
   }
-
-  _renderSection(sectionName);
-  window.history.pushState({}, '', '#' + name);
-
-  if (sectionName === 'dashboard') {
-    window.location.href = '/dashboard.html';
-    return;
-  } else {
-    // Public: home, login, join
-    setHeaders(true, false);
-    if (sectionName === 'join') {
-      var params = new URLSearchParams(parts[1] || '');
-      var ref = params.get('ref');
-      if (ref) {
-        var refEl = document.getElementById('referrerCode');
-        if (refEl) refEl.value = ref;
-      }
-    }
+  _renderSection(sn); window.history.pushState({}, '', '#' + name);
+  if (sn === 'dashboard') { window.location.href = '/dashboard.html'; return; }
+  if (sn === 'join') {
+    var params = new URLSearchParams(parts[1] || '');
+    var ref = params.get('ref');
+    if (ref) { var refEl = document.getElementById('referrerCode'); if (refEl) refEl.value = ref; }
   }
 }
 
-// Event delegation — catches nav-trigger clicks on ALL elements including dynamic ones
+// ── NAVIGATION ──
 document.addEventListener('click', function(e) {
   var el = e.target.closest ? e.target.closest('.nav-trigger') : null;
-  if (!el) {
-    // Fallback for older browsers
-    var t = e.target;
-    while (t && t !== document) {
-      if (t.classList && t.classList.contains('nav-trigger')) { el = t; break; }
-      t = t.parentNode;
-    }
-  }
+  if (!el) { var t = e.target; while (t && t !== document) { if (t.classList && t.classList.contains('nav-trigger')) { el = t; break; } t = t.parentNode; } }
   if (!el) return;
-  var section = el.getAttribute('data-section') || (el.getAttribute('href') || '').replace('#','');
-  if (section) {
-    e.preventDefault();
-    showSection(section);
-    window.scrollTo(0, 0);
-  }
+  var section = el.getAttribute('data-section') || (el.getAttribute('href') || '').replace('#', '');
+  if (section) { e.preventDefault(); showSection(section); window.scrollTo(0, 0); }
 });
 
-// Initial load
 window.addEventListener('load', function() {
   var hash = window.location.hash.slice(1) || 'home';
-  var sectionName = hash.split('?')[0];
+  var sn = hash.split('?')[0];
   var token = localStorage.getItem('token');
   var storedUser = _getStoredUser();
-
-  // No token trying to access protected page
-  if (!token && ['dashboard','activation'].concat(ACTIVE_ONLY).indexOf(sectionName) !== -1) {
-    showSection('login');
-    return;
-  }
-  // Logged in but not activated
-  if (token && storedUser && storedUser.packageType === 'not_active') {
-    window.location.href = '/dashboard.html';
-    return;
-  }
+  if (!token && ['dashboard', 'activation'].concat(ACTIVE_ONLY).indexOf(sn) !== -1) { showSection('login'); return; }
+  if (token && storedUser) { window.location.href = '/dashboard.html'; return; }
   showSection(hash);
 });
 
-// ==================== AUTH ====================
+// ── API ──
 function apiHeaders() {
-  const token = localStorage.getItem('token');
-  return { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) };
+  var token = localStorage.getItem('token');
+  return Object.assign({'Content-Type': 'application/json'}, token ? {'Authorization': 'Bearer ' + token} : {});
 }
-
-async function apiFetch(url, options = {}) {
-  const res = await fetch(url, { ...options, headers: apiHeaders() });
-  const data = await res.json();
+async function apiFetch(url, options) {
+  options = options || {};
+  var res = await fetch(url, Object.assign({}, options, {headers: apiHeaders()}));
+  var data = await res.json();
   if (!res.ok) throw new Error(data.error || (data.errors && data.errors[0]) || 'Request failed');
   return data;
 }
 
-// Login
-document.getElementById('loginForm').addEventListener('submit', async e => {
+// ── LOGIN ──
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const btn = document.getElementById('loginBtn');
-  const errEl = document.getElementById('loginError');
+  var btn = document.getElementById('loginBtn');
+  var errEl = document.getElementById('loginError');
   errEl.style.display = 'none';
-  btn.textContent = 'Logging in...'; btn.disabled = true;
+  btn.textContent = 'Logging in…'; btn.disabled = true;
   try {
-    const data = await apiFetch('/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email: document.getElementById('loginEmail').value.trim(), password: document.getElementById('loginPassword').value })
-    });
+    var data = await apiFetch('/api/auth/login', {method: 'POST', body: JSON.stringify({
+      email: document.getElementById('loginEmail').value.trim(),
+      password: document.getElementById('loginPassword').value
+    })});
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
-    if (data.user.isAdmin) {
-      localStorage.setItem('adminToken', data.token);
-      window.location.href = '/admin.html';
-    } else if (data.user.packageType === 'not_active') {
-      // Inactive: go to activation page, NOT dashboard
-      window.location.href = '/dashboard.html';
-    } else {
-      window.location.href = '/dashboard.html';
-    }
-  } catch(err) {
-    errEl.textContent = err.message; errEl.style.display = 'block';
-  } finally { btn.textContent = 'Login'; btn.disabled = false; }
+    if (data.user.isAdmin) { localStorage.setItem('adminToken', data.token); window.location.href = '/admin.html'; }
+    else window.location.href = '/dashboard.html';
+  } catch(err) { errEl.textContent = err.message; errEl.style.display = 'block'; }
+  finally { btn.textContent = 'Login'; btn.disabled = false; }
 });
 
-// Signup
-document.getElementById('signupForm').addEventListener('submit', async e => {
+// ── SIGNUP ──
+document.getElementById('signupForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const btn = document.getElementById('signupBtn');
-  const errEl = document.getElementById('joinError');
+  var btn = document.getElementById('signupBtn');
+  var errEl = document.getElementById('joinError');
   errEl.style.display = 'none';
-  const referrerCode = document.getElementById('referrerCode').value.trim();
+  var referrerCode = document.getElementById('referrerCode').value.trim();
   if (!referrerCode) { errEl.textContent = 'Referral code is required.'; errEl.style.display = 'block'; return; }
-  btn.textContent = 'Creating account...'; btn.disabled = true;
+  btn.textContent = 'Creating account…'; btn.disabled = true;
   try {
-    const data = await apiFetch('/api/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify({
-        username: document.getElementById('signupUsername').value.trim(),
-        email: document.getElementById('signupEmail').value.trim(),
-        phone: document.getElementById('signupPhone').value.trim(),
-        password: document.getElementById('signupPassword').value,
-        referrerCode
-      })
-    });
+    var data = await apiFetch('/api/auth/signup', {method: 'POST', body: JSON.stringify({
+      username: document.getElementById('signupUsername').value.trim(),
+      email: document.getElementById('signupEmail').value.trim(),
+      phone: document.getElementById('signupPhone').value.trim(),
+      password: document.getElementById('signupPassword').value,
+      referrerCode
+    })});
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
-    // New accounts are always inactive — send to activation page
     window.location.href = '/dashboard.html';
-  } catch(err) {
-    errEl.textContent = err.message; errEl.style.display = 'block';
-  } finally { btn.textContent = 'Create Account'; btn.disabled = false; }
+  } catch(err) { errEl.textContent = err.message; errEl.style.display = 'block'; }
+  finally { btn.textContent = 'Create Account'; btn.disabled = false; }
 });
-
-// Logout
-document.getElementById('logoutBtn').addEventListener('click', () => {
-  localStorage.clear(); showSection('home');
-});
-
 </script>
 </body>
 </html>
