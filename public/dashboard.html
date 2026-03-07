@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TechGeo</title>
+<title>TechGeo — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -395,8 +395,7 @@ table.ref-table tr:hover td{background:var(--gray-50)}
         <div class="sc"><div class="slbl">Active Referrals</div><div class="sval" id="statActiveRefs" style="color:var(--g)">0</div></div>
         <div class="sc"><div class="slbl">Inactive Referrals</div><div class="sval" id="statInactiveRefs" style="color:var(--y)">0</div></div>
         <div class="sc"><div class="slbl">Total Earned</div><div class="sval" id="statTotalEarned">0</div></div>
-        <div class="sc"><div class="slbl">Blogs Submitted</div><div class="sval" id="statBlogs">0</div></div>
-        <div class="sc"><div class="slbl">Surveys Done</div><div class="sval" id="statSurveys">0</div></div>
+        <div class="sc"><div class="slbl">Total Withdrawn</div><div class="sval" id="statWithdrawn">KES 0</div></div>
       </div>
 
       <!-- Inactive referrals full table in profile -->
@@ -624,7 +623,7 @@ async function loadDashboardReferrals(){
   try{
     const s=await apiFetch('/api/referrals/stats');
     let totalInactive=0;
-    ['1','2','3','4'].forEach(l=>{const c=s.levels['level'+l];const t=c?.count||0,a=c?.active||0;document.getElementById('dashRef'+l).textContent=t;document.getElementById('dashRef'+l+'s').textContent=a+' active';totalInactive+=t-a;});
+    ['1','2','3','4'].forEach(l=>{const c=s.levels['level'+l];const t=c?.count||0,a=c?.active||0,inact=t-a;document.getElementById('dashRef'+l).textContent=t;document.getElementById('dashRef'+l+'s').textContent=a+' active';totalInactive+=inact;});
     document.getElementById('dashTotalCommission').textContent='KES '+(s.summary?.totalCommission||0);
     document.getElementById('dashInactiveReferrals').textContent=totalInactive+' inactive';
   }catch(e){}
@@ -798,8 +797,8 @@ async function loadReferrals(){
   document.getElementById('refLinkLocked').style.display=active?'none':'block';
   try{
     const[stats,link]=await Promise.all([apiFetch('/api/referrals/stats'),apiFetch('/api/referrals/link')]);
-    if(active)document.getElementById('referralLink').value=`${window.location.origin}/index.html?ref=${link.inviteCode}`;
-    ['1','2','3','4'].forEach(l=>{const c=stats.levels['level'+l];const t=c?.count||0,a=c?.active||0;document.getElementById('level'+l+'Count').textContent=t;document.getElementById('lvl'+l+'Status').textContent=`Active: ${a} | Inactive: ${t-a}`;const el=document.getElementById('level'+l+'Members');if(el&&c?.members?.length){el.innerHTML=c.members.slice(0,5).map(m=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-top:1px solid var(--gray-100);font-size:.78rem"><span style="font-weight:600">${m.username}</span><span class="bdg ${m.packageType!=='not_active'?'bg':'by'}">${m.packageType!=='not_active'?'Active':'Inactive'}</span></div>`).join('');if(c.count>5)el.innerHTML+=`<p style="font-size:.72rem;color:var(--gray-400);margin:.3rem 0 0">+${c.count-5} more</p>`;}});
+    if(active)document.getElementById('referralLink').value=`${window.location.origin}/index.html#join?ref=${link.inviteCode}`;
+    ['1','2','3','4'].forEach(l=>{const c=stats.levels['level'+l];const t=c?.count||0,a=c?.active||0,inact=t-a;document.getElementById('level'+l+'Count').textContent=t;document.getElementById('lvl'+l+'Status').textContent=`Active: ${a} | Inactive: ${inact}`;const el=document.getElementById('level'+l+'Members');if(el&&c?.members?.length){el.innerHTML=c.members.slice(0,5).map(m=>{const isAct=m.packageType&&m.packageType!=='not_active';return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-top:1px solid var(--gray-100);font-size:.78rem"><span style="font-weight:600">${m.username}</span><span class="bdg ${isAct?'bg':'by'}">${isAct?'Active':'Inactive'}</span></div>`}).join('');if(c.count>5)el.innerHTML+=`<p style="font-size:.72rem;color:var(--gray-400);margin:.3rem 0 0">+${c.count-5} more</p>`;}});
     document.getElementById('totalCommission').textContent='KES '+(stats.summary?.totalCommission||0);
     ['1','2','3','4'].forEach(l=>document.getElementById('commission'+l).textContent='KES '+(stats.summary?.commissionByLevel?.['level'+l]||0));
   }catch(err){console.error('Referrals:',err);}
@@ -875,7 +874,7 @@ async function loadProfile(){
     if(_isActive){
       document.getElementById('profileLinkSection').style.display='block';
       document.getElementById('profileLinkLocked').style.display='none';
-      document.getElementById('profileInviteCode').value=`${window.location.origin}/index.html?ref=${u.inviteCode}`;
+      document.getElementById('profileInviteCode').value=`${window.location.origin}/index.html#join?ref=${u.inviteCode}`;
     } else {
       document.getElementById('profileLinkSection').style.display='none';
       document.getElementById('profileLinkLocked').style.display='block';
@@ -886,16 +885,22 @@ async function loadProfile(){
     document.getElementById('statWallet').textContent='KES '+(u.primaryWallet?.balance||0);
     document.getElementById('statPoints').textContent=(u.pointsWallet?.points||0)+' pts';
     document.getElementById('statTotalEarned').textContent='KES '+(sd?.stats?.totalEarnings||0);
-    document.getElementById('statBlogs').textContent=sd?.taskStats?.blogsSubmitted??'—';
-    document.getElementById('statSurveys').textContent=sd?.taskStats?.surveysSubmitted??'—';
 
     if(rd){
       let totalRefs=0,activeRefs=0;
-      ['1','2','3','4'].forEach(l=>{const c=rd.levels['level'+l];totalRefs+=c?.count||0;activeRefs+=c?.active||0;});
+      ['1','2','3','4'].forEach(l=>{const c=rd.levels['level'+l];const cnt=c?.count||0,act=c?.active||0;totalRefs+=cnt;activeRefs+=act;});
       document.getElementById('statTotalRefs').textContent=totalRefs;
       document.getElementById('statActiveRefs').textContent=activeRefs;
       document.getElementById('statInactiveRefs').textContent=totalRefs-activeRefs;
     }
+
+    // Total withdrawn
+    try{
+      const wh=await apiFetch('/api/withdrawals/my');
+      const completed=(wh.withdrawals||[]).filter(w=>w.status==='completed');
+      const totalWith=completed.reduce((sum,w)=>sum+(w.amount||0),0);
+      document.getElementById('statWithdrawn').textContent='KES '+totalWith;
+    }catch(e){document.getElementById('statWithdrawn').textContent='KES 0';}
 
     // Email cooldown
     const ub=document.getElementById('updateEmailBtn');ub.disabled=false;ub.textContent='Save Email';document.getElementById('emailCooldownMsg').textContent='';
