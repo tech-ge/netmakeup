@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechGeo</title>
+  <title>TechGeo Network — Earn From Your Network</title>
   <link rel="stylesheet" href="/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
@@ -328,12 +328,32 @@
     .divider { height: 1px; background: var(--gray-200); margin: 0; }
 
     /* ── RESPONSIVE ── */
+    .mob-link {
+      display: block; padding: .65rem 0; font-size: .95rem; font-weight: 500;
+      color: var(--gray-700); text-decoration: none; border-bottom: 1px solid var(--gray-100);
+    }
+    .mob-link:last-child { border-bottom: none; }
+    .mob-link:hover { color: var(--g); }
+    .mob-join {
+      display: block; margin-top: .5rem; background: var(--g); color: #fff !important;
+      text-align: center; padding: .65rem 1rem; border-radius: .45rem;
+      font-weight: 700; border-bottom: none !important;
+    }
+    .mob-join:hover { background: #15803d; }
     @media (max-width: 640px) {
-      .hero { padding: 3.5rem 0 3rem; }
+      .hero { padding: 3.5rem 0 3rem; text-align: center; }
+      .hero h1 { margin-left: auto; margin-right: auto; }
+      .hero p { margin-left: auto; margin-right: auto; }
+      .hero-actions { justify-content: center; }
+      .hero-stats { margin-left: auto; margin-right: auto; }
       .sec { padding: 3.5rem 0; }
       .topbar-nav .nav-link { display: none; }
+      .topbar-nav .btn-nav { display: none; }
       .hamburger { display: block; }
       .steps, .earn-grid, .task-grid, .testi-grid, .why-grid { gap: 1rem; }
+      .auth-box { padding: 1.5rem 1.25rem; }
+      .contact-box { padding: 2rem 1.25rem; }
+      .cta-sec { padding: 3.5rem 0; }
     }
   </style>
 </head>
@@ -350,9 +370,15 @@
       <a href="#login" class="nav-link nav-trigger" data-section="login">Login</a>
       <a href="#join" class="btn-nav nav-trigger" data-section="join">Join Now</a>
     </nav>
-    <button class="hamburger" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='flex'?'none':'flex'" aria-label="Menu">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu" onclick="toggleMobileMenu()">
       <span></span><span></span><span></span>
     </button>
+  </div>
+  <!-- Mobile dropdown -->
+  <div id="mobileMenu" style="display:none;background:#fff;border-top:1px solid var(--gray-200);padding:.75rem 1.5rem 1rem;">
+    <a href="#home" class="mob-link nav-trigger" data-section="home">Home</a>
+    <a href="#login" class="mob-link nav-trigger" data-section="login">Login</a>
+    <a href="#join" class="mob-link mob-join nav-trigger" data-section="join">Join Now</a>
   </div>
 </header>
 
@@ -694,7 +720,7 @@
             Do I need a referral code to join?
             <span class="faq-arrow">&#9660;</span>
           </button>
-          <div class="faq-a">Yes. A valid referral code from an existing active member is required to create an account. This is by design — TechGeo operates as a community where every new member is connected to the network through a verified member. If you do not have a code, contact us at techgeof@gmail.com or ask someone in the TechGeo community for an invite.</div>
+          <div class="faq-a">Yes. A valid referral code from an existing active member is required to create an account. This is by design — TechGeo operates as a community where every new member is connected to the network through a verified member. If you do not have a code, contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a8dccdcbc0cfcdc7cee8cfc5c9c1c486cbc7c5">[email&#160;protected]</a> or ask someone in the TechGeo community for an invite.</div>
         </div>
 
         <div class="faq-item">
@@ -782,7 +808,7 @@
             What should I do if I have a problem or question?
             <span class="faq-arrow">&#9660;</span>
           </button>
-          <div class="faq-a">First, contact your upline — the person who referred you. They are incentivised to help you succeed. For platform-level issues such as missing payments, account problems, or technical errors, contact the TechGeo support team directly at techgeof@gmail.com. Include your username and a clear description of the issue.</div>
+          <div class="faq-a">First, contact your upline — the person who referred you. They are incentivised to help you succeed. For platform-level issues such as missing payments, account problems, or technical errors, contact the TechGeo support team directly at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="700415131817151f1630171d11191c5e131f1d">[email&#160;protected]</a>. Include your username and a clear description of the issue.</div>
         </div>
 
       </div>
@@ -795,7 +821,7 @@
       <div class="contact-box">
         <h2>Need Help? We Are Here</h2>
         <p>If you have questions about your account, a withdrawal, or anything about how the platform works, reach out to our support team directly. We aim to respond within 24 hours on business days.</p>
-        <a href="mailto:techgeof@gmail.com" class="contact-email">&#9993; techgeof@gmail.com</a>
+        <a href="/cdn-cgi/l/email-protection#cabeafa9a2adafa5ac8aada7aba3a6e4a9a5a7" class="contact-email">&#9993; <span class="__cf_email__" data-cfemail="8df9e8eee5eae8e2ebcdeae0ece4e1a3eee2e0">[email&#160;protected]</span></a>
       </div>
     </div>
   </div>
@@ -812,7 +838,7 @@
   <!-- FOOTER -->
   <footer>
     <div class="wrap">
-      <p>&copy; 2025 TechGeo Network &mdash; All rights reserved &middot; Support: <a href="mailto:techgeof@gmail.com">techgeof@gmail.com</a></p>
+      <p>&copy; 2025 TechGeo Network &mdash; All rights reserved &middot; Support: <a href="/cdn-cgi/l/email-protection#9eeafbfdf6f9fbf1f8def9f3fff7f2b0fdf1f3"><span class="__cf_email__" data-cfemail="bbcfded8d3dcded4ddfbdcd6dad2d795d8d4d6">[email&#160;protected]</span></a></p>
     </div>
   </footer>
 
@@ -896,13 +922,23 @@
 
 </main>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── FAQ TOGGLE ──
 function toggleFaq(btn) {
   var item = btn.parentElement;
   var isOpen = item.classList.contains('open');
   document.querySelectorAll('.faq-item.open').forEach(function(el) { el.classList.remove('open'); });
   if (!isOpen) item.classList.add('open');
+}
+
+// ── MOBILE MENU ──
+function toggleMobileMenu() {
+  var menu = document.getElementById('mobileMenu');
+  var btn = document.getElementById('hamburgerBtn');
+  if (!menu) return;
+  var open = menu.style.display === 'block';
+  menu.style.display = open ? 'none' : 'block';
+  btn.setAttribute('aria-expanded', !open);
 }
 
 // ── PASSWORD TOGGLES ──
@@ -980,6 +1016,9 @@ document.addEventListener('click', function(e) {
   var el = e.target.closest ? e.target.closest('.nav-trigger') : null;
   if (!el) { var t = e.target; while (t && t !== document) { if (t.classList && t.classList.contains('nav-trigger')) { el = t; break; } t = t.parentNode; } }
   if (!el) return;
+  // Close mobile menu on any nav click
+  var menu = document.getElementById('mobileMenu');
+  if (menu) menu.style.display = 'none';
   var section = el.getAttribute('data-section') || (el.getAttribute('href') || '').replace('#', '');
   if (section) { e.preventDefault(); showSection(section); window.scrollTo(0, 0); }
 });
@@ -1038,18 +1077,4 @@ document.getElementById('signupForm').addEventListener('submit', async function(
   btn.textContent = 'Creating account…'; btn.disabled = true;
   try {
     var data = await apiFetch('/api/auth/signup', {method: 'POST', body: JSON.stringify({
-      username: document.getElementById('signupUsername').value.trim(),
-      email: document.getElementById('signupEmail').value.trim(),
-      phone: document.getElementById('signupPhone').value.trim(),
-      password: document.getElementById('signupPassword').value,
-      referrerCode
-    })});
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    window.location.href = '/dashboard.html';
-  } catch(err) { errEl.textContent = err.message; errEl.style.display = 'block'; }
-  finally { btn.textContent = 'Create Account'; btn.disabled = false; }
-});
-</script>
-</body>
-</html>
+      username: docum
