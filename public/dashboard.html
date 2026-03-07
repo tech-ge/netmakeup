@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TechGeo — Dashboard</title>
+<title>TechGeo</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -19,7 +19,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--gray-700);background:#f4f6f8;line-height:1.6;min-height:100vh}
-/* TOPNAV */
 .topnav{background:#fff;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:200;height:60px}
 .tnin{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:100%;padding:0 1.25rem;gap:.75rem}
 .logo{display:flex;align-items:center;gap:.5rem;font-weight:800;font-size:1.1rem;color:var(--g);text-decoration:none}
@@ -30,9 +29,8 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--gray-700);
 .btn-logout{background:none;border:1.5px solid var(--gray-200);color:var(--gray-500);padding:.3rem .75rem;border-radius:.4rem;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
 .btn-logout:hover{border-color:var(--r);color:var(--r)}
 .ham{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer;padding:.2rem;color:var(--gray-700)}
-/* BELL */
 .bell-wrap{position:relative}
-.bell-btn{background:none;border:none;cursor:pointer;font-size:1.15rem;padding:.25rem .3rem;position:relative;color:var(--gray-700);line-height:1}
+.bell-btn{background:none;border:none;cursor:pointer;font-size:1.1rem;padding:.25rem .3rem;position:relative;color:var(--gray-700);line-height:1}
 .bell-badge{display:none;position:absolute;top:-3px;right:-4px;background:var(--r);color:#fff;font-size:.58rem;font-weight:800;padding:.1rem .28rem;border-radius:999px;min-width:15px;text-align:center;line-height:1.4;border:2px solid #fff}
 .notif-panel{display:none;position:absolute;right:0;top:calc(100% + 8px);width:330px;background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);box-shadow:var(--shm);z-index:500;flex-direction:column;overflow:hidden}
 .notif-head{display:flex;justify-content:space-between;align-items:center;padding:.7rem 1rem;border-bottom:1px solid var(--gray-100);background:var(--gray-50)}
@@ -46,38 +44,30 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--gray-700);
 .ndot{width:7px;height:7px;border-radius:50%;background:var(--g);flex-shrink:0;margin-top:3px}
 .nitem-msg{font-size:.75rem;color:var(--gray-500);margin-top:.15rem;line-height:1.4}
 .nitem-time{font-size:.68rem;color:var(--gray-400);margin-top:.2rem}
-/* SIDEBAR */
 .sidenav{position:fixed;top:60px;left:0;width:215px;height:calc(100vh - 60px);background:#fff;border-right:1px solid var(--gray-200);overflow-y:auto;padding:.85rem .65rem;z-index:150;display:flex;flex-direction:column;gap:.05rem}
 .nav-sec{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);padding:.85rem .75rem .3rem}
 .nav-lnk{display:flex;align-items:center;gap:.6rem;padding:.52rem .75rem;border-radius:.5rem;text-decoration:none;color:var(--gray-700);font-size:.86rem;font-weight:500;transition:.12s;white-space:nowrap}
 .nav-lnk:hover{background:var(--gray-100)}
 .nav-lnk.active{background:var(--gl);color:var(--g);font-weight:700}
-.ni{font-size:1rem;width:20px;text-align:center;flex-shrink:0}
-/* LAYOUT */
+.ni{font-size:.95rem;width:20px;text-align:center;flex-shrink:0}
 .main-wrap{margin-left:215px;padding:1.75rem 1.5rem;min-height:calc(100vh - 60px)}
 .container{max-width:980px;margin:0 auto}
-/* PAGES */
 .page{display:none}.page.active{display:block}
-/* CARDS */
 .card{background:#fff;border-radius:var(--radius);border:1px solid var(--gray-200);box-shadow:var(--sh);overflow:hidden}
 .ch{padding:.75rem 1.25rem;border-bottom:1px solid var(--gray-100);font-weight:700;font-size:.88rem;display:flex;justify-content:space-between;align-items:center;background:var(--gray-50)}
-/* STATS */
 .sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin-bottom:1.5rem}
 .sc{background:#fff;border-radius:var(--radius);border:1px solid var(--gray-200);padding:1.1rem 1.25rem;box-shadow:var(--sh)}
-.sico{font-size:1.5rem;margin-bottom:.4rem}
-.slbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400)}
+.slbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.2rem}
 .sval{font-size:1.4rem;font-weight:800;color:var(--gray-900);line-height:1.1;margin-top:.15rem;font-family:'DM Mono',monospace}
-/* TASK BOXES */
+.ssub{font-size:.72rem;color:var(--gray-400);margin-top:.15rem}
 .tboxes{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:.75rem}
-.tbox{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:.85rem;text-align:center;text-decoration:none;color:inherit;display:block;transition:.15s}
+.tbox{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:.85rem;text-align:center;text-decoration:none;color:inherit;display:block;transition:.15s;cursor:pointer}
 .tbox:hover{border-color:var(--g);background:var(--gl);transform:translateY(-1px)}
-.tbi{font-size:1.6rem;margin-bottom:.3rem}
-.tbn{font-weight:700;font-size:.8rem;color:var(--gray-700)}
-.tbp{font-size:.72rem;color:var(--g);font-weight:600;margin-top:.1rem}
+.tbox.locked{opacity:.55;cursor:not-allowed;pointer-events:none}
+.tbn{font-weight:700;font-size:.8rem;color:var(--gray-700);margin-bottom:.2rem}
+.tbp{font-size:.72rem;color:var(--g);font-weight:600}
 .tbl{font-size:.68rem;color:var(--gray-400);margin-top:.1rem}
-/* TASK GRID */
 .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
-/* BUTTONS */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;padding:.5rem 1.1rem;border-radius:var(--rs);font-weight:700;font-size:.84rem;cursor:pointer;border:none;transition:.15s;font-family:inherit;text-decoration:none;white-space:nowrap}
 .btn-p{background:var(--g);color:#fff}.btn-p:hover{background:#15803d}
 .btn-p:disabled{background:var(--gray-200);color:var(--gray-400);cursor:not-allowed}
@@ -87,52 +77,51 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--gray-700);
 .btn-sm{padding:.3rem .7rem;font-size:.78rem}
 .btn-d{background:var(--r);color:#fff}.btn-d:hover{background:#dc2626}
 .wf{width:100%}
-/* FORMS */
 .fg{margin-bottom:.9rem}
 .fl{display:block;font-weight:600;font-size:.8rem;margin-bottom:.3rem;color:var(--gray-700)}
 .fc{width:100%;padding:.55rem .8rem;border:1.5px solid var(--gray-200);border-radius:var(--rs);font-size:.9rem;outline:none;transition:.15s;font-family:inherit;color:var(--gray-900)}
 .fc:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(22,163,74,.1)}
 .fc[readonly]{background:var(--gray-50);color:var(--gray-500)}
 textarea.fc{resize:vertical}
-/* MSG BOXES */
 .mb{padding:.55rem .9rem;border-radius:.4rem;font-size:.82rem;font-weight:600;display:none}
 .mb-ok{background:var(--gm);color:#14532d;border:1px solid #86efac}
 .mb-err{background:var(--rl);color:#b91c1c;border:1px solid #fca5a5}
-/* MODALS */
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:2rem 1rem}
 .mbox{background:#fff;max-width:640px;margin:0 auto;border-radius:1rem;padding:1.75rem;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .mclose{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--gray-400);line-height:1}
 .mclose:hover{color:var(--gray-700)}
-/* BADGES */
 .bdg{padding:.15rem .6rem;border-radius:999px;font-size:.7rem;font-weight:700;display:inline-block}
 .bg{background:var(--gm);color:#14532d}
 .by{background:var(--ym);color:#78350f}
 .br{background:var(--rl);color:#b91c1c}
 .bb{background:var(--bl);color:#1e3a8a}
 .bgr{background:var(--gray-100);color:var(--gray-500)}
-/* HISTORY */
 .hrow{display:flex;justify-content:space-between;align-items:flex-start;padding:.75rem 0;border-bottom:1px solid var(--gray-100);gap:.75rem;flex-wrap:wrap}
 .hrow:last-child{border-bottom:none}
 .hm{font-weight:700;font-size:.88rem;color:var(--gray-900)}
 .hs{font-size:.75rem;color:var(--gray-400);margin-top:.15rem}
-/* REF LEVELS */
 .rlg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.25rem}
-/* ACTIVATION BG */
 .act-bg{min-height:calc(100vh - 60px);background:linear-gradient(135deg,#14532d 0%,#16a34a 60%,#15803d 100%);display:flex;align-items:flex-start;justify-content:center;padding:2.5rem 1rem;margin:-1.75rem -1.5rem}
-/* WITHDRAW / PROFILE GRIDS */
 .wdg{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
 .pfg{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
-/* PG HEADER */
 .pgh{margin-bottom:1.5rem}
 .pgh h2{font-size:1.45rem;font-weight:800;color:var(--gray-900)}
 .pgh p{font-size:.85rem;color:var(--gray-500);margin-top:.2rem}
-/* TOAST */
 #_toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;padding:.65rem 1.4rem;border-radius:.6rem;font-size:.88rem;font-weight:700;box-shadow:0 4px 20px rgba(0,0,0,.25);opacity:0;pointer-events:none;max-width:90vw;text-align:center;transition:.3s}
-/* SPINNER */
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin{display:inline-block;width:22px;height:22px;border:3px solid var(--gray-200);border-top-color:var(--g);border-radius:50%;animation:spin .7s linear infinite}
 .ls{text-align:center;padding:2.5rem;color:var(--gray-400);font-size:.88rem}
-/* RESPONSIVE */
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table.ref-table{width:100%;border-collapse:collapse;font-size:.82rem}
+table.ref-table th{background:var(--gray-50);padding:.55rem .9rem;text-align:left;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-400);border-bottom:2px solid var(--gray-200)}
+table.ref-table td{padding:.6rem .9rem;border-bottom:1px solid var(--gray-100);color:var(--gray-700)}
+table.ref-table tr:last-child td{border-bottom:none}
+table.ref-table tr:hover td{background:var(--gray-50)}
+/* INACTIVE BANNER */
+.inactive-banner{background:#fff7ed;border:2px solid #f97316;border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:none}
+.inactive-banner h3{font-size:.95rem;font-weight:800;color:#c2410c;margin:0 0 .3rem}
+.inactive-banner p{font-size:.84rem;color:#9a3412;margin:0 0 .85rem}
 @media(max-width:768px){
   .sidenav{display:none;position:fixed;inset:0 auto 0 0;z-index:300;width:215px;box-shadow:4px 0 20px rgba(0,0,0,.15)}
   .sidenav.open{display:flex}.main-wrap{margin-left:0;padding:1rem}.ham{display:block}
@@ -144,20 +133,19 @@ textarea.fc{resize:vertical}
 </head>
 <body>
 
-<!-- TOPNAV -->
 <nav class="topnav">
   <div class="tnin">
     <div style="display:flex;align-items:center;gap:.75rem">
-      <button class="ham" onclick="toggleSidenav()">☰</button>
+      <button class="ham" onclick="toggleSidenav()">&#9776;</button>
       <a href="/dashboard.html" class="logo"><span class="logo-dot"></span>TechGeo</a>
     </div>
     <div class="nav-right">
       <span class="nav-user" id="navUsername"></span>
       <span class="nav-badge" id="navWallet">KES 0</span>
       <div class="bell-wrap">
-        <button class="bell-btn" id="bellBtn" onclick="toggleNotifPanel()">🔔<span class="bell-badge" id="bellBadge">0</span></button>
+        <button class="bell-btn" id="bellBtn" onclick="toggleNotifPanel()">&#128276;<span class="bell-badge" id="bellBadge">0</span></button>
         <div class="notif-panel" id="notifPanel">
-          <div class="notif-head"><span>🔔 Notifications</span><button class="nmark" onclick="markAllRead()">Mark all read</button></div>
+          <div class="notif-head"><span>Notifications</span><button class="nmark" onclick="markAllRead()">Mark all read</button></div>
           <div class="notif-list" id="notifList"><div class="ls"><div class="spin"></div></div></div>
         </div>
       </div>
@@ -166,25 +154,24 @@ textarea.fc{resize:vertical}
   </div>
 </nav>
 
-<!-- SIDEBAR -->
 <nav class="sidenav" id="sidenav">
-  <a href="#dashboard" class="nav-lnk active" data-pg="dashboard"><span class="ni">🏠</span>Dashboard</a>
-  <div class="nav-sec">Daily Tasks</div>
-  <a href="#blogs" class="nav-lnk" data-pg="blogs"><span class="ni">📝</span>Blog Writing</a>
-  <a href="#surveys" class="nav-lnk" data-pg="surveys"><span class="ni">📊</span>Surveys</a>
-  <a href="#writing" class="nav-lnk" data-pg="writing"><span class="ni">✍️</span>Writing Jobs</a>
-  <a href="#transcription" class="nav-lnk" data-pg="transcription"><span class="ni">🎙️</span>Transcription</a>
-  <a href="#dataentry" class="nav-lnk" data-pg="dataentry"><span class="ni">📋</span>Data Entry</a>
+  <a href="#dashboard" class="nav-lnk active" data-pg="dashboard"><span class="ni">&#8962;</span>Dashboard</a>
+  <div class="nav-sec">Tasks</div>
+  <a href="#blogs" class="nav-lnk" data-pg="blogs"><span class="ni">&#128221;</span>Blog Writing</a>
+  <a href="#surveys" class="nav-lnk" data-pg="surveys"><span class="ni">&#128202;</span>Surveys</a>
+  <a href="#writing" class="nav-lnk" data-pg="writing"><span class="ni">&#9997;</span>Writing Jobs</a>
+  <a href="#transcription" class="nav-lnk" data-pg="transcription"><span class="ni">&#127897;</span>Transcription</a>
+  <a href="#dataentry" class="nav-lnk" data-pg="dataentry"><span class="ni">&#128203;</span>Data Entry</a>
   <div class="nav-sec">Earnings</div>
-  <a href="#referrals" class="nav-lnk" data-pg="referrals"><span class="ni">👥</span>Referrals</a>
-  <a href="#withdraw" class="nav-lnk" data-pg="withdraw"><span class="ni">💸</span>Withdraw</a>
+  <a href="#referrals" class="nav-lnk" data-pg="referrals"><span class="ni">&#128101;</span>Referrals</a>
+  <a href="#withdraw" class="nav-lnk" data-pg="withdraw"><span class="ni">&#128176;</span>Withdraw</a>
   <div class="nav-sec">Account</div>
-  <a href="#profile" class="nav-lnk" data-pg="profile"><span class="ni">👤</span>Profile</a>
+  <a href="#profile" class="nav-lnk" data-pg="profile"><span class="ni">&#128100;</span>Profile</a>
 </nav>
 
 <div class="main-wrap"><div class="container">
 
-<!-- ACTIVATION -->
+<!-- ACTIVATION PAGE -->
 <div id="pg-activation" class="page">
   <div class="act-bg">
     <div style="width:100%;max-width:540px">
@@ -194,17 +181,17 @@ textarea.fc{resize:vertical}
         <p style="color:rgba(255,255,255,.6);font-size:.78rem;margin-top:.25rem">Updates after admin deposits your payment</p>
       </div>
       <div style="background:#fff;border-radius:1rem;padding:2rem;box-shadow:0 24px 60px rgba(0,0,0,.3)">
-        <div style="text-align:center;margin-bottom:1.5rem"><div style="font-size:2.5rem">🔐</div><h2 style="font-size:1.3rem;font-weight:800;margin:.3rem 0">Account Not Activated</h2><p style="color:var(--gray-500);font-size:.85rem">Follow these steps to start earning</p></div>
+        <div style="text-align:center;margin-bottom:1.5rem"><h2 style="font-size:1.3rem;font-weight:800;margin:.3rem 0">Account Not Activated</h2><p style="color:var(--gray-500);font-size:.85rem">Follow the steps below to activate and start earning</p></div>
         <div style="background:var(--gl);border:1.5px solid var(--g);border-radius:var(--rs);padding:1rem;margin-bottom:.75rem">
-          <p style="font-weight:800;color:var(--gd);margin:0 0 .5rem;font-size:.9rem">① Pay KES 700 via M-Pesa Paybill</p>
-          <div style="background:#fff;border:2px solid var(--g);border-radius:.5rem;padding:.85rem;text-align:center"><p style="font-size:.7rem;color:var(--gray-400);text-transform:uppercase;letter-spacing:1px;margin:0">Paybill <b>247247</b> · Account Number</p><p style="font-size:2rem;font-weight:800;color:var(--g);letter-spacing:6px;margin:.15rem 0;font-family:'DM Mono',monospace">153316</p><p style="font-size:.75rem;color:var(--gray-400);margin:0">TechGeo Network Platform</p></div>
+          <p style="font-weight:800;color:var(--gd);margin:0 0 .5rem;font-size:.9rem">Step 1 — Pay KES 700 via M-Pesa Paybill</p>
+          <div style="background:#fff;border:2px solid var(--g);border-radius:.5rem;padding:.85rem;text-align:center"><p style="font-size:.7rem;color:var(--gray-400);text-transform:uppercase;letter-spacing:1px;margin:0">Paybill <b>247247</b> &middot; Account Number</p><p style="font-size:2rem;font-weight:800;color:var(--g);letter-spacing:6px;margin:.15rem 0;font-family:'DM Mono',monospace">153316</p><p style="font-size:.75rem;color:var(--gray-400);margin:0">TechGeo Network Platform</p></div>
         </div>
-        <div style="background:var(--bl);border:1.5px solid var(--b);border-radius:var(--rs);padding:.85rem;margin-bottom:.75rem"><p style="font-weight:700;color:#1e40af;margin:0 0 .2rem;font-size:.88rem">② Screenshot M-Pesa Confirmation</p><p style="color:#1e40af;font-size:.82rem;margin:0">Take a screenshot of the M-Pesa success message.</p></div>
+        <div style="background:var(--bl);border:1.5px solid var(--b);border-radius:var(--rs);padding:.85rem;margin-bottom:.75rem"><p style="font-weight:700;color:#1e40af;margin:0 0 .2rem;font-size:.88rem">Step 2 — Screenshot the M-Pesa confirmation</p><p style="color:#1e40af;font-size:.82rem;margin:0">Take a screenshot of the M-Pesa success message.</p></div>
         <div style="background:var(--ym);border:1.5px solid var(--y);border-radius:var(--rs);padding:.85rem;margin-bottom:.85rem">
-          <p style="font-weight:700;color:#78350f;margin:0 0 .5rem;font-size:.88rem">③ Send Screenshot to Your Upline</p>
+          <p style="font-weight:700;color:#78350f;margin:0 0 .5rem;font-size:.88rem">Step 3 — Send Screenshot to Your Upline</p>
           <div style="background:#fff;border:1px solid var(--y);border-radius:.4rem;padding:.65rem"><p style="font-size:.7rem;color:var(--gray-400);margin:0 0 .1rem">Your Upline</p><p style="font-weight:800;margin:0;color:var(--gray-900)" id="uplineName">Loading…</p><p style="font-size:.8rem;color:var(--gray-500);margin:.1rem 0 0" id="uplinePhone"></p><p style="font-size:.8rem;color:var(--gray-500);margin:.05rem 0 0" id="uplineEmail"></p></div>
         </div>
-        <button onclick="doActivation()" style="width:100%;background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border:none;padding:.95rem;font-size:1rem;font-weight:800;border-radius:.65rem;cursor:pointer;font-family:inherit">🚀 Activate My Account — KES 700</button>
+        <button onclick="doActivation()" style="width:100%;background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border:none;padding:.95rem;font-size:1rem;font-weight:800;border-radius:.65rem;cursor:pointer;font-family:inherit">Activate My Account — KES 700</button>
         <p id="activationMsg" style="display:none;text-align:center;font-size:.88rem;margin:.65rem 0 0;font-weight:600"></p>
       </div>
     </div>
@@ -215,102 +202,123 @@ textarea.fc{resize:vertical}
 <div id="pg-dashboard" class="page">
   <div style="background:linear-gradient(135deg,var(--g) 0%,#15803d 100%);color:#fff;border-radius:var(--radius);padding:1.5rem 1.75rem;margin-bottom:1.5rem;position:relative;overflow:hidden">
     <div style="position:absolute;right:-20px;top:-30px;width:140px;height:140px;background:rgba(255,255,255,.06);border-radius:50%"></div>
-    <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:.15rem">Welcome back, <span id="dashUsername">User</span>! 👋</h2>
+    <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:.15rem">Welcome back, <span id="dashUsername">User</span></h2>
     <p id="dashPackageStatus" style="opacity:.85;margin:0;font-size:.88rem"></p>
   </div>
+
+  <!-- Inactive account banner on dashboard -->
+  <div class="inactive-banner" id="dashInactiveBanner">
+    <h3>Account Not Activated</h3>
+    <p>Your account is pending activation. You can browse tasks but cannot submit them or share your referral link until you activate.</p>
+    <button id="activateBtn" class="btn btn-p">Activate Account — KES 700</button>
+  </div>
+
   <div class="sg">
-    <div class="sc"><div class="sico">💵</div><div class="slbl">KES Wallet</div><div class="sval" id="dashMainWallet">0</div></div>
-    <div class="sc"><div class="sico">⭐</div><div class="slbl">Points</div><div class="sval" id="dashPoints">0</div></div>
-    <div class="sc"><div class="sico">👥</div><div class="slbl">Active Refs</div><div class="sval" id="dashActiveReferrals">0</div></div>
-    <div class="sc"><div class="sico">📈</div><div class="slbl">Total Earned</div><div class="sval" id="dashTotalEarnings">0</div></div>
+    <div class="sc"><div class="slbl">KES Wallet</div><div class="sval" id="dashMainWallet">0</div></div>
+    <div class="sc"><div class="slbl">Points</div><div class="sval" id="dashPoints">0</div></div>
+    <div class="sc"><div class="slbl">Active Referrals</div><div class="sval" id="dashActiveReferrals">0</div><div class="ssub" id="dashInactiveReferrals">0 inactive</div></div>
+    <div class="sc"><div class="slbl">Total Earned</div><div class="sval" id="dashTotalEarnings">0</div></div>
   </div>
-  <div id="activationAlert" style="display:none;background:var(--ym);border:2px solid var(--y);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem">
-    <p style="font-weight:800;color:#78350f;margin:0 0 .4rem">⚠️ Package Not Activated</p>
-    <p style="color:#92400e;margin:0 0 .85rem;font-size:.88rem">Deposit KES 700 to activate and start earning.</p>
-    <button id="activateBtn" class="btn btn-p">🚀 Activate (KES 700)</button>
-  </div>
+
   <div id="pointsConversionCard" style="display:none;background:#fff;border:1.5px solid var(--g);border-radius:var(--radius);padding:1.1rem 1.25rem;margin-bottom:1.5rem;box-shadow:var(--sh)">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
-      <div><p style="font-weight:800;color:var(--gray-900);margin:0">⭐ Convert Points → KES</p><p style="font-size:.82rem;color:var(--gray-500);margin:.15rem 0 0">You have <strong id="currentPoints">0</strong> pts ≈ <strong id="pointsKES">KES 0</strong></p></div>
+      <div><p style="font-weight:800;color:var(--gray-900);margin:0">Convert Points to KES</p><p style="font-size:.82rem;color:var(--gray-500);margin:.15rem 0 0">You have <strong id="currentPoints">0</strong> pts &asymp; <strong id="pointsKES">KES 0</strong></p></div>
       <button id="convertPointsBtn" class="btn btn-p btn-sm">Convert Now</button>
     </div>
   </div>
+
   <div class="card" style="margin-bottom:1.5rem">
-    <div class="ch">📅 Available Tasks <span style="font-size:.75rem;font-weight:500;color:var(--gray-400)">Click to start earning</span></div>
+    <div class="ch">Available Tasks <span style="font-size:.75rem;font-weight:500;color:var(--gray-400)">Click to open</span></div>
     <div style="padding:1.25rem">
-      <div class="tboxes">
-        <a href="#blogs" class="tbox nav-lnk" data-pg="blogs"><div class="tbi">📝</div><div class="tbn">Blog Writing</div><div class="tbp">100 pts</div><div class="tbl" id="tbBlogsLeft">—</div></a>
-        <a href="#surveys" class="tbox nav-lnk" data-pg="surveys"><div class="tbi">📊</div><div class="tbn">Surveys</div><div class="tbp">100 pts</div><div class="tbl" id="tbSurveysLeft">—</div></a>
-        <a href="#writing" class="tbox nav-lnk" data-pg="writing"><div class="tbi">✍️</div><div class="tbn">Writing Jobs</div><div class="tbp">Varies</div><div class="tbl">Upload file</div></a>
-        <a href="#transcription" class="tbox nav-lnk" data-pg="transcription"><div class="tbi">🎙️</div><div class="tbn">Transcription</div><div class="tbp">50 pts</div><div class="tbl">Type audio</div></a>
-        <a href="#dataentry" class="tbox nav-lnk" data-pg="dataentry"><div class="tbi">📋</div><div class="tbn">Data Entry</div><div class="tbp">75 pts</div><div class="tbl">Upload file</div></a>
+      <div class="tboxes" id="dashTaskBoxes">
+        <a href="#blogs" class="tbox nav-lnk" data-pg="blogs"><div class="tbn">Blog Writing</div><div class="tbp">100 pts</div><div class="tbl" id="tbBlogsLeft">—</div></a>
+        <a href="#surveys" class="tbox nav-lnk" data-pg="surveys"><div class="tbn">Surveys</div><div class="tbp">100 pts</div><div class="tbl" id="tbSurveysLeft">—</div></a>
+        <a href="#writing" class="tbox nav-lnk" data-pg="writing"><div class="tbn">Writing Jobs</div><div class="tbp">Varies</div><div class="tbl">Upload file</div></a>
+        <a href="#transcription" class="tbox nav-lnk" data-pg="transcription"><div class="tbn">Transcription</div><div class="tbp">50 pts</div><div class="tbl">Type audio</div></a>
+        <a href="#dataentry" class="tbox nav-lnk" data-pg="dataentry"><div class="tbn">Data Entry</div><div class="tbp">75 pts</div><div class="tbl">Upload file</div></a>
       </div>
-      <p style="font-size:.75rem;color:var(--gray-400);margin-top:.85rem">💡 100 pts = KES 10 · Redeem on Tuesdays (min 2,000 pts + 4 referrals)</p>
+      <p style="font-size:.75rem;color:var(--gray-400);margin-top:.85rem">100 pts = KES 10 &middot; Redeem on Tuesdays (min 2,000 pts + 4 referrals)</p>
     </div>
   </div>
+
   <div class="card" style="margin-bottom:1.5rem">
-    <div class="ch">👥 Referral Network <a href="#referrals" class="nav-lnk btn btn-p btn-sm" data-pg="referrals" style="font-size:.75rem">View All</a></div>
+    <div class="ch">Referral Network <a href="#referrals" class="nav-lnk btn btn-p btn-sm" data-pg="referrals" style="font-size:.75rem">View All</a></div>
     <div style="padding:1.25rem">
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:.85rem">
-        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,var(--g),#15803d);color:#fff"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef1">0</div><div style="font-size:.7rem;opacity:.85">L1 · KES 200</div><div style="font-size:.65rem;opacity:.7;margin-top:.1rem" id="dashRef1s">0 active</div></div>
-        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#22c55e,var(--g));color:#fff"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef2">0</div><div style="font-size:.7rem;opacity:.85">L2 · KES 150</div><div style="font-size:.65rem;opacity:.7;margin-top:.1rem" id="dashRef2s">0 active</div></div>
-        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#4ade80,#22c55e);color:#14532d"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef3">0</div><div style="font-size:.7rem;opacity:.75">L3 · KES 75</div><div style="font-size:.65rem;opacity:.65;margin-top:.1rem" id="dashRef3s">0 active</div></div>
-        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#86efac,#4ade80);color:#14532d"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef4">0</div><div style="font-size:.7rem;opacity:.75">L4 · KES 25</div><div style="font-size:.65rem;opacity:.65;margin-top:.1rem" id="dashRef4s">0 active</div></div>
+        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,var(--g),#15803d);color:#fff"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef1">0</div><div style="font-size:.7rem;opacity:.85">L1 &middot; KES 200</div><div style="font-size:.65rem;opacity:.7;margin-top:.1rem" id="dashRef1s">0 active</div></div>
+        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#22c55e,var(--g));color:#fff"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef2">0</div><div style="font-size:.7rem;opacity:.85">L2 &middot; KES 150</div><div style="font-size:.65rem;opacity:.7;margin-top:.1rem" id="dashRef2s">0 active</div></div>
+        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#4ade80,#22c55e);color:#14532d"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef3">0</div><div style="font-size:.7rem;opacity:.75">L3 &middot; KES 75</div><div style="font-size:.65rem;opacity:.65;margin-top:.1rem" id="dashRef3s">0 active</div></div>
+        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#86efac,#4ade80);color:#14532d"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef4">0</div><div style="font-size:.7rem;opacity:.75">L4 &middot; KES 25</div><div style="font-size:.65rem;opacity:.65;margin-top:.1rem" id="dashRef4s">0 active</div></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;background:var(--gl);border-radius:.5rem;padding:.75rem 1rem"><span style="font-weight:700;font-size:.88rem">Total Commission Earned</span><span style="font-size:1.2rem;font-weight:800;color:var(--g);font-family:'DM Mono',monospace" id="dashTotalCommission">KES 0</span></div>
     </div>
   </div>
+
+  <!-- Inactive referrals table on dashboard -->
   <div id="inactiveReferralsSection" style="display:none;margin-bottom:1.5rem">
-    <div style="background:var(--ym);border:1px solid var(--y);border-radius:var(--radius);padding:1.25rem">
-      <p style="font-weight:800;color:#78350f;margin:0 0 .75rem">⚠️ Invited people who haven't activated yet</p>
-      <div id="inactiveReferralsList"></div>
+    <div class="card">
+      <div class="ch">Pending Activations <span style="font-size:.75rem;font-weight:500;color:var(--gray-400)">Invited users who have not activated</span></div>
+      <div class="tbl-wrap">
+        <table class="ref-table">
+          <thead><tr><th>#</th><th>Username</th><th>Phone</th><th>Joined</th><th>Status</th></tr></thead>
+          <tbody id="inactiveReferralsList"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- BLOGS -->
 <div id="pg-blogs" class="page">
-  <div class="pgh"><h2>📝 Blog Writing</h2><p>Write blog posts on assigned topics · 100 pts each · Max 2 per day</p></div>
-  <div id="blogsDaily" style="background:var(--ym);border:1px solid var(--y);padding:.65rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.85rem;font-weight:600;color:#78350f">Loading daily progress…</div>
+  <div class="pgh"><h2>Blog Writing</h2><p>Write blog posts on assigned topics &middot; 100 pts each</p></div>
+  <div id="blogsInfo" style="background:var(--gray-50);border:1px solid var(--gray-200);padding:.65rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.85rem;font-weight:600;color:var(--gray-700)">Loading…</div>
+  <div id="blogsLocked" style="display:none;background:#fff7ed;border:2px solid #f97316;padding:1rem 1.25rem;border-radius:var(--radius);margin-bottom:1.25rem;font-size:.88rem;font-weight:700;color:#c2410c">Your account is not activated. Activate to submit blog posts.</div>
   <div id="blogsList" class="tgrid"><div class="ls"><div class="spin"></div><p style="margin-top:.75rem">Loading blogs…</p></div></div>
 </div>
 
 <!-- SURVEYS -->
 <div id="pg-surveys" class="page">
-  <div class="pgh"><h2>📊 Surveys</h2><p>Answer survey questions · 100 pts each · Max 2 per day</p></div>
-  <div id="surveysDaily" style="background:var(--ym);border:1px solid var(--y);padding:.65rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.85rem;font-weight:600;color:#78350f">Loading daily progress…</div>
+  <div class="pgh"><h2>Surveys</h2><p>Answer survey questions &middot; 100 pts each</p></div>
+  <div id="surveysInfo" style="background:var(--gray-50);border:1px solid var(--gray-200);padding:.65rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.85rem;font-weight:600;color:var(--gray-700)">Loading…</div>
+  <div id="surveysLocked" style="display:none;background:#fff7ed;border:2px solid #f97316;padding:1rem 1.25rem;border-radius:var(--radius);margin-bottom:1.25rem;font-size:.88rem;font-weight:700;color:#c2410c">Your account is not activated. Activate to submit surveys.</div>
   <div id="surveysList" class="tgrid"><div class="ls"><div class="spin"></div><p style="margin-top:.75rem">Loading surveys…</p></div></div>
 </div>
 
 <!-- WRITING -->
 <div id="pg-writing" class="page">
-  <div class="pgh"><h2>✍️ Writing Jobs</h2><p>Upload your written work as a PDF or Word document</p></div>
+  <div class="pgh"><h2>Writing Jobs</h2><p>Upload your written work as a PDF or Word document</p></div>
+  <div id="writingLocked" style="display:none;background:#fff7ed;border:2px solid #f97316;padding:1rem 1.25rem;border-radius:var(--radius);margin-bottom:1.25rem;font-size:.88rem;font-weight:700;color:#c2410c">Your account is not activated. Activate to submit writing jobs.</div>
   <div id="writingList" class="tgrid"><div class="ls"><div class="spin"></div><p style="margin-top:.75rem">Loading writing jobs…</p></div></div>
 </div>
 
 <!-- TRANSCRIPTION -->
 <div id="pg-transcription" class="page">
-  <div class="pgh"><h2>🎙️ Transcription</h2><p>Listen to audio and type out the transcription · 50 pts each</p></div>
+  <div class="pgh"><h2>Transcription</h2><p>Listen to audio and type out the transcription &middot; 50 pts each</p></div>
+  <div id="transcriptionLocked" style="display:none;background:#fff7ed;border:2px solid #f97316;padding:1rem 1.25rem;border-radius:var(--radius);margin-bottom:1.25rem;font-size:.88rem;font-weight:700;color:#c2410c">Your account is not activated. Activate to submit transcriptions.</div>
   <div id="transcriptionList" class="tgrid"><div class="ls"><div class="spin"></div><p style="margin-top:.75rem">Loading transcription jobs…</p></div></div>
 </div>
 
 <!-- DATA ENTRY -->
 <div id="pg-dataentry" class="page">
-  <div class="pgh"><h2>📋 Data Entry</h2><p>Download template, complete it, upload your file · 75 pts each</p></div>
+  <div class="pgh"><h2>Data Entry</h2><p>Download template, complete it, upload your file &middot; 75 pts each</p></div>
+  <div id="dataentryLocked" style="display:none;background:#fff7ed;border:2px solid #f97316;padding:1rem 1.25rem;border-radius:var(--radius);margin-bottom:1.25rem;font-size:.88rem;font-weight:700;color:#c2410c">Your account is not activated. Activate to submit data entry tasks.</div>
   <div id="dataentryList" class="tgrid"><div class="ls"><div class="spin"></div><p style="margin-top:.75rem">Loading data entry jobs…</p></div></div>
 </div>
 
 <!-- REFERRALS -->
 <div id="pg-referrals" class="page">
-  <div class="pgh"><h2>👥 Referral Network</h2><p>Earn commissions on 4 levels when your invites activate</p></div>
+  <div class="pgh"><h2>Referral Network</h2><p>Earn commissions on 4 levels when your invites activate</p></div>
   <div class="card" style="margin-bottom:1.25rem;border:2px solid var(--g)">
-    <div class="ch" style="background:var(--gl)">📤 Your Personal Invite Link</div>
+    <div class="ch" style="background:var(--gl)">Your Personal Invite Link</div>
     <div style="padding:1.25rem">
-      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:.75rem">
-        <input type="text" id="referralLink" class="fc" readonly style="flex:1;min-width:200px;font-family:'DM Mono',monospace;font-size:.8rem;background:var(--gl);border-color:var(--g)">
-        <button id="copyReferralBtn" class="btn btn-p">📋 Copy Link</button>
+      <div id="refLinkSection">
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:.75rem">
+          <input type="text" id="referralLink" class="fc" readonly style="flex:1;min-width:200px;font-family:'DM Mono',monospace;font-size:.8rem;background:var(--gl);border-color:var(--g)">
+          <button id="copyReferralBtn" class="btn btn-p">Copy Link</button>
+        </div>
+        <p style="font-size:.82rem;color:var(--g);font-weight:600;margin:0">L1: KES 200 &middot; L2: KES 150 &middot; L3: KES 75 &middot; L4: KES 25 per activation</p>
       </div>
-      <p style="font-size:.82rem;color:var(--g);font-weight:600;margin:0">✅ L1: KES 200 · L2: KES 150 · L3: KES 75 · L4: KES 25 per activation</p>
+      <div id="refLinkLocked" style="display:none;background:#fff7ed;border:1.5px solid #f97316;border-radius:var(--rs);padding:.85rem;font-size:.88rem;font-weight:700;color:#c2410c">Activate your account to unlock your referral link and start earning commissions.</div>
     </div>
   </div>
   <div class="rlg">
@@ -320,7 +328,7 @@ textarea.fc{resize:vertical}
     <div class="card" style="border-top:4px solid #86efac"><div style="padding:1.25rem;text-align:center"><div style="font-size:2rem;font-weight:800;color:#86efac;font-family:'DM Mono',monospace" id="level4Count">0</div><div style="font-weight:800;margin:.2rem 0">Level 4 — KES 25</div><div style="font-size:.78rem;color:var(--gray-400)">4th level</div><div style="font-size:.75rem;color:var(--gray-500);margin:.4rem 0" id="lvl4Status">Active: 0 | Inactive: 0</div><div id="level4Members" style="margin-top:.5rem"></div></div></div>
   </div>
   <div class="card">
-    <div class="ch">💰 Commission Totals</div>
+    <div class="ch">Commission Totals</div>
     <div style="padding:1.25rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem">
       <div style="border-left:4px solid var(--g);padding-left:.85rem"><div style="font-size:.7rem;color:var(--gray-400);font-weight:700;text-transform:uppercase">Level 1</div><div style="font-weight:800;font-size:1.2rem;font-family:'DM Mono',monospace" id="commission1">KES 0</div></div>
       <div style="border-left:4px solid #22c55e;padding-left:.85rem"><div style="font-size:.7rem;color:var(--gray-400);font-weight:700;text-transform:uppercase">Level 2</div><div style="font-weight:800;font-size:1.2rem;font-family:'DM Mono',monospace" id="commission2">KES 0</div></div>
@@ -333,30 +341,30 @@ textarea.fc{resize:vertical}
 
 <!-- WITHDRAW -->
 <div id="pg-withdraw" class="page">
-  <div class="pgh"><h2>💸 Withdraw Earnings</h2><p>Points → KES: Tuesdays · KES Wallet: Thursdays</p></div>
+  <div class="pgh"><h2>Withdraw Earnings</h2><p>Points to KES: Tuesdays &middot; KES Wallet: Thursdays</p></div>
   <div id="withdrawDayMsg" style="border-left:4px solid var(--b);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:600;font-size:.9rem;background:var(--bl);color:#1e40af">Checking day…</div>
   <div class="wdg" style="margin-bottom:1.25rem">
-    <div class="card"><div style="padding:1.5rem;text-align:center"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.35rem">KES Wallet</div><div style="font-size:2.2rem;font-weight:800;color:var(--g);font-family:'DM Mono',monospace" id="withdrawBalance">0</div><div style="font-size:.75rem;color:var(--gray-400);margin-top:.3rem">Referral commissions · Thursdays</div></div></div>
-    <div class="card"><div style="padding:1.5rem;text-align:center"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.35rem">Points Wallet</div><div style="font-size:2.2rem;font-weight:800;color:var(--y);font-family:'DM Mono',monospace" id="withdrawPoints">0</div><div style="font-size:.75rem;color:var(--gray-400);margin-top:.3rem" id="withdrawPointsKES">≈ KES 0 · Tuesdays</div></div></div>
+    <div class="card"><div style="padding:1.5rem;text-align:center"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.35rem">KES Wallet</div><div style="font-size:2.2rem;font-weight:800;color:var(--g);font-family:'DM Mono',monospace" id="withdrawBalance">0</div><div style="font-size:.75rem;color:var(--gray-400);margin-top:.3rem">Referral commissions &middot; Thursdays</div></div></div>
+    <div class="card"><div style="padding:1.5rem;text-align:center"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.35rem">Points Wallet</div><div style="font-size:2.2rem;font-weight:800;color:var(--y);font-family:'DM Mono',monospace" id="withdrawPoints">0</div><div style="font-size:.75rem;color:var(--gray-400);margin-top:.3rem" id="withdrawPointsKES">= KES 0 &middot; Tuesdays</div></div></div>
   </div>
   <div id="pointsEligibilityHint" style="background:var(--ym);border:1px solid var(--y);padding:.7rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.85rem;color:#78350f;font-weight:600"></div>
   <div class="wdg">
     <div class="card">
-      <div class="ch" style="background:var(--ym);border-bottom-color:#fde68a">⭐ Points → KES <span style="font-size:.7rem;font-weight:700;color:var(--y);margin-left:.4rem">TUESDAYS</span></div>
+      <div class="ch" style="background:var(--ym);border-bottom-color:#fde68a">Points to KES <span style="font-size:.7rem;font-weight:700;color:var(--y);margin-left:.4rem">TUESDAYS</span></div>
       <div style="padding:1.25rem">
         <div class="mb" id="ptsWdMsg"></div>
-        <p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.85rem;line-height:1.5">100 pts = KES 10 · Min 2,000 pts<br>+ 4 new referrals since last withdrawal</p>
+        <p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.85rem;line-height:1.5">100 pts = KES 10 &middot; Min 2,000 pts<br>+ 4 new referrals since last withdrawal</p>
         <div class="fg"><label class="fl">Payment Method</label><select id="ptsPaymentMethod" class="fc"><option value="">Select…</option><option value="mpesa">M-Pesa</option><option value="bank">Bank Transfer</option></select></div>
         <div id="ptsMpesaSection" style="display:none"><div class="fg"><label class="fl">M-Pesa Phone</label><input type="tel" id="ptsMpesaPhone" class="fc" placeholder="254712345678"></div></div>
         <div id="ptsBankSection" style="display:none"><div class="fg"><label class="fl">Bank Name</label><input type="text" id="ptsBankName" class="fc"></div><div class="fg"><label class="fl">Account Number</label><input type="text" id="ptsAccountNumber" class="fc"></div><div class="fg"><label class="fl">Account Holder Name</label><input type="text" id="ptsAccountName" class="fc"></div></div>
-        <button onclick="submitPointsWithdrawal()" id="ptsWithdrawBtn" class="btn btn-a wf">Redeem Points → KES</button>
+        <button onclick="submitPointsWithdrawal()" id="ptsWithdrawBtn" class="btn btn-a wf">Redeem Points to KES</button>
       </div>
     </div>
     <div class="card">
-      <div class="ch" style="background:var(--gl);border-bottom-color:var(--gm)">💸 KES Wallet <span style="font-size:.7rem;font-weight:700;color:var(--g);margin-left:.4rem">THURSDAYS</span></div>
+      <div class="ch" style="background:var(--gl);border-bottom-color:var(--gm)">KES Wallet <span style="font-size:.7rem;font-weight:700;color:var(--g);margin-left:.4rem">THURSDAYS</span></div>
       <div style="padding:1.25rem">
         <div class="mb" id="kesWdMsg"></div>
-        <p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.85rem;line-height:1.5">Min KES 300 · From referral commissions<br>Processed every Thursday</p>
+        <p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.85rem;line-height:1.5">Min KES 300 &middot; From referral commissions<br>Processed every Thursday</p>
         <div class="fg"><label class="fl">Amount (KES)</label><input type="number" id="withdrawAmount" class="fc" placeholder="Min 300" min="300"></div>
         <div class="fg"><label class="fl">Payment Method</label><select id="paymentMethod" class="fc"><option value="">Select…</option><option value="mpesa">M-Pesa</option><option value="bank">Bank Transfer</option></select></div>
         <div id="mpesaSection" style="display:none"><div class="fg"><label class="fl">M-Pesa Phone</label><input type="tel" id="mpesaPhone" class="fc" placeholder="254712345678"></div></div>
@@ -366,83 +374,125 @@ textarea.fc{resize:vertical}
     </div>
   </div>
   <div class="card" style="margin-top:1.25rem">
-    <div class="ch">📋 Withdrawal History</div>
+    <div class="ch">Withdrawal History</div>
     <div id="withdrawHistory" style="padding:1.25rem"><div class="ls"><div class="spin"></div></div></div>
   </div>
 </div>
 
 <!-- PROFILE -->
 <div id="pg-profile" class="page">
-  <div class="pgh"><h2>👤 My Profile</h2><p>View account info, update contact details and change password</p></div>
+  <div class="pgh"><h2>My Profile</h2><p>Account info, statistics and settings</p></div>
+
+  <!-- Account statistics -->
+  <div class="card" style="margin-bottom:1.25rem">
+    <div class="ch">Account Statistics</div>
+    <div style="padding:1.25rem">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:1.25rem">
+        <div class="sc"><div class="slbl">Status</div><div id="statStatus" style="font-size:.95rem;font-weight:800;margin-top:.2rem">—</div></div>
+        <div class="sc"><div class="slbl">KES Wallet</div><div class="sval" id="statWallet">0</div></div>
+        <div class="sc"><div class="slbl">Points</div><div class="sval" id="statPoints">0</div></div>
+        <div class="sc"><div class="slbl">Total Referrals</div><div class="sval" id="statTotalRefs">0</div></div>
+        <div class="sc"><div class="slbl">Active Referrals</div><div class="sval" id="statActiveRefs" style="color:var(--g)">0</div></div>
+        <div class="sc"><div class="slbl">Inactive Referrals</div><div class="sval" id="statInactiveRefs" style="color:var(--y)">0</div></div>
+        <div class="sc"><div class="slbl">Total Earned</div><div class="sval" id="statTotalEarned">0</div></div>
+        <div class="sc"><div class="slbl">Blogs Submitted</div><div class="sval" id="statBlogs">0</div></div>
+        <div class="sc"><div class="slbl">Surveys Done</div><div class="sval" id="statSurveys">0</div></div>
+      </div>
+
+      <!-- Inactive referrals full table in profile -->
+      <div id="profileInactiveSection">
+        <div style="font-weight:700;font-size:.88rem;color:var(--gray-900);margin-bottom:.75rem;border-top:1px solid var(--gray-200);padding-top:.85rem">Inactive Referrals</div>
+        <div class="tbl-wrap">
+          <table class="ref-table">
+            <thead><tr><th>#</th><th>Username</th><th>Phone</th><th>Level</th><th>Joined</th><th>Status</th></tr></thead>
+            <tbody id="profileInactiveList"><tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:1.5rem">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="pfg">
     <div class="card">
       <div class="ch">Personal Information</div>
       <div style="padding:1.25rem;display:grid;gap:.85rem">
-        <div><div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.2rem">Username</div><div style="font-weight:700;color:var(--gray-900)" id="profileUsername">—</div></div>
-        <div><div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.2rem">Email</div><div id="profileEmail">—</div></div>
-        <div><div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.2rem">Phone</div><div id="profilePhone">—</div></div>
-        <div><div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.2rem">Member Since</div><div id="profileJoinDate">—</div></div>
-        <div><div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.2rem">Status</div><div id="profileStatus">—</div></div>
+        <div><div class="slbl">Username</div><div style="font-weight:700;color:var(--gray-900)" id="profileUsername">—</div></div>
+        <div><div class="slbl">Phone</div><div id="profilePhone">—</div></div>
+        <div><div class="slbl">Member Since</div><div id="profileJoinDate">—</div></div>
       </div>
     </div>
     <div class="card">
-      <div class="ch">🔗 Your Invite Link</div>
+      <div class="ch">Your Invite Link</div>
       <div style="padding:1.25rem">
-        <input type="text" id="profileInviteCode" class="fc" readonly style="font-family:'DM Mono',monospace;font-size:.78rem;background:var(--gl);border-color:var(--g);margin-bottom:.75rem">
-        <button onclick="copyInviteLink()" class="btn btn-o wf btn-sm">📋 Copy Invite Link</button>
-        <p style="font-size:.78rem;color:var(--gray-400);margin-top:.75rem">Share to earn commissions on 4 levels</p>
+        <div id="profileLinkSection">
+          <input type="text" id="profileInviteCode" class="fc" readonly style="font-family:'DM Mono',monospace;font-size:.78rem;background:var(--gl);border-color:var(--g);margin-bottom:.75rem">
+          <button onclick="copyInviteLink()" class="btn btn-o wf btn-sm">Copy Invite Link</button>
+          <p style="font-size:.78rem;color:var(--gray-400);margin-top:.75rem">Share to earn commissions on 4 levels</p>
+        </div>
+        <div id="profileLinkLocked" style="display:none;background:#fff7ed;border:1.5px solid #f97316;border-radius:var(--rs);padding:.85rem;font-size:.85rem;font-weight:700;color:#c2410c">Activate your account to unlock your referral link.</div>
       </div>
     </div>
   </div>
+
+  <!-- Update Email (weekly limit) -->
   <div class="card" style="margin-bottom:1.25rem">
-    <div class="ch">📧 Update Email &amp; Phone <span id="contactCooldownMsg" style="font-size:.72rem;color:var(--y);font-weight:600;margin-left:.5rem"></span></div>
+    <div class="ch">Update Email <span id="emailCooldownMsg" style="font-size:.72rem;color:var(--y);font-weight:600;margin-left:.5rem"></span></div>
     <div style="padding:1.25rem;max-width:480px">
-      <div class="mb" id="contactUpdateMsg" style="margin-bottom:.85rem"></div>
-      <p style="font-size:.8rem;color:var(--gray-500);margin-bottom:1rem;line-height:1.5">⚠️ You can update your email and phone <strong>once every 7 days</strong>. Current password required.</p>
-      <div class="fg"><label class="fl">New Email <span style="color:var(--gray-400);font-weight:400">(blank = keep current)</span></label><input type="email" id="newEmail" class="fc" placeholder="new@email.com"></div>
-      <div class="fg"><label class="fl">New Phone <span style="color:var(--gray-400);font-weight:400">(blank = keep current)</span></label><input type="tel" id="newPhone" class="fc" placeholder="254712345678"></div>
-      <div class="fg"><label class="fl">Current Password <span style="color:var(--r)">*</span></label><input type="password" id="contactPassword" class="fc" placeholder="Enter password to confirm"></div>
-      <button onclick="updateContact()" id="updateContactBtn" class="btn btn-p">💾 Save Changes</button>
+      <div class="mb" id="emailUpdateMsg" style="margin-bottom:.85rem"></div>
+      <p style="font-size:.8rem;color:var(--gray-500);margin-bottom:1rem;line-height:1.5">Email can be changed <strong>once every 7 days</strong>. Current password required.</p>
+      <div class="fg"><label class="fl">New Email</label><input type="email" id="newEmail" class="fc" placeholder="new@email.com"></div>
+      <div class="fg"><label class="fl">Current Password <span style="color:var(--r)">*</span></label><input type="password" id="emailPassword" class="fc" placeholder="Enter password to confirm"></div>
+      <button onclick="updateEmail()" id="updateEmailBtn" class="btn btn-p">Save Email</button>
     </div>
   </div>
+
+  <!-- Update Phone (separate, no cooldown shown — backend handles it) -->
+  <div class="card" style="margin-bottom:1.25rem">
+    <div class="ch">Update Phone</div>
+    <div style="padding:1.25rem;max-width:480px">
+      <div class="mb" id="phoneUpdateMsg" style="margin-bottom:.85rem"></div>
+      <div class="fg"><label class="fl">New Phone</label><input type="tel" id="newPhone" class="fc" placeholder="254712345678"></div>
+      <div class="fg"><label class="fl">Current Password <span style="color:var(--r)">*</span></label><input type="password" id="phonePassword" class="fc" placeholder="Enter password to confirm"></div>
+      <button onclick="updatePhone()" id="updatePhoneBtn" class="btn btn-p">Save Phone</button>
+    </div>
+  </div>
+
   <div class="card">
-    <div class="ch">🔒 Change Password</div>
+    <div class="ch">Change Password</div>
     <form id="changePasswordForm" style="padding:1.25rem;max-width:420px">
       <div class="mb mb-err" id="pwdError" style="margin-bottom:.85rem"></div>
-      <div class="mb mb-ok" id="pwdSuccess" style="margin-bottom:.85rem">✅ Password changed successfully!</div>
+      <div class="mb mb-ok" id="pwdSuccess" style="margin-bottom:.85rem">Password changed successfully.</div>
       <div class="fg"><label class="fl">Current Password</label><input type="password" id="currentPassword" class="fc" required></div>
       <div class="fg"><label class="fl">New Password <span style="color:var(--gray-400);font-weight:400">(min 6 chars)</span></label><input type="password" id="newPassword" class="fc" required minlength="6"></div>
       <div class="fg"><label class="fl">Confirm New Password</label><input type="password" id="confirmPassword" class="fc" required></div>
-      <button type="submit" class="btn btn-p" id="changePwdBtn">🔒 Change Password</button>
+      <button type="submit" class="btn btn-p" id="changePwdBtn">Change Password</button>
     </form>
   </div>
 </div>
 
-</div></div><!-- /.container /.main-wrap -->
+</div></div>
 
 <!-- MODALS -->
-<div class="modal" id="blogModal"><div class="mbox" style="max-width:720px"><button class="mclose" onclick="closeModal('blogModal')">✕</button><h3 id="blogModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="blogModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.85rem"></p><div id="blogModalContent" style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:1rem;font-size:.88rem;max-height:160px;overflow-y:auto;line-height:1.7;color:var(--gray-700)"></div><label class="fl">Your Blog Post <span style="color:var(--gray-400);font-weight:400">(min 100 chars)</span></label><textarea id="blogWriteContent" class="fc" rows="9" placeholder="Write your blog post here…"></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin:.35rem 0 .85rem"><span id="blogCharCount" style="font-size:.75rem;color:var(--gray-400)">0 chars</span><span style="font-size:.75rem;color:var(--gray-400)">Min: 100</span></div><button id="blogSubmitBtn" class="btn btn-p wf">✅ Submit Blog Post</button></div></div>
+<div class="modal" id="blogModal"><div class="mbox" style="max-width:720px"><button class="mclose" onclick="closeModal('blogModal')">&#10005;</button><h3 id="blogModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="blogModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.85rem"></p><div id="blogModalContent" style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:1rem;font-size:.88rem;max-height:160px;overflow-y:auto;line-height:1.7;color:var(--gray-700)"></div><label class="fl">Your Blog Post <span style="color:var(--gray-400);font-weight:400">(min 100 chars)</span></label><textarea id="blogWriteContent" class="fc" rows="9" placeholder="Write your blog post here…"></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin:.35rem 0 .85rem"><span id="blogCharCount" style="font-size:.75rem;color:var(--gray-400)">0 chars</span><span style="font-size:.75rem;color:var(--gray-400)">Min: 100</span></div><button id="blogSubmitBtn" class="btn btn-p wf">Submit Blog Post</button></div></div>
 
-<div class="modal" id="surveyModal"><div class="mbox"><button class="mclose" onclick="closeModal('surveyModal')">✕</button><h3 id="surveyModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="surveyModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:1rem"></p><div id="surveyModalQuestions"></div><button id="surveySubmitBtn" class="btn btn-p wf" style="margin-top:1rem">✅ Submit Survey</button></div></div>
+<div class="modal" id="surveyModal"><div class="mbox"><button class="mclose" onclick="closeModal('surveyModal')">&#10005;</button><h3 id="surveyModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="surveyModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:1rem"></p><div id="surveyModalQuestions"></div><button id="surveySubmitBtn" class="btn btn-p wf" style="margin-top:1rem">Submit Survey</button></div></div>
 
-<div class="modal" id="writingModal"><div class="mbox"><button class="mclose" onclick="closeModal('writingModal')">✕</button><h3 id="writingModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="writingModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:1rem"><strong style="font-size:.82rem">Instructions:</strong><div id="writingModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div class="fg"><label class="fl">Upload Your Work <span style="font-weight:400;color:var(--gray-400)">(PDF or Word · Max 20MB)</span></label><input type="file" id="writingFileInput" class="fc" accept=".pdf,.doc,.docx"></div><button id="writingSubmitBtn" class="btn btn-p wf" style="margin-top:.5rem">📤 Submit Writing Job</button></div></div>
+<div class="modal" id="writingModal"><div class="mbox"><button class="mclose" onclick="closeModal('writingModal')">&#10005;</button><h3 id="writingModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="writingModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:1rem"><strong style="font-size:.82rem">Instructions:</strong><div id="writingModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div class="fg"><label class="fl">Upload Your Work <span style="font-weight:400;color:var(--gray-400)">(PDF or Word &middot; Max 20MB)</span></label><input type="file" id="writingFileInput" class="fc" accept=".pdf,.doc,.docx"></div><button id="writingSubmitBtn" class="btn btn-p wf" style="margin-top:.5rem">Submit Writing Job</button></div></div>
 
-<div class="modal" id="transcriptionModal"><div class="mbox" style="max-width:680px"><button class="mclose" onclick="closeModal('transcriptionModal')">✕</button><h3 id="transcriptionModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="transcriptionModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.85rem"><strong style="font-size:.82rem">Instructions:</strong><div id="transcriptionModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div style="margin-bottom:1rem"><strong style="font-size:.82rem">🎙️ Audio:</strong><audio id="transcriptionAudio" controls style="width:100%;margin-top:.5rem"></audio></div><div class="fg"><label class="fl">Your Transcription <span style="font-weight:400;color:var(--gray-400)">(min 20 chars)</span></label><textarea id="transcriptionText" class="fc" rows="7" placeholder="Type the transcription here…"></textarea><div style="font-size:.75rem;color:var(--gray-400);text-align:right;margin-top:.2rem" id="transcriptionCharCount">0 chars</div></div><button id="transcriptionSubmitBtn" class="btn btn-p wf">✅ Submit Transcription</button></div></div>
+<div class="modal" id="transcriptionModal"><div class="mbox" style="max-width:680px"><button class="mclose" onclick="closeModal('transcriptionModal')">&#10005;</button><h3 id="transcriptionModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="transcriptionModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.85rem"><strong style="font-size:.82rem">Instructions:</strong><div id="transcriptionModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div style="margin-bottom:1rem"><strong style="font-size:.82rem">Audio:</strong><audio id="transcriptionAudio" controls style="width:100%;margin-top:.5rem"></audio></div><div class="fg"><label class="fl">Your Transcription <span style="font-weight:400;color:var(--gray-400)">(min 20 chars)</span></label><textarea id="transcriptionText" class="fc" rows="7" placeholder="Type the transcription here…"></textarea><div style="font-size:.75rem;color:var(--gray-400);text-align:right;margin-top:.2rem" id="transcriptionCharCount">0 chars</div></div><button id="transcriptionSubmitBtn" class="btn btn-p wf">Submit Transcription</button></div></div>
 
-<div class="modal" id="dataentryModal"><div class="mbox"><button class="mclose" onclick="closeModal('dataentryModal')">✕</button><h3 id="dataentryModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="dataentryModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.85rem"><strong style="font-size:.82rem">Instructions:</strong><div id="dataentryModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div id="dataentryTemplateSection" style="display:none;margin-bottom:.85rem"><a id="dataentryTemplateLink" href="javascript:void(0)" onclick="smartDownload(this.dataset.url,this.dataset.pid,'template')" data-url="" data-pid="" class="btn btn-o btn-sm">📥 Download Template File</a></div><div class="fg"><label class="fl">Upload Completed File <span style="font-weight:400;color:var(--gray-400)">(PDF, Word, Excel, CSV · Max 20MB)</span></label><input type="file" id="dataentryFileInput" class="fc" accept=".pdf,.doc,.docx,.xlsx,.csv"></div><button id="dataentrySubmitBtn" class="btn btn-p wf" style="margin-top:.5rem">📤 Submit Data Entry</button></div></div>
+<div class="modal" id="dataentryModal"><div class="mbox"><button class="mclose" onclick="closeModal('dataentryModal')">&#10005;</button><h3 id="dataentryModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="dataentryModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.85rem"><strong style="font-size:.82rem">Instructions:</strong><div id="dataentryModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div id="dataentryTemplateSection" style="display:none;margin-bottom:.85rem"><a id="dataentryTemplateLink" href="javascript:void(0)" onclick="smartDownload(this.dataset.url,this.dataset.pid,'template')" data-url="" data-pid="" class="btn btn-o btn-sm">Download Template File</a></div><div class="fg"><label class="fl">Upload Completed File <span style="font-weight:400;color:var(--gray-400)">(PDF, Word, Excel, CSV &middot; Max 20MB)</span></label><input type="file" id="dataentryFileInput" class="fc" accept=".pdf,.doc,.docx,.xlsx,.csv"></div><button id="dataentrySubmitBtn" class="btn btn-p wf" style="margin-top:.5rem">Submit Data Entry</button></div></div>
 
 <div id="_toast"></div>
 
 <script>
-// AUTH GUARD
 const _token=localStorage.getItem('token');
 const _user=(()=>{try{return JSON.parse(localStorage.getItem('user')||'null');}catch(e){return null;}})();
 if(!_token||!_user)window.location.href='/index.html';
 if(_user&&_user.isAdmin)window.location.href='/admin.html';
 
-let currentUser=null,_activeBlogId=null,_activeSurveyId=null,_activeWritingId=null,_activeTranscriptionId=null,_activeDataentryId=null,_notifOpen=false;
+let currentUser=null,_isActive=false,_activeBlogId=null,_activeSurveyId=null,_activeWritingId=null,_activeTranscriptionId=null,_activeDataentryId=null,_notifOpen=false;
 
-// HELPERS
 async function apiFetch(url,opts={}){
   const ctrl=new AbortController(),t=setTimeout(()=>ctrl.abort(),25000);
   try{
@@ -473,11 +523,13 @@ function showMsg(id,txt,ok){
   setTimeout(()=>{el.style.display='none';},6000);
 }
 function setLS(id,msg='Loading…'){const el=document.getElementById(id);if(el)el.innerHTML=`<div class="ls"><div class="spin"></div><p style="margin-top:.75rem">${msg}</p></div>`;}
-function setErr(id,msg,fn){const el=document.getElementById(id);if(el)el.innerHTML=`<div style="background:var(--rl);border:1px solid #fca5a5;border-radius:.5rem;padding:1rem;color:#b91c1c;font-size:.83rem;grid-column:1/-1">⚠️ ${msg}${fn?` <button onclick="${fn}()" style="margin-left:.5rem;background:#b91c1c;color:#fff;border:none;padding:.2rem .6rem;border-radius:.3rem;cursor:pointer;font-size:.78rem">Retry</button>`:''}` +'</div>';}
+function setErr(id,msg,fn){const el=document.getElementById(id);if(el)el.innerHTML=`<div style="background:var(--rl);border:1px solid #fca5a5;border-radius:.5rem;padding:1rem;color:#b91c1c;font-size:.83rem;grid-column:1/-1">Error: ${msg}${fn?` <button onclick="${fn}()" style="margin-left:.5rem;background:#b91c1c;color:#fff;border:none;padding:.2rem .6rem;border-radius:.3rem;cursor:pointer;font-size:.78rem">Retry</button>`:''}` +'</div>';}
 function getEATDay(){return new Date(new Date().getTime()+3*3600000).getUTCDay();}
 const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
-// ROUTING
+// Check if user is active — used to gate task submission and referral link
+function isActiveUser(){return _isActive;}
+
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const el=document.getElementById('pg-'+name);if(el)el.classList.add('active');
@@ -512,17 +564,17 @@ async function loadActivationPage(){
   document.getElementById('pg-activation').classList.add('active');
   try{
     const data=await apiFetch('/api/users/profile');const user=data.user;
-    if(user.packageType!=='not_active'){showPage('dashboard');return;}
+    if(user.packageType!=='not_active'){_isActive=true;showPage('dashboard');return;}
     document.getElementById('activationBalance').textContent='KES '+(user.primaryWallet?.balance||0);
     try{const cd=await apiFetch('/api/referrals/chain');const f=cd.chain?.[0];if(f){document.getElementById('uplineName').textContent=f.username||'Your referrer';document.getElementById('uplinePhone').textContent=f.phone||'';document.getElementById('uplineEmail').textContent=f.email||'';}else document.getElementById('uplineName').textContent='Contact admin';}catch(e){document.getElementById('uplineName').textContent='Contact your referrer';}
   }catch(err){if(err.message.includes('Session'))logout();}
 }
 async function doActivation(){
   const m=document.getElementById('activationMsg');
-  if(!confirm('Deduct KES 700 to activate?'))return;
+  if(!confirm('Deduct KES 700 from your wallet to activate?'))return;
   m.style.display='block';m.style.color='var(--gray-500)';m.textContent='Activating…';
-  try{const d=await apiFetch('/api/auth/activate-package',{method:'POST'});m.style.color='var(--g)';m.textContent='✅ '+d.message;const p=await apiFetch('/api/users/profile');localStorage.setItem('user',JSON.stringify(p.user));setTimeout(()=>showPage('dashboard'),1500);}
-  catch(err){m.style.color='var(--r)';m.textContent='❌ '+err.message;loadActivationPage();}
+  try{const d=await apiFetch('/api/auth/activate-package',{method:'POST'});m.style.color='var(--g)';m.textContent=d.message;const p=await apiFetch('/api/users/profile');localStorage.setItem('user',JSON.stringify(p.user));_isActive=true;setTimeout(()=>showPage('dashboard'),1500);}
+  catch(err){m.style.color='var(--r)';m.textContent=err.message;loadActivationPage();}
 }
 
 // DASHBOARD
@@ -530,87 +582,232 @@ async function loadDashboard(){
   try{
     const data=await apiFetch('/api/users/dashboard');currentUser=data;
     localStorage.setItem('user',JSON.stringify({id:data.profile.id,username:data.profile.username,packageType:data.profile.packageType,isAdmin:false}));
-    if(data.profile.packageType==='not_active'){loadActivationPage();return;}
+    _isActive=data.profile.packageType!=='not_active';
+    if(!_isActive){
+      // Inactive: show dashboard but with banner and locked tasks
+      document.getElementById('dashInactiveBanner').style.display='block';
+      document.getElementById('pg-dashboard').classList.add('active');
+      // Lock task boxes visually
+      document.querySelectorAll('#dashTaskBoxes .tbox').forEach(b=>b.classList.add('locked'));
+    } else {
+      document.getElementById('dashInactiveBanner').style.display='none';
+      document.querySelectorAll('#dashTaskBoxes .tbox').forEach(b=>b.classList.remove('locked'));
+    }
     document.getElementById('dashUsername').textContent=data.profile.username;
     document.getElementById('dashMainWallet').textContent='KES '+data.wallets.primary.balance;
-    document.getElementById('navWallet').textContent='KES '+data.wallets.primary.balance;
-    document.getElementById('dashPoints').textContent=data.wallets.points.points+' pts';
-    document.getElementById('dashActiveReferrals').textContent=data.stats.activeDirectReferrals;
-    document.getElementById('dashTotalEarnings').textContent='KES '+data.stats.totalEarnings;
-    document.getElementById('dashPackageStatus').textContent='✅ Active Member';
-    document.getElementById('activationAlert').style.display='none';
-    document.getElementById('tbBlogsLeft').textContent=data.dailyProgress.blogsLeft+' left today';
-    document.getElementById('tbSurveysLeft').textContent=data.dailyProgress.surveysLeft+' left today';
-    if(data.wallets.points.canConvert){document.getElementById('pointsConversionCard').style.display='block';document.getElementById('currentPoints').textContent=data.wallets.points.points;document.getElementById('pointsKES').textContent='KES '+data.wallets.points.kesEquivalent;}
+    document.getElementById('navWallet').textContent='KES '+(data.wallets.primary.balance||0);
+    document.getElementById('dashPoints').textContent=(data.wallets.points.points||0)+' pts';
+    document.getElementById('dashActiveReferrals').textContent=data.stats.activeDirectReferrals||0;
+    document.getElementById('dashTotalEarnings').textContent='KES '+(data.stats.totalEarnings||0);
+    document.getElementById('dashPackageStatus').textContent=_isActive?'Active Member':'Account not activated — see banner below';
+    document.getElementById('tbBlogsLeft').textContent=(data.dailyProgress?.blogsLeft??'—')+(_isActive?' slots left':'');
+    document.getElementById('tbSurveysLeft').textContent=(data.dailyProgress?.surveysLeft??'—')+(_isActive?' slots left':'');
+    if(data.wallets.points.canConvert&&_isActive){document.getElementById('pointsConversionCard').style.display='block';document.getElementById('currentPoints').textContent=data.wallets.points.points;document.getElementById('pointsKES').textContent='KES '+data.wallets.points.kesEquivalent;}
     loadDashboardReferrals();loadInactiveReferrals();
   }catch(err){if(err.message.includes('Session')||err.message.includes('token'))logout();}
 }
+document.getElementById('activateBtn').addEventListener('click',async()=>{
+  if(!confirm('Deduct KES 700 to activate?'))return;
+  const b=document.getElementById('activateBtn');b.disabled=true;b.textContent='Activating…';
+  try{const d=await apiFetch('/api/auth/activate-package',{method:'POST'});toast(d.message);_isActive=true;loadDashboard();}
+  catch(err){toast(err.message,false);}
+  finally{b.disabled=false;b.textContent='Activate Account — KES 700';}
+});
+document.getElementById('convertPointsBtn')?.addEventListener('click',async()=>{
+  if(!confirm('Convert all eligible points?'))return;
+  const b=document.getElementById('convertPointsBtn');b.disabled=true;b.textContent='Converting…';
+  try{const d=await apiFetch('/api/wallets/convert-points',{method:'POST'});toast(d.message);loadDashboard();}
+  catch(err){toast(err.message,false);}
+  finally{b.disabled=false;b.textContent='Convert Now';}
+});
 async function loadDashboardReferrals(){
-  try{const s=await apiFetch('/api/referrals/stats');['1','2','3','4'].forEach(l=>{const c=s.levels['level'+l];const t=c?.count||0,a=c?.active||0;document.getElementById('dashRef'+l).textContent=t;document.getElementById('dashRef'+l+'s').textContent=a+' active';});document.getElementById('dashTotalCommission').textContent='KES '+(s.summary?.totalCommission||0);}catch(e){}
+  try{
+    const s=await apiFetch('/api/referrals/stats');
+    let totalInactive=0;
+    ['1','2','3','4'].forEach(l=>{const c=s.levels['level'+l];const t=c?.count||0,a=c?.active||0;document.getElementById('dashRef'+l).textContent=t;document.getElementById('dashRef'+l+'s').textContent=a+' active';totalInactive+=t-a;});
+    document.getElementById('dashTotalCommission').textContent='KES '+(s.summary?.totalCommission||0);
+    document.getElementById('dashInactiveReferrals').textContent=totalInactive+' inactive';
+  }catch(e){}
 }
 async function loadInactiveReferrals(){
-  try{const data=await apiFetch('/api/users/inactive-referrals');const sec=document.getElementById('inactiveReferralsSection');if(!data.inactiveReferrals.length){sec.style.display='none';return;}sec.style.display='block';document.getElementById('inactiveReferralsList').innerHTML=data.inactiveReferrals.map(u=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid #fde68a;flex-wrap:wrap;gap:.3rem"><div><strong style="font-size:.88rem">${u.name}</strong> <span style="font-size:.78rem;color:#92400e">${u.email} · ${u.phone}</span></div><span class="bdg by">Joined ${u.daysSinceJoined}d ago</span></div>`).join('');}catch(e){}
+  try{
+    const data=await apiFetch('/api/users/inactive-referrals');
+    const sec=document.getElementById('inactiveReferralsSection');
+    const tbody=document.getElementById('inactiveReferralsList');
+    if(!data.inactiveReferrals?.length){sec.style.display='none';return;}
+    sec.style.display='block';
+    tbody.innerHTML=data.inactiveReferrals.map((u,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${u.name||u.username||'—'}</td><td style="font-family:'DM Mono',monospace">${u.phone||'—'}</td><td>${new Date(u.createdAt||Date.now()).toLocaleDateString()}</td><td><span class="bdg by">Inactive</span></td></tr>`).join('');
+  }catch(e){}
 }
-document.getElementById('activateBtn').addEventListener('click',async()=>{if(!confirm('Deduct KES 700?'))return;const b=document.getElementById('activateBtn');b.disabled=true;b.textContent='Activating…';try{const d=await apiFetch('/api/auth/activate-package',{method:'POST'});toast('✅ '+d.message);loadDashboard();}catch(err){toast('❌ '+err.message,false);}finally{b.disabled=false;b.textContent='🚀 Activate (KES 700)';}});
-document.getElementById('convertPointsBtn')?.addEventListener('click',async()=>{if(!confirm('Convert all eligible points?'))return;const b=document.getElementById('convertPointsBtn');b.disabled=true;b.textContent='Converting…';try{const d=await apiFetch('/api/wallets/convert-points',{method:'POST'});toast('✅ '+d.message);loadDashboard();}catch(err){toast('❌ '+err.message,false);}finally{b.disabled=false;b.textContent='Convert Now';}});
 
-// TASK CARD
+// TASK CARD — inactive users see the card but the action button is replaced with a locked notice
 function renderTaskCard(item,type,userStatus){
   const sub=item.currentBidders||item.currentWorkers||0,appr=item.approvedCount||0,pend=item.pendingCount||0;
   const isOpen=!item.status||item.status==='open';
-  const dl=item.deadline?`<span style="font-size:.72rem;color:#b45309;background:var(--ym);padding:.1rem .45rem;border-radius:999px">⏰ ${new Date(item.deadline).toLocaleDateString()}</span>`:'';
-  const tpl=item.templateUrl?`<span style="font-size:.72rem"><a href="javascript:void(0)" onclick="smartDownload('${item.templateUrl}','${item.templatePublicId||''}','${(item.title||'template').replace(/'/g,'')}_template')" style="color:var(--g);font-weight:600">📥 Template</a></span>`:'';
+  const max=item.maxBidders||item.maxWorkers||null;
+  const slots=max?max-sub:null;
+  const dl=item.deadline?`<span style="font-size:.72rem;color:#b45309;background:var(--ym);padding:.1rem .45rem;border-radius:999px">Deadline: ${new Date(item.deadline).toLocaleDateString()}</span>`:'';
+  const tpl=item.templateUrl?`<span style="font-size:.72rem"><a href="javascript:void(0)" onclick="smartDownload('${item.templateUrl}','${item.templatePublicId||''}','${(item.title||'template').replace(/'/g,'')}_template')" style="color:var(--g);font-weight:600">Download Template</a></span>`:'';
   const fns={blogs:`openBlogModal('${item.id}')`,surveys:`openSurveyModal('${item.id}')`,writing:`openWritingModal('${item.id}')`,transcription:`openTranscriptionModal('${item.id}')`,dataentry:`openDataentryModal('${item.id}')`};
-  const lbls={blogs:'✍️ Write',surveys:'📋 Survey',writing:'📤 Submit',transcription:'🎙️ Transcribe',dataentry:'📋 Submit'};
-  const slots=(item.maxBidders||item.maxWorkers||999)-sub;
+  const lbls={blogs:'Write',surveys:'Start Survey',writing:'Submit',transcription:'Transcribe',dataentry:'Submit'};
   let ab='';
-  if(userStatus)ab=`<span class="bdg bb" style="font-size:.72rem">Your status: ${userStatus}</span>`;
-  else if(!isOpen)ab=`<span class="bdg bgr">Closed</span>`;
-  else if(slots<=0)ab=`<span class="bdg br">Slots Full</span>`;
-  else ab=`<button onclick="${fns[type]}" class="btn btn-p btn-sm">${lbls[type]}</button>`;
-  return `<div class="card" style="border-top:3px solid var(--g);transition:.15s" onmouseover="this.style.boxShadow='var(--shm)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='var(--sh)';this.style.transform='none'"><div style="padding:1rem"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.35rem"><h4 style="font-size:.9rem;font-weight:800;color:var(--gray-900);line-height:1.3;margin:0">${item.title}</h4><div style="display:flex;gap:.3rem;align-items:center;flex-shrink:0"><span class="bdg ${isOpen?'bg':'bgr'}">${item.status||'open'}</span><span style="background:var(--gl);color:var(--g);padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:800;border:1px solid var(--gm)">⭐${item.reward||0}pts</span></div></div><p style="color:var(--gray-500);font-size:.78rem;margin:0 0 .35rem;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${item.description||''}</p><div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.35rem">${dl}${tpl}</div>${item.audioUrl?`<audio src="${item.audioUrl}" controls style="width:100%;height:28px;margin:.3rem 0"></audio>`:''}<div style="display:flex;gap:1rem;padding:.4rem 0;margin:.25rem 0;border-top:1px solid var(--gray-100)"><div><span style="font-weight:800;font-size:.85rem;color:var(--b)">📝${sub}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">submitted</span></div><div><span style="font-weight:800;font-size:.85rem;color:var(--g)">✅${appr}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">approved</span></div><div><span style="font-weight:800;font-size:.85rem;color:var(--y)">⏳${pend}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">pending</span></div><div style="margin-left:auto"><span style="font-size:.7rem;color:var(--gray-400)">${sub}/${item.maxBidders||item.maxWorkers||'∞'}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">slots</span></div></div><div style="display:flex;justify-content:flex-end">${ab}</div></div></div>`;
+  if(!_isActive){
+    ab=`<span class="bdg by" style="font-size:.72rem">Activate to submit</span>`;
+  } else if(userStatus){
+    ab=`<span class="bdg bb" style="font-size:.72rem">Your status: ${userStatus}</span>`;
+  } else if(!isOpen){
+    ab=`<span class="bdg bgr">Closed</span>`;
+  } else if(slots!==null&&slots<=0){
+    ab=`<span class="bdg br">Slots Full</span>`;
+  } else {
+    ab=`<button onclick="${fns[type]}" class="btn btn-p btn-sm">${lbls[type]}</button>`;
+  }
+  const slotsText=max?`${sub}/${max}`:'open';
+  return `<div class="card" style="border-top:3px solid var(--g);transition:.15s" onmouseover="this.style.boxShadow='var(--shm)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='var(--sh)';this.style.transform='none'"><div style="padding:1rem"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.35rem"><h4 style="font-size:.9rem;font-weight:800;color:var(--gray-900);line-height:1.3;margin:0">${item.title}</h4><div style="display:flex;gap:.3rem;align-items:center;flex-shrink:0"><span class="bdg ${isOpen?'bg':'bgr'}">${item.status||'open'}</span><span style="background:var(--gl);color:var(--g);padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:800;border:1px solid var(--gm)">${item.reward||0} pts</span></div></div><p style="color:var(--gray-500);font-size:.78rem;margin:0 0 .35rem;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${item.description||''}</p><div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.35rem">${dl}${tpl}</div>${item.audioUrl?`<audio src="${item.audioUrl}" controls style="width:100%;height:28px;margin:.3rem 0"></audio>`:''}<div style="display:flex;gap:1rem;padding:.4rem 0;margin:.25rem 0;border-top:1px solid var(--gray-100)"><div><span style="font-weight:800;font-size:.85rem;color:var(--b)">${sub}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">submitted</span></div><div><span style="font-weight:800;font-size:.85rem;color:var(--g)">${appr}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">approved</span></div><div><span style="font-weight:800;font-size:.85rem;color:var(--y)">${pend}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">pending</span></div><div style="margin-left:auto"><span style="font-size:.7rem;color:var(--gray-400)">${slotsText}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">slots</span></div></div><div style="display:flex;justify-content:flex-end">${ab}</div></div></div>`;
 }
 
 // BLOGS
-async function loadBlogs(){setLS('blogsList','Loading blog opportunities…');try{const[dd,bd]=await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null),apiFetch('/api/blogs')]);if(dd)document.getElementById('blogsDaily').textContent=`📅 Today: ${dd.dailyProgress.blogsLeft}/2 remaining · ⭐ Each = 100 points`;const l=document.getElementById('blogsList');if(!bd.blogs.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No blog opportunities right now.</p>';return;}l.innerHTML=bd.blogs.map(b=>renderTaskCard(b,'blogs',b.userBidStatus)).join('');}catch(err){setErr('blogsList',err.message,'loadBlogs');}}
-async function openBlogModal(id){try{const d=await apiFetch(`/api/blogs/${id}`);const b=d.blog;_activeBlogId=id;document.getElementById('blogModalTitle').textContent=b.title;document.getElementById('blogModalDesc').textContent=b.description;document.getElementById('blogModalContent').innerHTML=b.content.replace(/\n/g,'<br>');document.getElementById('blogWriteContent').value='';document.getElementById('blogCharCount').textContent='0 chars';openModal('blogModal');}catch(err){toast('Error: '+err.message,false);}}
+async function loadBlogs(){
+  const locked=document.getElementById('blogsLocked');
+  const info=document.getElementById('blogsInfo');
+  if(!_isActive){locked.style.display='block';}else{locked.style.display='none';}
+  setLS('blogsList','Loading blog opportunities…');
+  try{
+    const[dd,bd]=await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null),apiFetch('/api/blogs')]);
+    if(dd){
+      const left=dd.dailyProgress?.blogsLeft??'—';
+      info.textContent=`Available slots today: ${left}`;
+    }
+    const l=document.getElementById('blogsList');
+    if(!bd.blogs?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No blog opportunities right now.</p>';return;}
+    l.innerHTML=bd.blogs.map(b=>renderTaskCard(b,'blogs',b.userBidStatus)).join('');
+  }catch(err){setErr('blogsList',err.message,'loadBlogs');}
+}
+async function openBlogModal(id){
+  if(!_isActive){toast('Activate your account to submit tasks.',false);return;}
+  try{const d=await apiFetch(`/api/blogs/${id}`);const b=d.blog;_activeBlogId=id;document.getElementById('blogModalTitle').textContent=b.title;document.getElementById('blogModalDesc').textContent=b.description;document.getElementById('blogModalContent').innerHTML=b.content.replace(/\n/g,'<br>');document.getElementById('blogWriteContent').value='';document.getElementById('blogCharCount').textContent='0 chars';openModal('blogModal');}catch(err){toast('Error: '+err.message,false);}
+}
 document.getElementById('blogWriteContent').addEventListener('input',function(){document.getElementById('blogCharCount').textContent=this.value.length+' chars';});
-document.getElementById('blogSubmitBtn').addEventListener('click',async()=>{if(!_activeBlogId)return;const c=document.getElementById('blogWriteContent').value.trim();if(c.length<100){toast('Min 100 chars required.',false);return;}const b=document.getElementById('blogSubmitBtn');b.disabled=true;b.textContent='Submitting…';try{await apiFetch(`/api/blogs/${_activeBlogId}/submit`,{method:'POST',body:JSON.stringify({submissionContent:c})});toast('✅ Blog submitted!');closeModal('blogModal');loadBlogs();}catch(err){toast('❌ '+err.message,false);}finally{b.disabled=false;b.textContent='✅ Submit Blog Post';}});
+document.getElementById('blogSubmitBtn').addEventListener('click',async()=>{
+  if(!_activeBlogId)return;
+  const c=document.getElementById('blogWriteContent').value.trim();
+  if(c.length<100){toast('Minimum 100 characters required.',false);return;}
+  const b=document.getElementById('blogSubmitBtn');b.disabled=true;b.textContent='Submitting…';
+  try{await apiFetch(`/api/blogs/${_activeBlogId}/submit`,{method:'POST',body:JSON.stringify({submissionContent:c})});toast('Blog submitted successfully.');closeModal('blogModal');loadBlogs();}
+  catch(err){toast(err.message,false);}
+  finally{b.disabled=false;b.textContent='Submit Blog Post';}
+});
 
 // SURVEYS
-async function loadSurveys(){setLS('surveysList','Loading surveys…');try{const[dd,sd]=await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null),apiFetch('/api/surveys')]);if(dd)document.getElementById('surveysDaily').textContent=`📅 Today: ${dd.dailyProgress.surveysLeft}/2 remaining · ⭐ Each = 100 points`;const l=document.getElementById('surveysList');if(!sd.surveys.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No surveys right now.</p>';return;}l.innerHTML=sd.surveys.map(s=>renderTaskCard(s,'surveys',s.userBidStatus)).join('');}catch(err){setErr('surveysList',err.message,'loadSurveys');}}
-async function openSurveyModal(id){try{const d=await apiFetch(`/api/surveys/${id}`);const s=d.survey;if(s.alreadySubmitted){toast('Already submitted.',false);return;}_activeSurveyId=id;document.getElementById('surveyModalTitle').textContent=s.title;document.getElementById('surveyModalDesc').textContent=s.description;document.getElementById('surveyModalQuestions').innerHTML=s.questions.map((q,i)=>`<div style="margin-bottom:1.1rem"><label style="font-weight:700;display:block;margin-bottom:.4rem;font-size:.88rem">${i+1}. ${q.question}${q.required?'<span style="color:var(--r)"> *</span>':''}</label>${q.type==='multiple_choice'?q.options.map(o=>`<label style="display:flex;align-items:center;gap:.4rem;margin-bottom:.25rem;cursor:pointer;font-size:.85rem"><input type="radio" name="q${i}" value="${o}" ${q.required?'required':''}> ${o}</label>`).join(''):q.type==='yes_no'?`<label style="margin-right:1.25rem;font-size:.85rem;cursor:pointer"><input type="radio" name="q${i}" value="Yes" required> Yes</label><label style="font-size:.85rem;cursor:pointer"><input type="radio" name="q${i}" value="No" required> No</label>`:q.type==='rating'?`<div style="display:flex;gap:.5rem">${[1,2,3,4,5].map(n=>`<label style="text-align:center;cursor:pointer;font-size:.85rem"><input type="radio" name="q${i}" value="${n}" style="display:block;margin:0 auto .2rem"> ${n}</label>`).join('')}</div>`:`<textarea name="q${i}" class="fc" rows="2" ${q.required?'required':''}></textarea>`}</div>`).join('');openModal('surveyModal');}catch(err){toast('Error: '+err.message,false);}}
-document.getElementById('surveySubmitBtn').addEventListener('click',async()=>{if(!_activeSurveyId)return;const r=[];let i=0;while(true){const rd=document.querySelector(`input[name="q${i}"]:checked`),ta=document.querySelector(`textarea[name="q${i}"]`);if(!rd&&!ta)break;r.push(rd?rd.value:(ta?ta.value.trim():''));i++;}if(!r.length){toast('Answer at least one question.',false);return;}const b=document.getElementById('surveySubmitBtn');b.disabled=true;b.textContent='Submitting…';try{await apiFetch(`/api/surveys/${_activeSurveyId}/submit`,{method:'POST',body:JSON.stringify({responses:r})});toast('✅ Survey submitted!');closeModal('surveyModal');loadSurveys();}catch(err){toast('❌ '+err.message,false);}finally{b.disabled=false;b.textContent='✅ Submit Survey';}});
+async function loadSurveys(){
+  const locked=document.getElementById('surveysLocked');
+  const info=document.getElementById('surveysInfo');
+  if(!_isActive){locked.style.display='block';}else{locked.style.display='none';}
+  setLS('surveysList','Loading surveys…');
+  try{
+    const[dd,sd]=await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null),apiFetch('/api/surveys')]);
+    if(dd){
+      const left=dd.dailyProgress?.surveysLeft??'—';
+      info.textContent=`Available slots today: ${left}`;
+    }
+    const l=document.getElementById('surveysList');
+    if(!sd.surveys?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No surveys right now.</p>';return;}
+    l.innerHTML=sd.surveys.map(s=>renderTaskCard(s,'surveys',s.userBidStatus)).join('');
+  }catch(err){setErr('surveysList',err.message,'loadSurveys');}
+}
+async function openSurveyModal(id){
+  if(!_isActive){toast('Activate your account to submit tasks.',false);return;}
+  try{const d=await apiFetch(`/api/surveys/${id}`);const s=d.survey;if(s.alreadySubmitted){toast('Already submitted.',false);return;}_activeSurveyId=id;document.getElementById('surveyModalTitle').textContent=s.title;document.getElementById('surveyModalDesc').textContent=s.description;document.getElementById('surveyModalQuestions').innerHTML=s.questions.map((q,i)=>`<div style="margin-bottom:1.1rem"><label style="font-weight:700;display:block;margin-bottom:.4rem;font-size:.88rem">${i+1}. ${q.question}${q.required?'<span style="color:var(--r)"> *</span>':''}</label>${q.type==='multiple_choice'?q.options.map(o=>`<label style="display:flex;align-items:center;gap:.4rem;margin-bottom:.25rem;cursor:pointer;font-size:.85rem"><input type="radio" name="q${i}" value="${o}" ${q.required?'required':''}> ${o}</label>`).join(''):q.type==='yes_no'?`<label style="margin-right:1.25rem;font-size:.85rem;cursor:pointer"><input type="radio" name="q${i}" value="Yes" required> Yes</label><label style="font-size:.85rem;cursor:pointer"><input type="radio" name="q${i}" value="No" required> No</label>`:q.type==='rating'?`<div style="display:flex;gap:.5rem">${[1,2,3,4,5].map(n=>`<label style="text-align:center;cursor:pointer;font-size:.85rem"><input type="radio" name="q${i}" value="${n}" style="display:block;margin:0 auto .2rem"> ${n}</label>`).join('')}</div>`:`<textarea name="q${i}" class="fc" rows="2" ${q.required?'required':''}></textarea>`}</div>`).join('');openModal('surveyModal');}catch(err){toast('Error: '+err.message,false);}
+}
+document.getElementById('surveySubmitBtn').addEventListener('click',async()=>{
+  if(!_activeSurveyId)return;
+  const r=[];let i=0;
+  while(true){const rd=document.querySelector(`input[name="q${i}"]:checked`),ta=document.querySelector(`textarea[name="q${i}"]`);if(!rd&&!ta)break;r.push(rd?rd.value:(ta?ta.value.trim():''));i++;}
+  if(!r.length){toast('Answer at least one question.',false);return;}
+  const b=document.getElementById('surveySubmitBtn');b.disabled=true;b.textContent='Submitting…';
+  try{await apiFetch(`/api/surveys/${_activeSurveyId}/submit`,{method:'POST',body:JSON.stringify({responses:r})});toast('Survey submitted.');closeModal('surveyModal');loadSurveys();}
+  catch(err){toast(err.message,false);}
+  finally{b.disabled=false;b.textContent='Submit Survey';}
+});
 
 // WRITING
-async function loadWriting(){setLS('writingList','Loading writing jobs…');try{const d=await apiFetch('/api/writing');const l=document.getElementById('writingList');if(!d.jobs.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No writing jobs right now.</p>';return;}l.innerHTML=d.jobs.map(j=>renderTaskCard(j,'writing',j.userSubmission?('Status: '+j.userSubmission.status+(j.userSubmission.reviewNotes?' — '+j.userSubmission.reviewNotes:'')):null)).join('');}catch(err){setErr('writingList',err.message,'loadWriting');}}
-async function openWritingModal(id){try{const d=await apiFetch(`/api/writing/${id}`);const j=d.job;_activeWritingId=id;document.getElementById('writingModalTitle').textContent=j.title;document.getElementById('writingModalDesc').textContent=j.description;document.getElementById('writingModalInstructions').textContent=j.instructions;document.getElementById('writingFileInput').value='';openModal('writingModal');}catch(err){toast('Error: '+err.message,false);}}
-document.getElementById('writingSubmitBtn').addEventListener('click',async()=>{if(!_activeWritingId)return;const f=document.getElementById('writingFileInput').files[0];if(!f){toast('Select a file.',false);return;}const b=document.getElementById('writingSubmitBtn');b.disabled=true;b.textContent='Uploading…';try{const fd=new FormData();fd.append('file',f);const d=await apiFetch(`/api/writing/${_activeWritingId}/submit`,{method:'POST',body:fd});toast('✅ '+d.message);closeModal('writingModal');loadWriting();}catch(err){toast('❌ '+err.message,false);}finally{b.disabled=false;b.textContent='📤 Submit Writing Job';}});
+async function loadWriting(){
+  document.getElementById('writingLocked').style.display=_isActive?'none':'block';
+  setLS('writingList','Loading writing jobs…');
+  try{const d=await apiFetch('/api/writing');const l=document.getElementById('writingList');if(!d.jobs?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No writing jobs right now.</p>';return;}l.innerHTML=d.jobs.map(j=>renderTaskCard(j,'writing',j.userSubmission?('Status: '+j.userSubmission.status+(j.userSubmission.reviewNotes?' — '+j.userSubmission.reviewNotes:'')):null)).join('');}catch(err){setErr('writingList',err.message,'loadWriting');}
+}
+async function openWritingModal(id){
+  if(!_isActive){toast('Activate your account to submit tasks.',false);return;}
+  try{const d=await apiFetch(`/api/writing/${id}`);const j=d.job;_activeWritingId=id;document.getElementById('writingModalTitle').textContent=j.title;document.getElementById('writingModalDesc').textContent=j.description;document.getElementById('writingModalInstructions').textContent=j.instructions;document.getElementById('writingFileInput').value='';openModal('writingModal');}catch(err){toast('Error: '+err.message,false);}
+}
+document.getElementById('writingSubmitBtn').addEventListener('click',async()=>{
+  if(!_activeWritingId)return;
+  const f=document.getElementById('writingFileInput').files[0];if(!f){toast('Select a file.',false);return;}
+  const b=document.getElementById('writingSubmitBtn');b.disabled=true;b.textContent='Uploading…';
+  try{const fd=new FormData();fd.append('file',f);const d=await apiFetch(`/api/writing/${_activeWritingId}/submit`,{method:'POST',body:fd});toast(d.message);closeModal('writingModal');loadWriting();}
+  catch(err){toast(err.message,false);}
+  finally{b.disabled=false;b.textContent='Submit Writing Job';}
+});
 
 // TRANSCRIPTION
-async function loadTranscription(){setLS('transcriptionList','Loading transcription jobs…');try{const d=await apiFetch('/api/transcriptions');const l=document.getElementById('transcriptionList');if(!d.jobs.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No transcription jobs right now.</p>';return;}l.innerHTML=d.jobs.map(j=>renderTaskCard(j,'transcription',j.userSubmission?('Status: '+j.userSubmission.status):null)).join('');}catch(err){setErr('transcriptionList',err.message,'loadTranscription');}}
-async function openTranscriptionModal(id){try{const d=await apiFetch(`/api/transcriptions/${id}`);const j=d.job;_activeTranscriptionId=id;document.getElementById('transcriptionModalTitle').textContent=j.title;document.getElementById('transcriptionModalDesc').textContent=j.description;document.getElementById('transcriptionModalInstructions').textContent=j.instructions;document.getElementById('transcriptionAudio').src=j.audioUrl;document.getElementById('transcriptionText').value='';document.getElementById('transcriptionCharCount').textContent='0 chars';openModal('transcriptionModal');}catch(err){toast('Error: '+err.message,false);}}
+async function loadTranscription(){
+  document.getElementById('transcriptionLocked').style.display=_isActive?'none':'block';
+  setLS('transcriptionList','Loading transcription jobs…');
+  try{const d=await apiFetch('/api/transcriptions');const l=document.getElementById('transcriptionList');if(!d.jobs?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No transcription jobs right now.</p>';return;}l.innerHTML=d.jobs.map(j=>renderTaskCard(j,'transcription',j.userSubmission?('Status: '+j.userSubmission.status):null)).join('');}catch(err){setErr('transcriptionList',err.message,'loadTranscription');}
+}
+async function openTranscriptionModal(id){
+  if(!_isActive){toast('Activate your account to submit tasks.',false);return;}
+  try{const d=await apiFetch(`/api/transcriptions/${id}`);const j=d.job;_activeTranscriptionId=id;document.getElementById('transcriptionModalTitle').textContent=j.title;document.getElementById('transcriptionModalDesc').textContent=j.description;document.getElementById('transcriptionModalInstructions').textContent=j.instructions;document.getElementById('transcriptionAudio').src=j.audioUrl;document.getElementById('transcriptionText').value='';document.getElementById('transcriptionCharCount').textContent='0 chars';openModal('transcriptionModal');}catch(err){toast('Error: '+err.message,false);}
+}
 document.getElementById('transcriptionText').addEventListener('input',function(){document.getElementById('transcriptionCharCount').textContent=this.value.length+' chars';});
-document.getElementById('transcriptionSubmitBtn').addEventListener('click',async()=>{if(!_activeTranscriptionId)return;const c=document.getElementById('transcriptionText').value.trim();if(c.length<20){toast('Min 20 chars.',false);return;}const b=document.getElementById('transcriptionSubmitBtn');b.disabled=true;b.textContent='Submitting…';try{await apiFetch(`/api/transcriptions/${_activeTranscriptionId}/submit`,{method:'POST',body:JSON.stringify({content:c})});toast('✅ Submitted!');closeModal('transcriptionModal');loadTranscription();}catch(err){toast('❌ '+err.message,false);}finally{b.disabled=false;b.textContent='✅ Submit Transcription';}});
+document.getElementById('transcriptionSubmitBtn').addEventListener('click',async()=>{
+  if(!_activeTranscriptionId)return;
+  const c=document.getElementById('transcriptionText').value.trim();if(c.length<20){toast('Minimum 20 characters.',false);return;}
+  const b=document.getElementById('transcriptionSubmitBtn');b.disabled=true;b.textContent='Submitting…';
+  try{await apiFetch(`/api/transcriptions/${_activeTranscriptionId}/submit`,{method:'POST',body:JSON.stringify({content:c})});toast('Transcription submitted.');closeModal('transcriptionModal');loadTranscription();}
+  catch(err){toast(err.message,false);}
+  finally{b.disabled=false;b.textContent='Submit Transcription';}
+});
 
 // DATA ENTRY
-async function loadDataentry(){setLS('dataentryList','Loading data entry jobs…');try{const d=await apiFetch('/api/dataentry');const l=document.getElementById('dataentryList');if(!d.jobs.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No data entry jobs right now.</p>';return;}l.innerHTML=d.jobs.map(j=>renderTaskCard(j,'dataentry',j.userSubmission?('Status: '+j.userSubmission.status):null)).join('');}catch(err){setErr('dataentryList',err.message,'loadDataentry');}}
-async function openDataentryModal(id){try{const d=await apiFetch(`/api/dataentry/${id}`);const j=d.job;_activeDataentryId=id;document.getElementById('dataentryModalTitle').textContent=j.title;document.getElementById('dataentryModalDesc').textContent=j.description;document.getElementById('dataentryModalInstructions').textContent=j.instructions;const tp=document.getElementById('dataentryTemplateSection');if(j.templateUrl){tp.style.display='block';const tl=document.getElementById('dataentryTemplateLink');tl.dataset.url=j.templateUrl;tl.dataset.pid=j.templatePublicId||'';}else tp.style.display='none';document.getElementById('dataentryFileInput').value='';openModal('dataentryModal');}catch(err){toast('Error: '+err.message,false);}}
-document.getElementById('dataentrySubmitBtn').addEventListener('click',async()=>{if(!_activeDataentryId)return;const f=document.getElementById('dataentryFileInput').files[0];if(!f){toast('Select a file.',false);return;}const b=document.getElementById('dataentrySubmitBtn');b.disabled=true;b.textContent='Uploading…';try{const fd=new FormData();fd.append('file',f);const d=await apiFetch(`/api/dataentry/${_activeDataentryId}/submit`,{method:'POST',body:fd});toast('✅ '+d.message);closeModal('dataentryModal');loadDataentry();}catch(err){toast('❌ '+err.message,false);}finally{b.disabled=false;b.textContent='📤 Submit Data Entry';}});
+async function loadDataentry(){
+  document.getElementById('dataentryLocked').style.display=_isActive?'none':'block';
+  setLS('dataentryList','Loading data entry jobs…');
+  try{const d=await apiFetch('/api/dataentry');const l=document.getElementById('dataentryList');if(!d.jobs?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No data entry jobs right now.</p>';return;}l.innerHTML=d.jobs.map(j=>renderTaskCard(j,'dataentry',j.userSubmission?('Status: '+j.userSubmission.status):null)).join('');}catch(err){setErr('dataentryList',err.message,'loadDataentry');}
+}
+async function openDataentryModal(id){
+  if(!_isActive){toast('Activate your account to submit tasks.',false);return;}
+  try{const d=await apiFetch(`/api/dataentry/${id}`);const j=d.job;_activeDataentryId=id;document.getElementById('dataentryModalTitle').textContent=j.title;document.getElementById('dataentryModalDesc').textContent=j.description;document.getElementById('dataentryModalInstructions').textContent=j.instructions;const tp=document.getElementById('dataentryTemplateSection');if(j.templateUrl){tp.style.display='block';const tl=document.getElementById('dataentryTemplateLink');tl.dataset.url=j.templateUrl;tl.dataset.pid=j.templatePublicId||'';}else tp.style.display='none';document.getElementById('dataentryFileInput').value='';openModal('dataentryModal');}catch(err){toast('Error: '+err.message,false);}
+}
+document.getElementById('dataentrySubmitBtn').addEventListener('click',async()=>{
+  if(!_activeDataentryId)return;
+  const f=document.getElementById('dataentryFileInput').files[0];if(!f){toast('Select a file.',false);return;}
+  const b=document.getElementById('dataentrySubmitBtn');b.disabled=true;b.textContent='Uploading…';
+  try{const fd=new FormData();fd.append('file',f);const d=await apiFetch(`/api/dataentry/${_activeDataentryId}/submit`,{method:'POST',body:fd});toast(d.message);closeModal('dataentryModal');loadDataentry();}
+  catch(err){toast(err.message,false);}
+  finally{b.disabled=false;b.textContent='Submit Data Entry';}
+});
 
 async function smartDownload(url,pid,fn){if(!url)return;try{const p=await fetch(url,{method:'HEAD'}).catch(()=>null);if(p&&p.ok){const a=document.createElement('a');a.href=url;a.target='_blank';a.download=fn||'download';document.body.appendChild(a);a.click();document.body.removeChild(a);return;}}catch(e){}if(!pid||pid===url){window.open(url,'_blank');return;}try{const d=await apiFetch(`/api/dataentry/file/signed?publicId=${encodeURIComponent(pid)}&fileName=${encodeURIComponent(fn||'download')}`);if(d.url)window.open(d.url,'_blank');else window.open(url,'_blank');}catch(e){window.open(url,'_blank');}}
 
 // REFERRALS
 async function loadReferrals(){
+  // Gate referral link for inactive users
+  const active=_isActive;
+  document.getElementById('refLinkSection').style.display=active?'block':'none';
+  document.getElementById('refLinkLocked').style.display=active?'none':'block';
   try{
     const[stats,link]=await Promise.all([apiFetch('/api/referrals/stats'),apiFetch('/api/referrals/link')]);
-    document.getElementById('referralLink').value=`${window.location.origin}/index.html?ref=${link.inviteCode}`;
+    if(active)document.getElementById('referralLink').value=`${window.location.origin}/index.html?ref=${link.inviteCode}`;
     ['1','2','3','4'].forEach(l=>{const c=stats.levels['level'+l];const t=c?.count||0,a=c?.active||0;document.getElementById('level'+l+'Count').textContent=t;document.getElementById('lvl'+l+'Status').textContent=`Active: ${a} | Inactive: ${t-a}`;const el=document.getElementById('level'+l+'Members');if(el&&c?.members?.length){el.innerHTML=c.members.slice(0,5).map(m=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-top:1px solid var(--gray-100);font-size:.78rem"><span style="font-weight:600">${m.username}</span><span class="bdg ${m.packageType!=='not_active'?'bg':'by'}">${m.packageType!=='not_active'?'Active':'Inactive'}</span></div>`).join('');if(c.count>5)el.innerHTML+=`<p style="font-size:.72rem;color:var(--gray-400);margin:.3rem 0 0">+${c.count-5} more</p>`;}});
     document.getElementById('totalCommission').textContent='KES '+(stats.summary?.totalCommission||0);
     ['1','2','3','4'].forEach(l=>document.getElementById('commission'+l).textContent='KES '+(stats.summary?.commissionByLevel?.['level'+l]||0));
   }catch(err){console.error('Referrals:',err);}
 }
-document.getElementById('copyReferralBtn').addEventListener('click',()=>{const el=document.getElementById('referralLink');el.select();document.execCommand('copy');toast('✅ Referral link copied!');});
+document.getElementById('copyReferralBtn').addEventListener('click',()=>{
+  if(!_isActive){toast('Activate your account to share your referral link.',false);return;}
+  const el=document.getElementById('referralLink');el.select();document.execCommand('copy');toast('Referral link copied.');
+});
 
 // WITHDRAW
 document.getElementById('ptsPaymentMethod').addEventListener('change',e=>{document.getElementById('ptsMpesaSection').style.display=e.target.value==='mpesa'?'block':'none';document.getElementById('ptsBankSection').style.display=e.target.value==='bank'?'block':'none';});
@@ -622,78 +819,151 @@ async function loadWithdraw(){
     const pts=u.pointsWallet?.points||0,pKES=Math.floor(pts/100)*10,bal=u.primaryWallet?.balance||0,refs=u.pointsWallet?.referralsSinceLastWithdrawal||0;
     document.getElementById('withdrawBalance').textContent='KES '+bal;
     document.getElementById('withdrawPoints').textContent=pts;
-    document.getElementById('withdrawPointsKES').textContent=`≈ KES ${pKES} · Tuesdays`;
+    document.getElementById('withdrawPointsKES').textContent=`= KES ${pKES} · Tuesdays`;
     const canPts=pts>=2000&&refs>=4;
-    document.getElementById('pointsEligibilityHint').textContent=canPts?`✅ Eligible! ${pts} pts → KES ${pKES} · ${refs} referrals ✓ · Submit on Tuesday.`:`Points: ${pts}/2,000 · Referrals: ${refs}/4 — unlock both to redeem on Tuesdays.`;
+    document.getElementById('pointsEligibilityHint').textContent=canPts?`Eligible: ${pts} pts = KES ${pKES} · ${refs} referrals confirmed · Submit on Tuesday.`:`Points: ${pts}/2,000 · Referrals since last withdrawal: ${refs}/4`;
     const day=getEATDay(),msg=document.getElementById('withdrawDayMsg');
-    if(day===2){msg.textContent='✅ Today is Tuesday — POINTS withdrawals are OPEN!';msg.style.cssText='border-left:4px solid var(--g);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:700;font-size:.9rem;background:var(--gl);color:var(--g)';}
-    else if(day===4){msg.textContent='✅ Today is Thursday — KES wallet withdrawals are OPEN!';msg.style.cssText='border-left:4px solid var(--g);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:700;font-size:.9rem;background:var(--gl);color:var(--g)';}
-    else{msg.textContent=`⏰ Today is ${DAYS[day]}. Points: Tuesdays · KES wallet: Thursdays.`;msg.style.cssText='border-left:4px solid var(--b);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:600;font-size:.9rem;background:var(--bl);color:#1e40af';}
+    if(day===2){msg.textContent='Today is Tuesday — points withdrawals are open.';msg.style.cssText='border-left:4px solid var(--g);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:700;font-size:.9rem;background:var(--gl);color:var(--g)';}
+    else if(day===4){msg.textContent='Today is Thursday — KES wallet withdrawals are open.';msg.style.cssText='border-left:4px solid var(--g);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:700;font-size:.9rem;background:var(--gl);color:var(--g)';}
+    else{msg.textContent=`Today is ${DAYS[day]}. Points withdrawals: Tuesdays · KES withdrawals: Thursdays.`;msg.style.cssText='border-left:4px solid var(--b);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:600;font-size:.9rem;background:var(--bl);color:#1e40af';}
     const pb=document.getElementById('ptsWithdrawBtn'),kb=document.getElementById('kesWithdrawBtn');
-    if(day!==2){pb.disabled=true;pb.textContent='Opens on Tuesday';}else if(!canPts){pb.disabled=true;pb.textContent='Not eligible yet';}else{pb.disabled=false;pb.textContent=`Redeem ${pts} pts → KES ${pKES}`;}
+    if(day!==2){pb.disabled=true;pb.textContent='Opens on Tuesday';}else if(!canPts){pb.disabled=true;pb.textContent='Not eligible yet';}else{pb.disabled=false;pb.textContent=`Redeem ${pts} pts = KES ${pKES}`;}
     if(day!==4){kb.disabled=true;kb.textContent='Opens on Thursday';}else{kb.disabled=false;kb.textContent='Request KES Withdrawal';}
     const hist=await apiFetch('/api/withdrawals/my').catch(()=>null);
     const hel=document.getElementById('withdrawHistory');
-    if(hist?.withdrawals?.length){hel.innerHTML=hist.withdrawals.map(w=>`<div class="hrow"><div><div class="hm">${w.type==='points'?`${w.pointsRedeemed} pts → `:''}KES ${w.amount} <span class="bdg ${w.type==='kes'?'bb':'by'}">${(w.type||'').toUpperCase()}</span></div><div class="hs">${new Date(w.requestedAt).toLocaleDateString()} · ${(w.paymentMethod||'').toUpperCase()}${w.adminNotes?' · 📝 '+w.adminNotes:''}${w.transactionReference?' · Ref: '+w.transactionReference:''}</div></div><span class="bdg ${w.status==='completed'?'bg':w.status==='pending'?'by':'br'}">${(w.status||'').toUpperCase()}</span></div>`).join('');}
+    if(hist?.withdrawals?.length){hel.innerHTML=hist.withdrawals.map(w=>`<div class="hrow"><div><div class="hm">${w.type==='points'?`${w.pointsRedeemed} pts = `:''}KES ${w.amount} <span class="bdg ${w.type==='kes'?'bb':'by'}">${(w.type||'').toUpperCase()}</span></div><div class="hs">${new Date(w.requestedAt).toLocaleDateString()} · ${(w.paymentMethod||'').toUpperCase()}${w.adminNotes?' · Note: '+w.adminNotes:''}${w.transactionReference?' · Ref: '+w.transactionReference:''}</div></div><span class="bdg ${w.status==='completed'?'bg':w.status==='pending'?'by':'br'}">${(w.status||'').toUpperCase()}</span></div>`).join('');}
     else hel.innerHTML='<p style="color:var(--gray-400);text-align:center;padding:.75rem;font-size:.85rem">No withdrawal history yet.</p>';
   }catch(err){console.error('Withdraw:',err);}
 }
-
 async function submitPointsWithdrawal(){
-  const pm=document.getElementById('ptsPaymentMethod').value;
-  if(!pm){showMsg('ptsWdMsg','Select a payment method.',false);return;}
+  const pm=document.getElementById('ptsPaymentMethod').value;if(!pm){showMsg('ptsWdMsg','Select a payment method.',false);return;}
   let pd={};
   if(pm==='mpesa'){const ph=document.getElementById('ptsMpesaPhone').value.trim();if(!ph){showMsg('ptsWdMsg','Enter M-Pesa phone.',false);return;}pd={mpesaPhone:ph};}
   else{const bn=document.getElementById('ptsBankName').value.trim(),an=document.getElementById('ptsAccountNumber').value.trim(),aname=document.getElementById('ptsAccountName').value.trim();if(!bn||!an||!aname){showMsg('ptsWdMsg','Fill all bank details.',false);return;}pd={bankName:bn,accountNumber:an,accountName:aname};}
   const b=document.getElementById('ptsWithdrawBtn');b.disabled=true;b.textContent='Submitting…';
-  try{const d=await apiFetch('/api/withdrawals/points',{method:'POST',body:JSON.stringify({paymentMethod:pm,paymentDetails:pd})});toast('✅ '+d.message);showMsg('ptsWdMsg',d.message,true);document.getElementById('ptsPaymentMethod').value='';document.getElementById('ptsMpesaSection').style.display='none';document.getElementById('ptsBankSection').style.display='none';setTimeout(()=>loadWithdraw(),600);}
-  catch(err){showMsg('ptsWdMsg',err.message,false);b.disabled=false;b.textContent='Redeem Points → KES';}
+  try{const d=await apiFetch('/api/withdrawals/points',{method:'POST',body:JSON.stringify({paymentMethod:pm,paymentDetails:pd})});toast(d.message);showMsg('ptsWdMsg',d.message,true);document.getElementById('ptsPaymentMethod').value='';document.getElementById('ptsMpesaSection').style.display='none';document.getElementById('ptsBankSection').style.display='none';setTimeout(()=>loadWithdraw(),600);}
+  catch(err){showMsg('ptsWdMsg',err.message,false);b.disabled=false;b.textContent='Redeem Points to KES';}
 }
-
 async function submitKesWithdrawal(){
-  const amount=parseFloat(document.getElementById('withdrawAmount').value);
-  if(!amount||amount<300){showMsg('kesWdMsg','Minimum KES 300.',false);return;}
-  const pm=document.getElementById('paymentMethod').value;
-  if(!pm){showMsg('kesWdMsg','Select a payment method.',false);return;}
+  const amount=parseFloat(document.getElementById('withdrawAmount').value);if(!amount||amount<300){showMsg('kesWdMsg','Minimum KES 300.',false);return;}
+  const pm=document.getElementById('paymentMethod').value;if(!pm){showMsg('kesWdMsg','Select a payment method.',false);return;}
   let pd={};
   if(pm==='mpesa'){const ph=document.getElementById('mpesaPhone').value.trim();if(!ph){showMsg('kesWdMsg','Enter M-Pesa phone.',false);return;}pd={mpesaPhone:ph};}
   else{const bn=document.getElementById('bankName').value.trim(),an=document.getElementById('accountNumber').value.trim(),aname=document.getElementById('accountName').value.trim();if(!bn||!an||!aname){showMsg('kesWdMsg','Fill all bank details.',false);return;}pd={bankName:bn,accountNumber:an,accountName:aname};}
   const b=document.getElementById('kesWithdrawBtn');b.disabled=true;b.textContent='Submitting…';
-  try{const d=await apiFetch('/api/withdrawals/kes',{method:'POST',body:JSON.stringify({amount,paymentMethod:pm,paymentDetails:pd})});toast('✅ '+d.message);showMsg('kesWdMsg',d.message,true);document.getElementById('withdrawAmount').value='';document.getElementById('paymentMethod').value='';document.getElementById('mpesaSection').style.display='none';document.getElementById('bankSection').style.display='none';setTimeout(()=>loadWithdraw(),600);}
+  try{const d=await apiFetch('/api/withdrawals/kes',{method:'POST',body:JSON.stringify({amount,paymentMethod:pm,paymentDetails:pd})});toast(d.message);showMsg('kesWdMsg',d.message,true);document.getElementById('withdrawAmount').value='';document.getElementById('paymentMethod').value='';document.getElementById('mpesaSection').style.display='none';document.getElementById('bankSection').style.display='none';setTimeout(()=>loadWithdraw(),600);}
   catch(err){showMsg('kesWdMsg',err.message,false);b.disabled=false;b.textContent='Request KES Withdrawal';}
 }
 
 // PROFILE
 async function loadProfile(){
   try{
-    const d=await apiFetch('/api/users/profile');const u=d.user;
+    const[pd,sd,rd]=await Promise.all([
+      apiFetch('/api/users/profile'),
+      apiFetch('/api/users/dashboard').catch(()=>null),
+      apiFetch('/api/referrals/stats').catch(()=>null)
+    ]);
+    const u=pd.user;
+    _isActive=u.packageType!=='not_active';
+
+    // Personal info
     document.getElementById('profileUsername').textContent='@'+u.username;
-    document.getElementById('profileEmail').textContent=u.email;
-    document.getElementById('profilePhone').textContent=u.phone;
+    document.getElementById('profilePhone').textContent=u.phone||'—';
     document.getElementById('profileJoinDate').textContent=new Date(u.createdAt).toLocaleDateString('en-KE',{year:'numeric',month:'long',day:'numeric'});
-    document.getElementById('profileStatus').innerHTML=`<span class="bdg ${u.packageType!=='not_active'?'bg':'by'}">${u.packageType!=='not_active'?'✅ Active Member':'⚠️ Not Activated'}</span>`;
-    document.getElementById('profileInviteCode').value=`${window.location.origin}/index.html?ref=${u.inviteCode}`;
-    const ub=document.getElementById('updateContactBtn');ub.disabled=false;ub.textContent='💾 Save Changes';document.getElementById('contactCooldownMsg').textContent='';
-    if(u.lastContactUpdate){const ds=(Date.now()-new Date(u.lastContactUpdate).getTime())/(1000*60*60*24);if(ds<7){const dl=Math.ceil(7-ds);document.getElementById('contactCooldownMsg').textContent=`(locked — ${dl}d remaining)`;ub.disabled=true;ub.textContent=`Locked — ${dl}d remaining`;}}
+
+    // Referral link gate
+    if(_isActive){
+      document.getElementById('profileLinkSection').style.display='block';
+      document.getElementById('profileLinkLocked').style.display='none';
+      document.getElementById('profileInviteCode').value=`${window.location.origin}/index.html?ref=${u.inviteCode}`;
+    } else {
+      document.getElementById('profileLinkSection').style.display='none';
+      document.getElementById('profileLinkLocked').style.display='block';
+    }
+
+    // Statistics
+    document.getElementById('statStatus').innerHTML=`<span class="bdg ${_isActive?'bg':'by'}">${_isActive?'Active':'Inactive'}</span>`;
+    document.getElementById('statWallet').textContent='KES '+(u.primaryWallet?.balance||0);
+    document.getElementById('statPoints').textContent=(u.pointsWallet?.points||0)+' pts';
+    document.getElementById('statTotalEarned').textContent='KES '+(sd?.stats?.totalEarnings||0);
+    document.getElementById('statBlogs').textContent=sd?.taskStats?.blogsSubmitted??'—';
+    document.getElementById('statSurveys').textContent=sd?.taskStats?.surveysSubmitted??'—';
+
+    if(rd){
+      let totalRefs=0,activeRefs=0;
+      ['1','2','3','4'].forEach(l=>{const c=rd.levels['level'+l];totalRefs+=c?.count||0;activeRefs+=c?.active||0;});
+      document.getElementById('statTotalRefs').textContent=totalRefs;
+      document.getElementById('statActiveRefs').textContent=activeRefs;
+      document.getElementById('statInactiveRefs').textContent=totalRefs-activeRefs;
+    }
+
+    // Email cooldown
+    const ub=document.getElementById('updateEmailBtn');ub.disabled=false;ub.textContent='Save Email';document.getElementById('emailCooldownMsg').textContent='';
+    if(u.lastContactUpdate){const ds=(Date.now()-new Date(u.lastContactUpdate).getTime())/(1000*60*60*24);if(ds<7){const dl=Math.ceil(7-ds);document.getElementById('emailCooldownMsg').textContent=`(locked — ${dl}d remaining)`;ub.disabled=true;ub.textContent=`Locked — ${dl}d remaining`;}}
+
+    // Inactive referrals table in profile
+    loadProfileInactiveReferrals();
   }catch(err){console.error('Profile:',err);}
 }
-async function updateContact(){
-  const email=document.getElementById('newEmail').value.trim(),phone=document.getElementById('newPhone').value.trim(),pwd=document.getElementById('contactPassword').value;
-  if(!email&&!phone){showMsg('contactUpdateMsg','Enter a new email or phone.',false);return;}
-  if(!pwd){showMsg('contactUpdateMsg','Current password required.',false);return;}
-  const b=document.getElementById('updateContactBtn');b.disabled=true;b.textContent='Saving…';
-  try{const d=await apiFetch('/api/users/update-contact',{method:'PUT',body:JSON.stringify({email:email||undefined,phone:phone||undefined,currentPassword:pwd})});showMsg('contactUpdateMsg','✅ '+d.message,true);document.getElementById('newEmail').value='';document.getElementById('newPhone').value='';document.getElementById('contactPassword').value='';b.textContent='✅ Saved!';document.getElementById('contactCooldownMsg').textContent='(next update in 7 days)';setTimeout(()=>loadProfile(),800);}
-  catch(err){showMsg('contactUpdateMsg','❌ '+err.message,false);b.disabled=false;b.textContent='💾 Save Changes';}
+
+async function loadProfileInactiveReferrals(){
+  try{
+    const data=await apiFetch('/api/users/inactive-referrals');
+    const tbody=document.getElementById('profileInactiveList');
+    if(!data.inactiveReferrals?.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:1.5rem;font-size:.85rem">No inactive referrals.</td></tr>';return;}
+    tbody.innerHTML=data.inactiveReferrals.map((u,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${u.name||u.username||'—'}</td><td style="font-family:'DM Mono',monospace">${u.phone||'—'}</td><td><span class="bdg bgr">L${u.level||1}</span></td><td>${u.daysSinceJoined!==undefined?u.daysSinceJoined+'d ago':(u.createdAt?new Date(u.createdAt).toLocaleDateString():'—')}</td><td><span class="bdg by">Inactive</span></td></tr>`).join('');
+  }catch(e){document.getElementById('profileInactiveList').innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:1rem;font-size:.85rem">Could not load data.</td></tr>';}
 }
-function copyInviteLink(){const el=document.getElementById('profileInviteCode');el.select();document.execCommand('copy');toast('✅ Invite link copied!');}
+
+// UPDATE EMAIL (weekly limit, email only)
+async function updateEmail(){
+  const email=document.getElementById('newEmail').value.trim();
+  const pwd=document.getElementById('emailPassword').value;
+  if(!email){showMsg('emailUpdateMsg','Enter a new email address.',false);return;}
+  if(!pwd){showMsg('emailUpdateMsg','Current password is required.',false);return;}
+  const b=document.getElementById('updateEmailBtn');b.disabled=true;b.textContent='Saving…';
+  try{
+    const d=await apiFetch('/api/users/update-contact',{method:'PUT',body:JSON.stringify({email,currentPassword:pwd})});
+    showMsg('emailUpdateMsg',d.message,true);
+    document.getElementById('newEmail').value='';
+    document.getElementById('emailPassword').value='';
+    b.textContent='Saved';
+    document.getElementById('emailCooldownMsg').textContent='(next update in 7 days)';
+    setTimeout(()=>loadProfile(),800);
+  }catch(err){showMsg('emailUpdateMsg',err.message,false);b.disabled=false;b.textContent='Save Email';}
+}
+
+// UPDATE PHONE (separate form, same endpoint but phone-only)
+async function updatePhone(){
+  const phone=document.getElementById('newPhone').value.trim();
+  const pwd=document.getElementById('phonePassword').value;
+  if(!phone){showMsg('phoneUpdateMsg','Enter a new phone number.',false);return;}
+  if(!pwd){showMsg('phoneUpdateMsg','Current password is required.',false);return;}
+  const b=document.getElementById('updatePhoneBtn');b.disabled=true;b.textContent='Saving…';
+  try{
+    const d=await apiFetch('/api/users/update-contact',{method:'PUT',body:JSON.stringify({phone,currentPassword:pwd})});
+    showMsg('phoneUpdateMsg',d.message,true);
+    document.getElementById('newPhone').value='';
+    document.getElementById('phonePassword').value='';
+    b.textContent='Saved';
+    setTimeout(()=>loadProfile(),800);
+  }catch(err){showMsg('phoneUpdateMsg',err.message,false);b.disabled=false;b.textContent='Save Phone';}
+}
+
+function copyInviteLink(){
+  if(!_isActive){toast('Activate your account to share your referral link.',false);return;}
+  const el=document.getElementById('profileInviteCode');el.select();document.execCommand('copy');toast('Invite link copied.');
+}
+
 document.getElementById('changePasswordForm').addEventListener('submit',async e=>{
-  e.preventDefault();document.getElementById('pwdError').style.display='none';document.getElementById('pwdSuccess').style.display='none';
+  e.preventDefault();
+  document.getElementById('pwdError').style.display='none';document.getElementById('pwdSuccess').style.display='none';
   const np=document.getElementById('newPassword').value;
   if(np!==document.getElementById('confirmPassword').value){const el=document.getElementById('pwdError');el.textContent='Passwords do not match.';el.style.display='block';return;}
   const b=document.getElementById('changePwdBtn');b.disabled=true;b.textContent='Changing…';
   try{await apiFetch('/api/users/change-password',{method:'PUT',body:JSON.stringify({currentPassword:document.getElementById('currentPassword').value,newPassword:np})});document.getElementById('pwdSuccess').style.display='block';e.target.reset();}
   catch(err){const el=document.getElementById('pwdError');el.textContent=err.message;el.style.display='block';}
-  finally{b.disabled=false;b.textContent='🔒 Change Password';}
+  finally{b.disabled=false;b.textContent='Change Password';}
 });
 
 // NOTIFICATIONS
