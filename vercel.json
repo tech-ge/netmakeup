@@ -12,8 +12,50 @@
   ],
   "routes": [
     {
+      "src": "/sw.js",
+      "dest": "/public/sw.js",
+      "headers": {
+        "Service-Worker-Allowed": "/",
+        "Cache-Control": "no-cache, no-store, must-revalidate"
+      }
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "/public/manifest.json",
+      "headers": {
+        "Cache-Control": "public, max-age=86400"
+      }
+    },
+    {
+      "src": "/offline.js",
+      "dest": "/public/offline.js",
+      "headers": {
+        "Cache-Control": "public, max-age=86400"
+      }
+    },
+    {
       "src": "/(css|js|images)/(.*)",
       "dest": "/public/$1/$2"
+    },
+    {
+      "src": "/style.css",
+      "dest": "/public/style.css"
+    },
+    {
+      "src": "/index.html",
+      "dest": "/public/index.html"
+    },
+    {
+      "src": "/dashboard.html",
+      "dest": "/public/dashboard.html"
+    },
+    {
+      "src": "/admin.html",
+      "dest": "/public/admin.html"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "server.js"
     },
     {
       "src": "/(.*)",
