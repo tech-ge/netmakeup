@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechGeo Network — Earn From Your Network</title>
+  <title>TechGeo</title>
   <meta name="description" content="Kenya's community-based earning platform. Build a referral network, complete digital tasks, and earn real income paid to M-Pesa.">
   <meta name="theme-color" content="#16a34a">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,7 +12,7 @@
   <meta name="google-site-verification" content="1Q4MjheMlY87LJr55NgwiS4lWBGUG-SOJPpnXvUnR3E" />
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/jpeg" href="https://port.techgeo.co.ke/logo.jpeg">
-  <link rel="apple-touch-icon" href="https://port.techgeo.co.ke/logo.jpeg">
+<link rel="apple-touch-icon" href="https://port.techgeo.co.ke/logo.jpeg">
   <link rel="stylesheet" href="/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
@@ -954,10 +954,20 @@ function apiHeaders() {
 }
 async function apiFetch(url, options) {
   options = options || {};
-  var res = await fetch(url, Object.assign({}, options, {headers: apiHeaders()}));
-  var data = await res.json();
-  if (!res.ok) throw new Error(data.error || (data.errors && data.errors[0]) || 'Request failed');
-  return data;
+  if (!navigator.onLine) {
+    throw new Error('No internet connection. Please check your network and try again.');
+  }
+  try {
+    var res = await fetch(url, Object.assign({}, options, {headers: apiHeaders()}));
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.error || (data.errors && data.errors[0]) || 'Request failed');
+    return data;
+  } catch(err) {
+    if (err instanceof TypeError || err.message === 'Failed to fetch') {
+      throw new Error('No internet connection. Please check your network and try again.');
+    }
+    throw err;
+  }
 }
 
 /* ── LOGIN ── */
