@@ -384,7 +384,6 @@ router.get('/surveys/:surveyId/submissions', authMiddleware, requireAdmin, async
   }
 });
 
-module.exports = router;
 // DELETE /api/admin/users/:userId
 router.delete('/users/:userId', authMiddleware, requireAdmin, async (req, res) => {
   try {
@@ -395,3 +394,163 @@ router.delete('/users/:userId', authMiddleware, requireAdmin, async (req, res) =
     res.json({ message: `✅ User deleted.` });
   } catch(err) { res.status(500).json({ error: err.message }); }
 });
+
+// ─── Blog admin routes (called as /api/admin/blogs/*) ────────────────────────
+const Blog = require('../models/Blog');
+
+router.post('/blogs/create', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { title, description, content, category, maxBidders, reward } = req.body;
+    if (!title || !description) return res.status(400).json({ error: 'Title and description required.' });
+    const blog = await Blog.create({
+      title, description, content: content || '', category: category || 'general',
+      maxBidders: maxBidders || 50, reward: reward || 100, isOpen: true, postedAt: new Date()
+    });
+    res.json({ message: 'Blog created.', blog });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.put('/blogs/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    const { title, description, content, category, maxBidders, reward } = req.body;
+    if (title)       blog.title       = title;
+    if (description) blog.description = description;
+    if (content)     blog.content     = content;
+    if (category)    blog.category    = category;
+    if (maxBidders)  blog.maxBidders  = maxBidders;
+    if (reward)      blog.reward      = reward;
+    await blog.save();
+    res.json({ message: 'Blog updated.', blog });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.post('/blogs/:id/close', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    blog.isOpen = false;
+    await blog.save();
+    res.json({ message: 'Blog closed.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.delete('/blogs/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    await Blog.deleteOne({ _id: blog._id });
+    res.json({ message: 'Blog deleted.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.post('/blogs/:blogId/approve/:userId', authMiddleware, requireAdmin, async (req, res) => {
+  const Blog2 = require('../models/Blog');
+  // Proxy to blog router logic inline
+  try {
+    const blog = await Blog2.findById(req.params.blogId);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    const bid = blog.bids.find(b => b.userId.toString() === req.params.userId);
+    if (!bid) return res.status(404).json({ error: 'Submission not found' });
+    if (bid.bidStatus === 'approved') return res.status(400).json({ error: 'Already approved' });
+    bid.bidStatus = 'approved';
+    bid.approvedAt = new Date();
+    await blog.save();
+    await User.findByIdAndUpdate(req.params.userId, { $inc: { 'pointsWallet.points': blog.reward } });
+    res.json({ message: 'Blog submission approved.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.post('/blogs/:blogId/reject/:userId', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.blogId);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    const bid = blog.bids.find(b => b.userId.toString() === req.params.userId);
+    if (!bid) return res.status(404).json({ error: 'Submission not found' });
+    bid.bidStatus = 'rejected';
+    bid.reviewNotes = req.body.reviewNotes || 'Rejected';
+    bid.reviewedAt = new Date();
+    await blog.save();
+    res.json({ message: 'Blog submission rejected.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+// ─── Survey admin routes (called as /api/admin/surveys/*) ─────────────────────
+const Survey = require('../models/Survey');
+
+router.post('/surveys/create', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { title, description, questions, maxResponses, reward } = req.body;
+    if (!title || !questions || !questions.length) return res.status(400).json({ error: 'Title and questions required.' });
+    const survey = await Survey.create({
+      title, description: description || '', questions,
+      maxResponses: maxResponses || 100, reward: reward || 100, isOpen: true, postedAt: new Date()
+    });
+    res.json({ message: 'Survey created.', survey });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.put('/surveys/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.id);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    const { title, description, maxResponses, reward } = req.body;
+    if (title)        survey.title        = title;
+    if (description)  survey.description  = description;
+    if (maxResponses) survey.maxResponses = maxResponses;
+    if (reward)       survey.reward       = reward;
+    await survey.save();
+    res.json({ message: 'Survey updated.', survey });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.post('/surveys/:id/close', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.id);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    survey.isOpen = false;
+    await survey.save();
+    res.json({ message: 'Survey closed.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.delete('/surveys/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.id);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    await Survey.deleteOne({ _id: survey._id });
+    res.json({ message: 'Survey deleted.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.post('/surveys/:surveyId/approve/:userId', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.surveyId);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    const bid = survey.bids.find(b => b.userId.toString() === req.params.userId);
+    if (!bid) return res.status(404).json({ error: 'Submission not found' });
+    if (bid.bidStatus === 'approved') return res.status(400).json({ error: 'Already approved' });
+    bid.bidStatus = 'approved';
+    bid.approvedAt = new Date();
+    await survey.save();
+    await User.findByIdAndUpdate(req.params.userId, { $inc: { 'pointsWallet.points': survey.reward } });
+    res.json({ message: 'Survey submission approved.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.post('/surveys/:surveyId/reject/:userId', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.surveyId);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    const bid = survey.bids.find(b => b.userId.toString() === req.params.userId);
+    if (!bid) return res.status(404).json({ error: 'Submission not found' });
+    bid.bidStatus = 'rejected';
+    bid.reviewNotes = req.body.reviewNotes || 'Rejected';
+    bid.reviewedAt = new Date();
+    await survey.save();
+    res.json({ message: 'Survey submission rejected.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+module.exports = router;
