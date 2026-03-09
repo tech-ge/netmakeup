@@ -7,7 +7,7 @@
      • HTML pages     → Cache First (stale-while-revalidate)
    ============================================================ */
 
-const CACHE_VERSION = 'techgeo-v1';
+const CACHE_VERSION = 'techgeo-v2';
 const STATIC_CACHE  = CACHE_VERSION + '-static';
 const API_CACHE     = CACHE_VERSION + '-api';
 
@@ -22,11 +22,11 @@ const PRECACHE_URLS = [
 
 /* API routes that are safe to cache (GET only) */
 const CACHEABLE_API = [
-  '/api/users/profile',
-  '/api/users/dashboard',
+  // NOTE: wallet/balance endpoints intentionally excluded — must always be fresh
+  // '/api/users/profile',   <- excluded: contains live wallet balance
+  // '/api/users/dashboard', <- excluded: contains live wallet balance
   '/api/referrals/stats',
   '/api/referrals/link',
-  '/api/withdrawals/my',
   '/api/blogs',
   '/api/surveys',
   '/api/writing-jobs',
