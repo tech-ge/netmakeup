@@ -1105,24 +1105,33 @@ async function initiateDeposit(){
     // Open Paystack popup using their inline JS
     if(typeof PaystackPop !== 'undefined'){
       const handler = PaystackPop.setup({
-        key:       window._PAYSTACK_PUBLIC_KEY,
-        email:     (JSON.parse(localStorage.getItem('user')||'{}')).email || '',
-        amount:    Math.round(amount * 100),
-        ref:       d.reference,
-        currency:  'KES',
-        onClose:   function(){ btn.disabled=false; btn.textContent='Pay via Card / M-Pesa'; },
-        callback:  async function(response){
+        key:      window._PAYSTACK_PUBLIC_KEY,
+        email:    (JSON.parse(localStorage.getItem('user')||'{}')).email || '',
+        amount:   Math.round(amount * 100),
+        ref:      d.reference,
+        currency: 'KES',
+        onClose: function(){
+          btn.disabled=false;
+          btn.textContent='Pay via Card / M-Pesa';
+        },
+        onSuccess: function(response){
           btn.textContent='Verifying…';
-          try {
-            const v = await apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:response.reference})});
-            closeModal('depositModal');
-            toast(v.message||'Deposit successful!');
-            loadDashboard();
-            if(typeof loadWithdraw==='function') setTimeout(loadWithdraw,600);
-          } catch(e){
-            showDepositMsg(e.message,false);
-            btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
-          }
+          apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:response.reference||response.trxref})})
+            .then(function(v){
+              closeModal('depositModal');
+              toast(v.message||'Deposit successful!');
+              loadDashboard();
+              if(typeof loadWithdraw==='function') setTimeout(loadWithdraw,600);
+            })
+            .catch(function(e){
+              showDepositMsg(e.message,false);
+              btn.disabled=false;
+              btn.textContent='Pay via Card / M-Pesa';
+            });
+        },
+        onCancel: function(){
+          btn.disabled=false;
+          btn.textContent='Pay via Card / M-Pesa';
         }
       });
       handler.openIframe();
