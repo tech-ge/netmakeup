@@ -72,7 +72,8 @@ router.post('/initialize', authMiddleware, async (req, res) => {
     res.json({
       authorizationUrl: response.data.authorization_url,
       reference:        response.data.reference,
-      accessCode:       response.data.access_code
+      accessCode:       response.data.access_code,
+      email:            user.email   // send back so frontend never has to guess
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
