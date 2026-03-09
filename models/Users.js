@@ -76,6 +76,16 @@ const UserSchema = new mongoose.Schema({
     surveysCompleted: { type: Number, default: 0 }
   },
 
+  // OTP — used for register, change-password, forgot-password, change-contact
+  otp: {
+    code:      { type: String, default: null },
+    expiresAt: { type: Date,   default: null },
+    reason:    { type: String, default: null }, // 'register' | 'change_password' | 'forgot_password' | 'change_contact'
+  },
+
+  // Email verified flag (set true after OTP confirmed at registration)
+  emailVerified: { type: Boolean, default: false },
+
   // Security
   lastLogin: { type: Date, default: null },
   loginAttempts: { type: Number, default: 0 },
