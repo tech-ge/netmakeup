@@ -91,7 +91,7 @@ router.post('/verify', authMiddleware, async (req, res) => {
     // Prevent double-credit
     const alreadyProcessed = await Commission.findOne({
       'metadata.paystackReference': reference,
-      type: 'deposit'
+      'metadata.recordType': 'deposit'
     });
     if (alreadyProcessed) return res.status(400).json({ error: 'This payment has already been credited.' });
 
@@ -111,24 +111,28 @@ router.post('/verify', authMiddleware, async (req, res) => {
     if (!user) return res.status(404).json({ error: 'User not found.' });
 
     // Log deposit — also serves as idempotency record
-    await Commission.create({
-      fromUserId:  user._id,
-      toUserId:    user._id,
-      level:       0,
-      amount:      amountKES,
-      type:        'deposit',
-      status:      'completed',
-      description: `Paystack deposit: KES ${amountKES} | ref: ${txnRef}`,
-      metadata:    { paystackReference: txnRef, channel: response.data.channel, paymentMethod: 'paystack' }
-    });
+    try {
+        amount:      amountKES,
+        type:        'deposit',
+        status:      'completed',
+        description: `Paystack deposit: KES ${amountKES} | ref: ${txnRef}`,
+        metadata:    { paystackReference: txnRef, channel: response.data.channel, paymentMethod: 'paystack', recordType: 'deposit' }
+      });
+    } catch (logErr) {
+      console.error('⚠️  Deposit commission log skipped:', logErr.message);
+    }
 
-    await Notification.create({
-      userId:   user._id,
-      type:     'deposit_confirmed',
-      title:    '✅ Deposit Confirmed',
-      message:  `KES ${amountKES} has been added to your wallet. Ref: ${txnRef}`,
-      metadata: { amount: amountKES, reference: txnRef }
-    }).catch(() => {});
+    try {
+      await Notification.create({
+        userId:   user._id,
+        type:     'deposit_confirmed',
+        title:    '✅ Deposit Confirmed',
+        message:  `KES ${amountKES} has been added to your wallet. Ref: ${txnRef}`,
+        metadata: { amount: amountKES, reference: txnRef, notificationType: 'deposit_confirmed' }
+      });
+    } catch (notifErr) {
+      console.error('⚠️  Deposit notification skipped:', notifErr.message);
+    }
 
     console.log(`💰 DEPOSIT VERIFIED: KES ${amountKES} → ${user.username} | ref: ${txnRef}`);
 
@@ -169,25 +173,33 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       if (!userId) return;
 
       // Idempotency — skip if already credited
-      const exists = await Commission.findOne({ 'metadata.paystackReference': reference, type: 'deposit' });
+      const exists = await Commission.findOne({ 'metadata.paystackReference': reference, 'metadata.recordType': 'deposit' });
       if (exists) return;
 
       await User.findByIdAndUpdate(userId, { $inc: { 'primaryWallet.balance': amountKES } });
 
-      await Commission.create({
-        fromUserId:  userId, toUserId: userId, level: 0,
-        amount:      amountKES, type: 'deposit', status: 'completed',
-        description: `Paystack webhook deposit: KES ${amountKES} | ref: ${reference}`,
-        metadata:    { paystackReference: reference, channel: data.channel, paymentMethod: 'paystack', source: 'webhook' }
-      });
+      try {
+        await Commission.create({
+          fromUserId:  userId, toUserId: userId, level: 0,
+          amount:      amountKES, type: 'deposit', status: 'completed',
+          description: `Paystack webhook deposit: KES ${amountKES} | ref: ${reference}`,
+          metadata:    { paystackReference: reference, channel: data.channel, paymentMethod: 'paystack', source: 'webhook', recordType: 'deposit' }
+        });
+      } catch (logErr) {
+        console.error('⚠️  Webhook deposit log skipped:', logErr.message);
+      }
 
-      await Notification.create({
-        userId,
-        type:     'deposit_confirmed',
-        title:    '✅ Deposit Confirmed',
-        message:  `KES ${amountKES} has been added to your wallet. Ref: ${reference}`,
-        metadata: { amount: amountKES, reference }
-      }).catch(() => {});
+      try {
+        await Notification.create({
+          userId,
+          type:     'deposit_confirmed',
+          title:    '✅ Deposit Confirmed',
+          message:  `KES ${amountKES} has been added to your wallet. Ref: ${reference}`,
+          metadata: { amount: amountKES, reference, notificationType: 'deposit_confirmed' }
+        });
+      } catch (notifErr) {
+        console.error('⚠️  Webhook notification skipped:', notifErr.message);
+      }
 
       console.log(`💰 WEBHOOK DEPOSIT: KES ${amountKES} → userId: ${userId} | ref: ${reference}`);
     }
