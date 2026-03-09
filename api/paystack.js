@@ -38,10 +38,9 @@ function paystackRequest(method, path, body) {
 }
 
 // ============================================================
-// INITIALIZE PAYMENT — user deposits via Paystack popup
+// INITIALIZE PAYMENT
 // POST /api/paystack/initialize
 // Body: { amount }  (amount in KES)
-// Returns: { authorizationUrl, reference }
 // ============================================================
 router.post('/initialize', authMiddleware, async (req, res) => {
   try {
@@ -52,7 +51,7 @@ router.post('/initialize', authMiddleware, async (req, res) => {
     const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ error: 'User not found.' });
 
-    const amountKobo = Math.round(parseFloat(amount) * 100); // Paystack uses kobo/cents
+    const amountKobo = Math.round(parseFloat(amount) * 100);
 
     const response = await paystackRequest('POST', '/transaction/initialize', {
       email:        user.email,
@@ -67,21 +66,23 @@ router.post('/initialize', authMiddleware, async (req, res) => {
       }
     });
 
-    if (!response.status) return res.status(400).json({ error: response.message || 'Paystack initialization failed.' });
+    if (!response.status)
+      return res.status(400).json({ error: response.message || 'Paystack initialization failed.' });
 
     res.json({
       authorizationUrl: response.data.authorization_url,
       reference:        response.data.reference,
       accessCode:       response.data.access_code
     });
-  } catch (error) { res.status(500).json({ error: error.message }); }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ============================================================
-// VERIFY PAYMENT — called after popup closes or user returns
+// VERIFY PAYMENT
 // POST /api/paystack/verify
 // Body: { reference }
-// Credits wallet if payment successful
 // ============================================================
 router.post('/verify', authMiddleware, async (req, res) => {
   try {
@@ -93,15 +94,16 @@ router.post('/verify', authMiddleware, async (req, res) => {
       'metadata.paystackReference': reference,
       'metadata.recordType': 'deposit'
     });
-    if (alreadyProcessed) return res.status(400).json({ error: 'This payment has already been credited.' });
+    if (alreadyProcessed)
+      return res.status(400).json({ error: 'This payment has already been credited.' });
 
     const response = await paystackRequest('GET', `/transaction/verify/${encodeURIComponent(reference)}`);
     if (!response.status || response.data.status !== 'success')
       return res.status(400).json({ error: 'Payment not successful. Please try again or contact support.' });
 
-    const amountKES  = response.data.amount / 100; // convert from kobo back to KES
-    const userId     = response.data.metadata?.userId || req.userId;
-    const txnRef     = response.data.reference;
+    const amountKES = response.data.amount / 100;
+    const userId    = response.data.metadata?.userId || req.userId;
+    const txnRef    = response.data.reference;
 
     const user = await User.findByIdAndUpdate(
       userId,
@@ -110,107 +112,132 @@ router.post('/verify', authMiddleware, async (req, res) => {
     );
     if (!user) return res.status(404).json({ error: 'User not found.' });
 
-    // Log deposit — also serves as idempotency record
     try {
+      await Commission.create({
+        fromUserId:  user._id,
+        toUserId:    user._id,
+        level:       0,
         amount:      amountKES,
         type:        'deposit',
         status:      'completed',
         description: `Paystack deposit: KES ${amountKES} | ref: ${txnRef}`,
-        metadata:    { paystackReference: txnRef, channel: response.data.channel, paymentMethod: 'paystack', recordType: 'deposit' }
+        metadata: {
+          paystackReference: txnRef,
+          channel:           response.data.channel,
+          paymentMethod:     'paystack',
+          recordType:        'deposit'
+        }
       });
     } catch (logErr) {
-      console.error('⚠️  Deposit commission log skipped:', logErr.message);
+      console.error('Deposit log skipped:', logErr.message);
     }
 
     try {
       await Notification.create({
         userId:   user._id,
         type:     'deposit_confirmed',
-        title:    '✅ Deposit Confirmed',
+        title:    'Deposit Confirmed',
         message:  `KES ${amountKES} has been added to your wallet. Ref: ${txnRef}`,
-        metadata: { amount: amountKES, reference: txnRef, notificationType: 'deposit_confirmed' }
+        metadata: { amount: amountKES, reference: txnRef }
       });
     } catch (notifErr) {
-      console.error('⚠️  Deposit notification skipped:', notifErr.message);
+      console.error('Deposit notification skipped:', notifErr.message);
     }
 
-    console.log(`💰 DEPOSIT VERIFIED: KES ${amountKES} → ${user.username} | ref: ${txnRef}`);
+    console.log(`DEPOSIT VERIFIED: KES ${amountKES} -> ${user.username} | ref: ${txnRef}`);
 
     res.json({
-      message:    `✅ KES ${amountKES} successfully added to your wallet.`,
+      message:    `KES ${amountKES} successfully added to your wallet.`,
       amount:     amountKES,
       newBalance: user.primaryWallet.balance,
       reference:  txnRef
     });
-  } catch (error) { res.status(500).json({ error: error.message }); }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ============================================================
-// WEBHOOK — Paystack server-to-server event (backup credit)
+// WEBHOOK — Paystack server-to-server event
 // POST /api/paystack/webhook
-// No auth — verified via Paystack signature
+// app.js already applies express.raw() to this path.
+// Do NOT add express.raw() here — that caused the JSON.parse error.
 // ============================================================
 router.post('/webhook', async (req, res) => {
   try {
-    const crypto  = require('crypto');
-    // app.js mounts express.raw() for this path — req.body is already a Buffer
+    const crypto = require('crypto');
+
     const rawBody = Buffer.isBuffer(req.body)
       ? req.body
       : Buffer.from(typeof req.body === 'string' ? req.body : JSON.stringify(req.body));
 
-    const hash = crypto.createHmac('sha512', PAYSTACK_SECRET)
-                       .update(rawBody)
-                       .digest('hex');
+    const hash = crypto
+      .createHmac('sha512', PAYSTACK_SECRET)
+      .update(rawBody)
+      .digest('hex');
 
     if (hash !== req.headers['x-paystack-signature']) {
       return res.status(401).send('Invalid signature');
     }
 
     const event = JSON.parse(rawBody.toString('utf8'));
-    res.sendStatus(200); // Always respond 200 immediately to Paystack
+
+    res.sendStatus(200);
 
     if (event.event === 'charge.success') {
       const data      = event.data;
       const reference = data.reference;
       const amountKES = data.amount / 100;
-      const userId    = data.metadata?.userId;
+      const userId    = data.metadata && data.metadata.userId;
 
       if (!userId) return;
 
-      // Idempotency — skip if already credited
-      const exists = await Commission.findOne({ 'metadata.paystackReference': reference, 'metadata.recordType': 'deposit' });
+      const exists = await Commission.findOne({
+        'metadata.paystackReference': reference,
+        'metadata.recordType':        'deposit'
+      });
       if (exists) return;
 
       await User.findByIdAndUpdate(userId, { $inc: { 'primaryWallet.balance': amountKES } });
 
       try {
         await Commission.create({
-          fromUserId:  userId, toUserId: userId, level: 0,
-          amount:      amountKES, type: 'deposit', status: 'completed',
+          fromUserId:  userId,
+          toUserId:    userId,
+          level:       0,
+          amount:      amountKES,
+          type:        'deposit',
+          status:      'completed',
           description: `Paystack webhook deposit: KES ${amountKES} | ref: ${reference}`,
-          metadata:    { paystackReference: reference, channel: data.channel, paymentMethod: 'paystack', source: 'webhook', recordType: 'deposit' }
+          metadata: {
+            paystackReference: reference,
+            channel:           data.channel,
+            paymentMethod:     'paystack',
+            source:            'webhook',
+            recordType:        'deposit'
+          }
         });
       } catch (logErr) {
-        console.error('⚠️  Webhook deposit log skipped:', logErr.message);
+        console.error('Webhook deposit log skipped:', logErr.message);
       }
 
       try {
         await Notification.create({
-          userId,
+          userId:   userId,
           type:     'deposit_confirmed',
-          title:    '✅ Deposit Confirmed',
+          title:    'Deposit Confirmed',
           message:  `KES ${amountKES} has been added to your wallet. Ref: ${reference}`,
-          metadata: { amount: amountKES, reference, notificationType: 'deposit_confirmed' }
+          metadata: { amount: amountKES, reference: reference }
         });
       } catch (notifErr) {
-        console.error('⚠️  Webhook notification skipped:', notifErr.message);
+        console.error('Webhook notification skipped:', notifErr.message);
       }
 
-      console.log(`💰 WEBHOOK DEPOSIT: KES ${amountKES} → userId: ${userId} | ref: ${reference}`);
+      console.log(`WEBHOOK DEPOSIT: KES ${amountKES} -> userId: ${userId} | ref: ${reference}`);
     }
   } catch (error) {
     console.error('Webhook error:', error.message);
-    res.sendStatus(200); // Still 200 — never let Paystack retry unnecessarily
+    res.sendStatus(200);
   }
 });
 
