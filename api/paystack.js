@@ -1,6 +1,7 @@
 const express      = require('express');
 const https        = require('https');
 const User         = require('../models/Users');
+const { sendDepositConfirmed } = require('../utils/emailHelper');
 const Commission   = require('../models/Commission');
 const Notification = require('../models/Notification');
 const { authMiddleware } = require('../middleware/auth');
@@ -160,6 +161,9 @@ router.post('/verify', authMiddleware, async (req, res) => {
     }
 
     console.log(`DEPOSIT VERIFIED: KES ${amountKES} -> ${user.username} | ref: ${txnRef}`);
+
+    // Send deposit confirmation email (non-blocking)
+    sendDepositConfirmed(user.email, user.username, amountKES, txnRef).catch(() => {});
 
     res.json({
       message:    `KES ${amountKES} successfully added to your wallet.`,
