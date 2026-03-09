@@ -445,4 +445,47 @@ router.post('/admin/:surveyId/reject/:userId', authMiddleware, requireAdmin, asy
   }
 });
 
+
+// ADMIN: Edit survey
+router.put('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.id);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    const { title, description, maxResponses, reward } = req.body;
+    if (title)        survey.title        = title;
+    if (description)  survey.description  = description;
+    if (maxResponses) survey.maxResponses = maxResponses;
+    if (reward)       survey.reward       = reward;
+    await survey.save();
+    res.json({ message: 'Survey updated.', survey });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ADMIN: Close survey
+router.post('/admin/:id/close', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.id);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    survey.isOpen = false;
+    await survey.save();
+    res.json({ message: 'Survey closed.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ADMIN: Delete survey
+router.delete('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.id);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    await Survey.deleteOne({ _id: survey._id });
+    res.json({ message: 'Survey deleted.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
