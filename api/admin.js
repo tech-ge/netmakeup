@@ -396,7 +396,6 @@ router.delete('/users/:userId', authMiddleware, requireAdmin, async (req, res) =
 });
 
 // ─── Blog admin routes (called as /api/admin/blogs/*) ────────────────────────
-const Blog = require('../models/Blog');
 
 router.post('/blogs/create', authMiddleware, requireAdmin, async (req, res) => {
   try {
@@ -446,10 +445,8 @@ router.delete('/blogs/:id', authMiddleware, requireAdmin, async (req, res) => {
 });
 
 router.post('/blogs/:blogId/approve/:userId', authMiddleware, requireAdmin, async (req, res) => {
-  const Blog2 = require('../models/Blog');
-  // Proxy to blog router logic inline
   try {
-    const blog = await Blog2.findById(req.params.blogId);
+    const blog = await Blog.findById(req.params.blogId);
     if (!blog) return res.status(404).json({ error: 'Blog not found' });
     const bid = blog.bids.find(b => b.userId.toString() === req.params.userId);
     if (!bid) return res.status(404).json({ error: 'Submission not found' });
@@ -477,7 +474,6 @@ router.post('/blogs/:blogId/reject/:userId', authMiddleware, requireAdmin, async
 });
 
 // ─── Survey admin routes (called as /api/admin/surveys/*) ─────────────────────
-const Survey = require('../models/Survey');
 
 router.post('/surveys/create', authMiddleware, requireAdmin, async (req, res) => {
   try {
