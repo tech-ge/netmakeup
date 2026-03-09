@@ -621,7 +621,7 @@ async function doActivation(){
 async function loadDashboard(){
   try{
     const data=await apiFetch('/api/users/dashboard');currentUser=data;
-    localStorage.setItem('user',JSON.stringify({id:data.profile.id,username:data.profile.username,packageType:data.profile.packageType,isAdmin:false}));
+    localStorage.setItem('user',JSON.stringify({id:data.profile.id,username:data.profile.username,email:data.profile.email,phone:data.profile.phone,packageType:data.profile.packageType,isAdmin:false}));
     _isActive=data.profile.packageType!=='not_active';
     if(!_isActive){
       // Inactive: show dashboard but with banner and locked tasks
@@ -1098,54 +1098,68 @@ async function initiateDeposit(){
   const btn   = document.getElementById('depositBtn');
   const amount = parseFloat(amtEl.value);
   if (!amount || amount < 10){ showDepositMsg('Enter a valid amount (min KES 10).',false); return; }
+
+  // Get email — try currentUser first (always fresh), then localStorage, then fail clearly
+  const storedUser = (()=>{try{return JSON.parse(localStorage.getItem('user')||'{}');}catch(e){return {};}})();
+  const userEmail  = (currentUser && currentUser.profile && currentUser.profile.email)
+                  || storedUser.email || '';
+  if(!userEmail){
+    showDepositMsg('Session error: could not load your email. Please refresh and try again.', false);
+    return;
+  }
+
   btn.disabled=true; btn.textContent='Initializing…';
   msgEl.style.display='none';
   try {
     const d = await apiFetch('/api/paystack/initialize',{method:'POST',body:JSON.stringify({amount})});
-    // Open Paystack popup using their inline JS
-    if(typeof PaystackPop !== 'undefined'){
-      const handler = PaystackPop.setup({
-        key:      window._PAYSTACK_PUBLIC_KEY,
-        email:    (JSON.parse(localStorage.getItem('user')||'{}')).email || '',
-        amount:   Math.round(amount * 100),
-        ref:      d.reference,
-        currency: 'KES',
-        onClose: function(){
-          btn.disabled=false;
-          btn.textContent='Pay via Card / M-Pesa';
-        },
-        onSuccess: function(response){
-          btn.textContent='Verifying…';
-          apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:response.reference||response.trxref})})
-            .then(function(v){
-              closeModal('depositModal');
-              toast(v.message||'Deposit successful!');
-              loadDashboard();
-              if(typeof loadWithdraw==='function') setTimeout(loadWithdraw,600);
-            })
-            .catch(function(e){
-              showDepositMsg(e.message,false);
-              btn.disabled=false;
-              btn.textContent='Pay via Card / M-Pesa';
-            });
-        },
-        onCancel: function(){
-          btn.disabled=false;
-          btn.textContent='Pay via Card / M-Pesa';
-        }
-      });
-      handler.openIframe();
-    } else {
-      // Fallback: redirect to Paystack hosted page
-      window.open(d.authorizationUrl,'_blank');
-      showDepositMsg('Complete payment in the new tab, then refresh your dashboard.',true);
-      btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
+
+    if(typeof PaystackPop === 'undefined'){
+      // Paystack JS not loaded — redirect to hosted page
+      showDepositMsg('Redirecting to payment page…', true);
+      window.location.href = d.authorizationUrl;
+      return;
     }
+
+    // Use newTransaction (current API) with setup() as fallback for older builds
+    const paystackFn = (PaystackPop.newTransaction || PaystackPop.setup).bind(PaystackPop);
+
+    paystackFn({
+      key:      window._PAYSTACK_PUBLIC_KEY,
+      email:    userEmail,
+      amount:   Math.round(amount * 100),
+      ref:      d.reference,
+      currency: 'KES',
+      onClose: function(){
+        btn.disabled=false;
+        btn.textContent='Pay via Card / M-Pesa';
+      },
+      onSuccess: function(response){
+        btn.textContent='Verifying…';
+        const ref = (response && (response.reference || response.trxref)) || d.reference;
+        apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:ref})})
+          .then(function(v){
+            btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
+            closeModal('depositModal');
+            toast(v.message||'Deposit successful!');
+            loadDashboard();
+            if(typeof loadWithdraw==='function') setTimeout(loadWithdraw,600);
+          })
+          .catch(function(e){
+            showDepositMsg('Payment received but verification failed. Ref: '+ref+'. Your balance will update shortly or contact support.', true);
+            btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
+          });
+      },
+      onCancel: function(){
+        btn.disabled=false;
+        btn.textContent='Pay via Card / M-Pesa';
+      }
+    });
   } catch(e){
-    showDepositMsg(e.message,false);
+    showDepositMsg(e.message, false);
     btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
   }
 }
+
 
 function showDepositMsg(msg,ok){
   const el=document.getElementById('depositMsg');
