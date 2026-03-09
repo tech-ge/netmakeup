@@ -98,14 +98,15 @@ router.post('/verify', authMiddleware, async (req, res) => {
     if (alreadyProcessed)
       return res.status(400).json({ error: 'This payment has already been credited.' });
 
-    // Retry up to 4 times with 3s delay — M-Pesa STK push can be 'pending' briefly
+    // Retry up to 3 times with 2s delay — M-Pesa STK push can briefly show 'pending'
+    // Total max wait: ~6s — well within Vercel's 30s maxDuration
     let response, attempts = 0;
-    while (attempts < 4) {
+    while (attempts < 3) {
       response = await paystackRequest('GET', `/transaction/verify/${encodeURIComponent(reference)}`);
       if (response.status && response.data.status === 'success') break;
       if (response.status && response.data.status === 'abandoned') break; // user cancelled
       attempts++;
-      if (attempts < 4) await new Promise(r => setTimeout(r, 3000));
+      if (attempts < 3) await new Promise(r => setTimeout(r, 2000));
     }
     if (!response.status || response.data.status !== 'success') {
       const ps = response?.data?.status || 'unknown';
