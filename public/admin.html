@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/jpeg" href="https://port.techgeo.co.ke/logo.jpeg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechGeo</title>
+  <title>TechGeo — Admin Panel</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <style>
@@ -1077,25 +1077,44 @@ async function loadAdminWithdrawals() {
           ${w.paymentDetails?.mpesaPhone?` · 📱 ${w.paymentDetails.mpesaPhone}`:''}
           ${w.paymentDetails?.accountNumber?` · 🏦 ${w.paymentDetails.accountNumber}`:''}
         </div>
-        ${w.type?`<div style="font-size:.72rem;color:var(--gray-500)">Type: ${w.type.toUpperCase()}</div>`:''}
-        <div style="font-size:.7rem;color:var(--gray-500);margin:.2rem 0">${w.requestedAt?new Date(w.requestedAt).toLocaleString():''}</div>
+        ${w.type?`<div style="font-size:.72rem;color:var(--gray-500)">Type: ${w.type.toUpperCase()}${w.type==='points'?` · ${w.pointsRedeemed||0} pts`:''}</div>`:''}
+        <div style="font-size:.7rem;color:var(--gray-500);margin:.2rem 0">Requested: ${w.requestedAt?new Date(w.requestedAt).toLocaleString():''}</div>
+        ${w.transactionReference?`<div style="font-size:.78rem;background:#f0fdf4;border:1px solid #86efac;padding:.35rem .6rem;border-radius:.3rem;margin:.3rem 0;font-weight:700;color:#15803d">✅ Txn Code: ${w.transactionReference}</div>`:''}
         ${w.adminNotes?`<div style="font-size:.75rem;background:var(--gray-50);padding:.35rem .5rem;border-radius:.3rem;margin:.3rem 0">📝 ${w.adminNotes}</div>`:''}
-        ${w.status==='pending'?`<div style="display:flex;gap:.4rem;margin-top:.6rem">
-          <button onclick="completeWithdrawal('${w.id}')" class="btn btp">✅ Mark Paid</button>
-          <button onclick="rejectWithdrawal('${w.id}')" class="btn btd">❌ Reject</button>
+        ${w.status==='pending'?`
+        <div style="margin-top:.75rem;border-top:1px solid var(--gray-100);padding-top:.65rem">
+          <input type="text" id="txnCode_${w.id}" placeholder="Enter M-Pesa/Bank txn code *" style="width:100%;padding:.5rem .7rem;border:1.5px solid var(--gray-200);border-radius:.4rem;font-size:.82rem;font-family:inherit;margin-bottom:.5rem;box-sizing:border-box">
+          <input type="text" id="txnNotes_${w.id}" placeholder="Notes (optional)" style="width:100%;padding:.5rem .7rem;border:1px solid var(--gray-200);border-radius:.4rem;font-size:.82rem;font-family:inherit;margin-bottom:.5rem;box-sizing:border-box">
+          <div style="display:flex;gap:.4rem">
+            <button onclick="completeWithdrawal('${w.id}')" class="btn btp" style="flex:1">✅ Approve & Mark Paid</button>
+            <button onclick="rejectWithdrawal('${w.id}')" class="btn btd">❌ Reject</button>
+          </div>
         </div>`:''}
+        ${w.status==='rejected'&&w.adminNotes?`<div style="font-size:.74rem;color:#dc2626;margin-top:.25rem">Rejected: ${w.adminNotes}</div>`:''}
       </div>`).join('')+'</div>';
   } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
 }
 async function completeWithdrawal(id) {
-  const notes=prompt('Notes (e.g. M-Pesa ID):')||'Payment processed';
-  try { await aF(`/api/withdrawals/admin/${id}/complete`,{method:'POST',body:JSON.stringify({adminNotes:notes})}); alert('✅ Marked as completed.'); loadAdminWithdrawals(); }
-  catch(err) { alert('❌ '+err.message); }
+  const txnInput = document.getElementById('txnCode_'+id);
+  const notesInput = document.getElementById('txnNotes_'+id);
+  const txnCode = txnInput ? txnInput.value.trim() : '';
+  const notes   = notesInput ? notesInput.value.trim() : '';
+  if (!txnCode) { alert('⚠️ Please enter the M-Pesa or bank transaction code before approving.'); return; }
+  if (!confirm(`Approve and mark KES withdrawal as paid?\nTxn Code: ${txnCode}`)) return;
+  try {
+    await aF(`/api/withdrawals/admin/${id}/complete`,{method:'POST',body:JSON.stringify({transactionCode:txnCode,adminNotes:notes||'Approved by admin'})});
+    toast('✅ Withdrawal approved. User notified.');
+    loadAdminWithdrawals();
+  } catch(err) { alert('❌ '+err.message); }
 }
 async function rejectWithdrawal(id) {
-  const notes=prompt('Reason for rejection:')||'Rejected';
-  try { await aF(`/api/withdrawals/admin/${id}/reject`,{method:'POST',body:JSON.stringify({adminNotes:notes})}); loadAdminWithdrawals(); }
-  catch(err) { alert('❌ '+err.message); }
+  const notes = document.getElementById('txnNotes_'+id)?.value.trim() || prompt('Reason for rejection:') || 'Rejected';
+  if (!confirm('Reject this withdrawal? User funds will remain unchanged.')) return;
+  try {
+    await aF(`/api/withdrawals/admin/${id}/reject`,{method:'POST',body:JSON.stringify({adminNotes:notes})});
+    toast('Withdrawal rejected. User notified, funds unchanged.');
+    loadAdminWithdrawals();
+  } catch(err) { alert('❌ '+err.message); }
 }
 
 // ============ SMART FILE DOWNLOAD ============
