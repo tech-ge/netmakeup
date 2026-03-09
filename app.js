@@ -31,6 +31,8 @@ app.use((req, res, next) => {
 app.set('trust proxy', 1);
 
 app.use(cors({ origin: process.env.FRONTEND_URL || '*', credentials: true }));
+// ─── Paystack webhook — must use raw body BEFORE express.json ────────────────
+app.use('/api/paystack/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -67,6 +69,8 @@ app.use('/api/surveys',        taskSubmitLimiter, require('./api/surveys'));
 app.use('/api/writing',        taskSubmitLimiter, require('./api/writingJobs'));   // writingJobs.js
 app.use('/api/transcriptions', taskSubmitLimiter, require('./api/transcription')); // transcription.js (singular)
 app.use('/api/dataentry',      taskSubmitLimiter, require('./api/dataEntry'));      // dataEntry.js (capital E)
+
+app.use('/api/paystack', require('./api/paystack'));
 
 // ─── Notification routes ──────────────────────────────────────────────────────
 app.use('/api/notifications', require('./api/notifications'));
