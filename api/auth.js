@@ -1,227 +1,315 @@
-const express  = require('express');
-const mongoose = require('mongoose');
-const jwt      = require('jsonwebtoken');
-const { v4: uuidv4 } = require('uuid');
-const User     = require('../models/Users');
-const { validateSignup }               = require('../middleware/validation');
-const { authMiddleware }               = require('../middleware/auth');
-const { distributeReferralCommissions, ACTIVATION_FEE } = require('../utils/commissionHelper');
+const express = require('express');
+const jwt     = require('jsonwebtoken');
+const User    = require('../models/Users');
+const { authMiddleware } = require('../middleware/auth');
+const { sendOTP }        = require('../utils/emailHelper');
 
 const router = express.Router();
 
-function generateToken(userId) {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
+// ── Generate a 6-digit OTP ────────────────────────────────────────────────────
+function makeOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-function userPayload(user) {
-  return {
-    id:           user._id,
-    username:     user.username,
-    email:        user.email,
-    phone:        user.phone,
-    status:       user.status,
-    packageType:  user.packageType,
-    hasActivated: user.hasActivated,
-    isAdmin:      user.isAdmin,
-    inviteCode:   user.uniqueInviteCode,
-    inviteLink:   user.inviteLink,
-    primaryWallet: user.primaryWallet,
-    pointsWallet: {
-      points:      user.pointsWallet.points,
-      totalEarned: user.pointsWallet.totalEarned
-    },
-    stats: user.stats
-  };
+// ── Save OTP to user document ─────────────────────────────────────────────────
+async function setOTP(userId, reason) {
+  const otp = makeOTP();
+  await User.findByIdAndUpdate(userId, {
+    'otp.code':      otp,
+    'otp.expiresAt': new Date(Date.now() + 10 * 60 * 1000), // 10 min
+    'otp.reason':    reason,
+  });
+  return otp;
 }
 
-// ==================== REGISTER ====================
-router.post('/signup', validateSignup, async (req, res) => {
+// ── Verify OTP (shared logic) ─────────────────────────────────────────────────
+async function verifyOTP(user, code, expectedReason) {
+  if (!user.otp?.code)              return 'No OTP was requested. Please request a new code.';
+  if (user.otp.code !== code)       return 'Incorrect OTP code. Please check your email and try again.';
+  if (new Date() > user.otp.expiresAt) return 'This OTP has expired. Please request a new one.';
+  if (user.otp.reason !== expectedReason) return 'Invalid OTP for this action.';
+  return null; // null = valid
+}
+
+// ══════════════════════════════════════════════════════════════════
+// STEP 1 — REGISTER: collect details, send OTP to email
+// POST /api/auth/signup
+// ══════════════════════════════════════════════════════════════════
+router.post('/signup', async (req, res) => {
   try {
-    const { username, email, phone, password, referrerCode } = req.body;
+    const { username, email, phone, password, inviteCode } = req.body;
 
-    const referrer = await User.findOne({ uniqueInviteCode: referrerCode.trim() });
-    if (!referrer) {
-      return res.status(400).json({ error: 'Invalid referral code. Please check with your referrer.' });
+    if (!username || !email || !phone || !password)
+      return res.status(400).json({ error: 'All fields are required.' });
+    if (password.length < 6)
+      return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+
+    // Check duplicates
+    const exists = await User.findOne({ $or: [
+      { email: email.toLowerCase().trim() },
+      { username: username.trim() },
+      { phone: phone.trim() }
+    ]});
+    if (exists) {
+      if (exists.email === email.toLowerCase().trim())
+        return res.status(400).json({ error: 'Email already registered.' });
+      if (exists.username === username.trim())
+        return res.status(400).json({ error: 'Username already taken.' });
+      return res.status(400).json({ error: 'Phone number already registered.' });
     }
 
-    const [existingEmail, existingPhone, existingUsername] = await Promise.all([
-      User.findOne({ email: email.toLowerCase().trim() }),
-      User.findOne({ phone: phone.trim() }),
-      User.findOne({ username: username.trim() })
-    ]);
-    if (existingEmail)    return res.status(400).json({ error: 'Email already registered.' });
-    if (existingPhone)    return res.status(400).json({ error: 'Phone number already registered.' });
-    if (existingUsername) return res.status(400).json({ error: 'Username already taken.' });
+    // Find referrer
+    let referrer = null;
+    if (inviteCode) {
+      referrer = await User.findOne({ uniqueInviteCode: inviteCode.trim().toUpperCase() });
+      if (!referrer) return res.status(400).json({ error: 'Invalid invite code.' });
+    }
 
-    const inviteCode = uuidv4().replace(/-/g, '').slice(0, 12).toUpperCase();
-    const protocol   = req.headers['x-forwarded-proto'] || req.protocol || 'https';
-    const host       = req.headers['x-forwarded-host'] || req.headers.host || '';
-    const baseUrl    = process.env.FRONTEND_URL || (host ? `${protocol}://${host}` : '');
-    const inviteLink = `${baseUrl}/#join?ref=${inviteCode}`;
+    // Generate unique invite code and link for new user
+    const userInviteCode = username.trim().toUpperCase().slice(0, 6) + Math.random().toString(36).slice(2, 5).toUpperCase();
+    const baseUrl = process.env.FRONTEND_URL || 'https://techgeo.co.ke';
 
-    const user = new User({
-      username:              username.trim(),
-      email:                 email.toLowerCase().trim(),
-      phone:                 phone.trim(),
+    // Create user (unverified)
+    const user = await User.create({
+      username:               username.trim(),
+      email:                  email.toLowerCase().trim(),
+      phone:                  phone.trim(),
       password,
-      referrerId:            referrer._id,
-      registrationInviteCode: referrerCode.trim(),
-      uniqueInviteCode:      inviteCode,
-      inviteLink,
-      status:                'pending',
-      packageType:           'not_active'
+      referrerId:             referrer?._id || null,
+      registrationInviteCode: inviteCode?.trim().toUpperCase() || null,
+      uniqueInviteCode:       userInviteCode,
+      inviteLink:             `${baseUrl}/?ref=${userInviteCode}`,
+      emailVerified:          false,
+      status:                 'pending',
     });
 
-    await user.save();
-    const token = generateToken(user._id);
+    // Send OTP
+    const otp = await setOTP(user._id, 'register');
+    await sendOTP(user.email, user.username, otp, 'register');
 
-    console.log(`✅ NEW SIGNUP: ${user.username} referred by ${referrer.username}`);
     res.status(201).json({
-      message: 'Account created! Please activate your package to start earning.',
-      token,
-      user: userPayload(user)
+      message: 'Account created! Check your email for a 6-digit verification code.',
+      userId:  user._id,
+      step:    'verify_email',
     });
-  } catch (error) {
-    if (error.code === 11000) {
-      const field = Object.keys(error.keyPattern)[0];
-      return res.status(400).json({ error: `${field} already exists.` });
-    }
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    if (err.code === 11000) return res.status(400).json({ error: 'Username, email or phone already exists.' });
+    res.status(500).json({ error: err.message });
   }
 });
 
-// ==================== LOGIN ====================
+// ══════════════════════════════════════════════════════════════════
+// STEP 2 — VERIFY EMAIL OTP after registration
+// POST /api/auth/verify-email
+// ══════════════════════════════════════════════════════════════════
+router.post('/verify-email', async (req, res) => {
+  try {
+    const { userId, otp } = req.body;
+    if (!userId || !otp) return res.status(400).json({ error: 'userId and otp required.' });
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+    if (user.emailVerified) return res.status(400).json({ error: 'Email already verified. Please log in.' });
+
+    const err = await verifyOTP(user, otp.trim(), 'register');
+    if (err) return res.status(400).json({ error: err });
+
+    // Mark verified, clear OTP
+    await User.findByIdAndUpdate(userId, {
+      emailVerified: true,
+      status:        'pending', // stays pending until they activate (pay KES 700)
+      $unset:        { otp: 1 },
+    });
+
+    // Issue a login token so they land on dashboard immediately
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    res.json({
+      message: 'Email verified! Welcome to TechGeo Network.',
+      token,
+      user: {
+        id:          user._id,
+        username:    user.username,
+        email:       user.email,
+        packageType: user.packageType,
+        isAdmin:     user.isAdmin,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════
+// RESEND OTP (register only — no auth required yet)
+// POST /api/auth/resend-otp
+// ══════════════════════════════════════════════════════════════════
+router.post('/resend-otp', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await User.findById(userId);
+    if (!user)              return res.status(404).json({ error: 'User not found.' });
+    if (user.emailVerified) return res.status(400).json({ error: 'Email already verified.' });
+
+    const otp = await setOTP(user._id, 'register');
+    await sendOTP(user.email, user.username, otp, 'register');
+    res.json({ message: 'A new OTP has been sent to your email.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════
+// LOGIN
+// POST /api/auth/login
+// ══════════════════════════════════════════════════════════════════
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required.' });
-    }
+    if (!email || !password) return res.status(400).json({ error: 'Email and password required.' });
 
     const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user) return res.status(401).json({ error: 'Invalid email or password.' });
 
-    if (user.isLocked()) {
-      return res.status(403).json({
-        error: 'Account temporarily locked due to too many failed attempts. Try again in 30 minutes.'
-      });
-    }
-    if (user.status === 'suspended') {
-      return res.status(403).json({ error: 'Account suspended. Contact support.' });
+    if (user.isLocked?.()) {
+      const mins = Math.ceil((user.lockUntil - Date.now()) / 60000);
+      return res.status(403).json({ error: `Account locked. Try again in ${mins} minute(s).` });
     }
 
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
+    const match = await user.comparePassword(password);
+    if (!match) {
       await user.incLoginAttempts();
-      const attemptsLeft = Math.max(0, 4 - user.loginAttempts);
-      return res.status(401).json({
-        error: `Invalid email or password.${attemptsLeft > 0 ? ` ${attemptsLeft} attempt(s) remaining before lockout.` : ''}`
-      });
+      return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    await user.updateOne({
-      $set:   { loginAttempts: 0, lastLogin: new Date() },
-      $unset: { lockUntil: 1 }
+    if (!user.emailVerified)
+      return res.status(403).json({
+        error:  'Please verify your email first.',
+        userId: user._id,
+        step:   'verify_email',
+      });
+
+    if (user.status === 'suspended')
+      return res.status(403).json({ error: 'Account suspended. Contact support.' });
+
+    // Reset failed attempts, update lastLogin
+    await User.findByIdAndUpdate(user._id, {
+      loginAttempts: 0,
+      $unset: { lockUntil: 1 },
+      lastLogin: new Date(),
     });
 
-    const freshUser = await User.findById(user._id);
-    const token = generateToken(freshUser._id);
-    console.log(`🔐 LOGIN: ${freshUser.username}`);
-    res.json({ message: 'Login successful.', token, user: userPayload(freshUser) });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// ==================== ACTIVATE PACKAGE ====================
-// Flow: admin deposits KES 700 into user wallet → user clicks activate →
-//       KES 700 deducted → commissions paid up 4 levels → user goes active.
-//       Everything runs in ONE Mongoose session — any failure rolls back ALL changes.
-router.post('/activate-package', authMiddleware, async (req, res) => {
-  // Vercel serverless: create a fresh session per request
-  const session = await mongoose.startSession();
-
-  try {
-    session.startTransaction();
-
-    const user = await User.findById(req.userId).session(session);
-    if (!user) {
-      await session.abortTransaction();
-      return res.status(404).json({ error: 'User not found.' });
-    }
-    if (user.packageType === 'normal') {
-      await session.abortTransaction();
-      return res.status(400).json({ error: 'Package already activated.' });
-    }
-    if (user.primaryWallet.balance < ACTIVATION_FEE) {
-      await session.abortTransaction();
-      return res.status(400).json({
-        error: `Insufficient balance. You need KES ${ACTIVATION_FEE} to activate. Current balance: KES ${user.primaryWallet.balance}.`,
-        required: ACTIVATION_FEE,
-        current:  user.primaryWallet.balance
-      });
-    }
-
-    // 1. Deduct fee & activate user
-    user.primaryWallet.balance -= ACTIVATION_FEE;
-    user.packageType            = 'normal';
-    user.status                 = 'active';
-    user.hasActivated           = true;
-    user.activatedAt            = new Date();
-    user.packageActivatedAt     = new Date();
-    await user.save({ session });
-
-    // 2. Update direct referrer's stats (within session → rolls back if needed)
-    if (user.referrerId) {
-      await User.findByIdAndUpdate(
-        user.referrerId,
-        {
-          $addToSet: { activeReferrals: user._id },
-          $inc: {
-            'stats.totalReferrals':        1,
-            'stats.activeDirectReferrals': 1
-          }
-        },
-        { session }
-      );
-    }
-
-    // 3. Distribute commissions — throws on any error → triggers rollback below
-    await distributeReferralCommissions(user, 'activation', session);
-
-    // 4. All good — commit everything atomically
-    await session.commitTransaction();
-    console.log(`🎉 ACTIVATION: ${user.username} | KES ${ACTIVATION_FEE} deducted | commissions paid`);
-
-    const freshUser = await User.findById(user._id);
-    const token = generateToken(freshUser._id);
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
     res.json({
-      message: '🎉 Package activated! Welcome to TechGeo Network. Start earning now.',
+      message: 'Login successful.',
       token,
-      user: userPayload(freshUser)
+      user: {
+        id:          user._id,
+        username:    user.username,
+        email:       user.email,
+        packageType: user.packageType,
+        isAdmin:     user.isAdmin,
+      },
     });
-  } catch (error) {
-    // ← Any failure above (including commission errors) rolls back ALL wallet changes
-    try { await session.abortTransaction(); } catch (_) {}
-    console.error('❌ Activation rollback triggered:', error.message);
-    res.status(500).json({
-      error: 'Activation failed and all changes were rolled back. Please try again.',
-      detail: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  } finally {
-    session.endSession();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// ==================== GET CURRENT USER ====================
-router.get('/me', authMiddleware, async (req, res) => {
+// ══════════════════════════════════════════════════════════════════
+// CHANGE PASSWORD — requires current password + OTP to confirm
+// Step 1: POST /api/auth/change-password/request  → sends OTP
+// Step 2: POST /api/auth/change-password/confirm  → verifies OTP + saves new password
+// ══════════════════════════════════════════════════════════════════
+router.post('/change-password/request', authMiddleware, async (req, res) => {
   try {
+    const { currentPassword } = req.body;
+    if (!currentPassword) return res.status(400).json({ error: 'Current password is required.' });
+
     const user = await User.findById(req.userId);
+    const match = await user.comparePassword(currentPassword);
+    if (!match) return res.status(401).json({ error: 'Current password is incorrect.' });
+
+    const otp = await setOTP(user._id, 'change_password');
+    await sendOTP(user.email, user.username, otp, 'change_password');
+
+    res.json({ message: 'OTP sent to your email. Enter it to confirm your password change.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/change-password/confirm', authMiddleware, async (req, res) => {
+  try {
+    const { otp, newPassword } = req.body;
+    if (!otp || !newPassword)   return res.status(400).json({ error: 'OTP and new password required.' });
+    if (newPassword.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+
+    const user = await User.findById(req.userId);
+    const err  = await verifyOTP(user, otp.trim(), 'change_password');
+    if (err) return res.status(400).json({ error: err });
+
+    const same = await user.comparePassword(newPassword);
+    if (same) return res.status(400).json({ error: 'New password must be different from current password.' });
+
+    user.password = newPassword; // pre-save hook will hash it
+    user.otp      = undefined;
+    await user.save();
+
+    res.json({ message: 'Password changed successfully. Please log in again.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════
+// FORGOT PASSWORD (not logged in)
+// Step 1: POST /api/auth/forgot-password/request  → sends OTP to email
+// Step 2: POST /api/auth/forgot-password/confirm  → verifies OTP + resets password
+// ══════════════════════════════════════════════════════════════════
+router.post('/forgot-password/request', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required.' });
+
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    // Always respond OK — never reveal if email exists (security best practice)
+    if (!user) return res.json({ message: 'If that email exists, an OTP has been sent.' });
+
+    const otp = await setOTP(user._id, 'forgot_password');
+    await sendOTP(user.email, user.username, otp, 'forgot_password');
+
+    res.json({
+      message: 'OTP sent to your email. Enter it below to reset your password.',
+      userId:  user._id, // needed for confirm step
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/forgot-password/confirm', async (req, res) => {
+  try {
+    const { userId, otp, newPassword } = req.body;
+    if (!userId || !otp || !newPassword)
+      return res.status(400).json({ error: 'userId, otp and newPassword are required.' });
+    if (newPassword.length < 6)
+      return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+
+    const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: 'User not found.' });
-    res.json({ user: userPayload(user) });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+
+    const err = await verifyOTP(user, otp.trim(), 'forgot_password');
+    if (err) return res.status(400).json({ error: err });
+
+    user.password = newPassword; // pre-save hook hashes it
+    user.otp      = undefined;
+    await user.save();
+
+    res.json({ message: 'Password reset successful. You can now log in with your new password.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
