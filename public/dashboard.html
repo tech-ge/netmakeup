@@ -1154,23 +1154,35 @@ function showDepositMsg(msg,ok){
 }
 
 // Check if returning from Paystack redirect
+// Paystack appends ?reference=xxx&trxref=xxx to whatever callback_url we give it
 (async function checkDepositReturn(){
-  if(window.location.hash.includes('deposit-success')){
-    const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get('reference') || urlParams.get('trxref');
-    if(ref){
-      try{
-        const v = await apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:ref})});
-        toast(v.message||'Deposit confirmed!');
-        loadDashboard();
-      }catch(e){ toast('Could not verify payment: '+e.message, false); }
-      history.replaceState(null,'',window.location.pathname);
-    }
+  const searchParams = new URLSearchParams(window.location.search);
+  const hashPart     = window.location.hash.split('?')[1] || '';
+  const hashParams   = new URLSearchParams(hashPart);
+
+  // Check both ?deposit=1 (new callback) and #deposit-success (old hash callback)
+  const isDepositReturn = searchParams.get('deposit') === '1'
+    || window.location.hash.includes('deposit-success');
+
+  const ref = searchParams.get('reference') || searchParams.get('trxref')
+           || hashParams.get('reference')    || hashParams.get('trxref');
+
+  if(isDepositReturn && ref){
+    try{
+      toast('Verifying your payment…', true);
+      const v = await apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:ref})});
+      toast(v.message||'Deposit confirmed!');
+      loadDashboard();
+    }catch(e){ toast('Could not verify payment: '+e.message, false); }
+    history.replaceState(null,'',window.location.pathname);
+  } else if(isDepositReturn && !ref){
+    // Returned from payment page but no reference — clear URL
+    history.replaceState(null,'',window.location.pathname);
   }
 })();
 </script>
-<script src="https://js.paystack.co/v1/inline.js"></script>
 <script>window._PAYSTACK_PUBLIC_KEY='pk_live_7def999fbc94b9848100cceecc0cdee15cb93cba';</script>
+<script src="https://js.paystack.co/v1/inline.js"></script>
 <script src="/offline.js"></script>
 </body>
 </html>
