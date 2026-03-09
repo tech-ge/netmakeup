@@ -1083,7 +1083,7 @@ function toggleNotifPanel(){_notifOpen=!_notifOpen;const p=document.getElementBy
 async function markAllRead(){try{await apiFetch('/api/notifications/mark-read',{method:'POST'});loadNotifications();}catch(e){}}
 async function markOneRead(id,el){try{await apiFetch(`/api/notifications/mark-read/${id}`,{method:'POST'});el.classList.remove('unread');el.querySelector('.ndot')?.remove();loadNotifications();}catch(e){}}
 setInterval(loadNotifications,60000);
-</script>
+
 
 /* ── PAYSTACK DEPOSIT ── */
 function openDepositModal(){
@@ -1159,7 +1159,6 @@ function showDepositMsg(msg,ok){
     }
   }
 })();
-
 </script>
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <script>window._PAYSTACK_PUBLIC_KEY='pk_live_7def999fbc94b9848100cceecc0cdee15cb93cba';</script>
