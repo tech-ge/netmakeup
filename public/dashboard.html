@@ -1129,19 +1129,30 @@ async function initiateDeposit(){
         btn.textContent='Pay via Card / M-Pesa';
       },
       onSuccess: function(response){
-        btn.textContent='Verifying…';
+        btn.textContent='Verifying payment…';
         const ref = (response && (response.reference || response.trxref)) || d.reference;
-        apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:ref})})
+        // Use longer timeout (40s) — M-Pesa STK push retries up to 4x with 3s gaps
+        const ctrl = new AbortController();
+        const timer = setTimeout(()=>ctrl.abort(), 40000);
+        fetch('/api/paystack/verify',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('token')},
+          body:JSON.stringify({reference:ref}),
+          signal:ctrl.signal
+        })
+          .then(function(r){ clearTimeout(timer); return r.json(); })
           .then(function(v){
             btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
+            if(v.error) throw new Error(v.error);
             closeModal('depositModal');
             toast(v.message||'Deposit successful!');
             loadDashboard();
             if(typeof loadWithdraw==='function') setTimeout(loadWithdraw,600);
           })
           .catch(function(e){
+            clearTimeout(timer);
             btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
-            showDepositMsg('Payment received. Ref: '+ref+'. Balance will update shortly or contact support.', true);
+            showDepositMsg('Payment received. Ref: '+ref+'. Your balance will update shortly — if not, contact support with this reference.', true);
           });
       },
       onCancel: function(){
