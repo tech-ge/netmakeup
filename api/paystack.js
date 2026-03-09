@@ -150,18 +150,23 @@ router.post('/verify', authMiddleware, async (req, res) => {
 // POST /api/paystack/webhook
 // No auth — verified via Paystack signature
 // ============================================================
-router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+router.post('/webhook', async (req, res) => {
   try {
-    const crypto = require('crypto');
-    const hash   = crypto.createHmac('sha512', PAYSTACK_SECRET)
-                         .update(req.body)
-                         .digest('hex');
+    const crypto  = require('crypto');
+    // app.js mounts express.raw() for this path — req.body is already a Buffer
+    const rawBody = Buffer.isBuffer(req.body)
+      ? req.body
+      : Buffer.from(typeof req.body === 'string' ? req.body : JSON.stringify(req.body));
+
+    const hash = crypto.createHmac('sha512', PAYSTACK_SECRET)
+                       .update(rawBody)
+                       .digest('hex');
 
     if (hash !== req.headers['x-paystack-signature']) {
       return res.status(401).send('Invalid signature');
     }
 
-    const event = JSON.parse(req.body);
+    const event = JSON.parse(rawBody.toString('utf8'));
     res.sendStatus(200); // Always respond 200 immediately to Paystack
 
     if (event.event === 'charge.success') {
