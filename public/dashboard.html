@@ -2,16 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="https://port.techgeo.co.ke/logo.jpeg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#16a34a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="TechGeo">
-  <link rel="icon" type="image/jpeg" href="https://port.techgeo.co.ke/logo.jpeg">
-<link rel="apple-touch-icon" href="https://port.techgeo.co.ke/logo.jpeg">
   <link rel="manifest" href="/manifest.json">
-  <meta name="google-site-verification" content="1Q4MjheMlY87LJr55NgwiS4lWBGUG-SOJPpnXvUnR3E" />
-<title>TechGeo</title>
+<title>TechGeo — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -186,17 +184,18 @@ table.ref-table tr:hover td{background:var(--gray-50)}
       <div style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;text-align:center">
         <p style="color:rgba(255,255,255,.7);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem">Your Wallet Balance</p>
         <p style="color:#fff;font-size:2.75rem;font-weight:800;margin:0;font-family:'DM Mono',monospace" id="activationBalance">KES 0</p>
-        <p style="color:rgba(255,255,255,.6);font-size:.78rem;margin-top:.25rem">Updates after admin deposits your payment</p>
+        <p style="color:rgba(255,255,255,.6);font-size:.78rem;margin-top:.25rem">Deposit via card/M-Pesa to activate instantly</p>
+        <button onclick="openDepositModal()" style="margin-top:.75rem;background:#fff;color:var(--g);border:none;padding:.55rem 1.25rem;font-size:.85rem;font-weight:800;border-radius:.5rem;cursor:pointer;font-family:inherit">+ Deposit via Paystack</button>
       </div>
       <div style="background:#fff;border-radius:1rem;padding:2rem;box-shadow:0 24px 60px rgba(0,0,0,.3)">
         <div style="text-align:center;margin-bottom:1.5rem"><h2 style="font-size:1.3rem;font-weight:800;margin:.3rem 0">Account Not Activated</h2><p style="color:var(--gray-500);font-size:.85rem">Follow the steps below to activate and start earning</p></div>
         <div style="background:var(--gl);border:1.5px solid var(--g);border-radius:var(--rs);padding:1rem;margin-bottom:.75rem">
-          <p style="font-weight:800;color:var(--gd);margin:0 0 .5rem;font-size:.9rem">Step 1 — Pay KES 700 via M-Pesa Paybill</p>
-          <div style="background:#fff;border:2px solid var(--g);border-radius:.5rem;padding:.85rem;text-align:center"><p style="font-size:.7rem;color:var(--gray-400);text-transform:uppercase;letter-spacing:1px;margin:0">Paybill <b>247247</b> &middot; Account Number</p><p style="font-size:2rem;font-weight:800;color:var(--g);letter-spacing:6px;margin:.15rem 0;font-family:'DM Mono',monospace">153316</p><p style="font-size:.75rem;color:var(--gray-400);margin:0">TechGeo Network Platform</p></div>
+          <p style="font-weight:800;color:var(--gd);margin:0 0 .5rem;font-size:.9rem">Option A — Pay via Paystack (Card / M-Pesa)</p>
+          <button onclick="openDepositModal()" style="width:100%;background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border:none;padding:.85rem;font-size:.95rem;font-weight:800;border-radius:.6rem;cursor:pointer;font-family:inherit;margin-top:.25rem">Pay via Card / M-Pesa (Paystack)</button><p style="font-size:.75rem;color:var(--gd);margin:.4rem 0 0;text-align:center">Instant — no need to contact anyone</p>
         </div>
-        <div style="background:var(--bl);border:1.5px solid var(--b);border-radius:var(--rs);padding:.85rem;margin-bottom:.75rem"><p style="font-weight:700;color:#1e40af;margin:0 0 .2rem;font-size:.88rem">Step 2 — Screenshot the M-Pesa confirmation</p><p style="color:#1e40af;font-size:.82rem;margin:0">Take a screenshot of the M-Pesa success message.</p></div>
+        <div style="background:var(--bl);border:1.5px solid var(--b);border-radius:var(--rs);padding:.85rem;margin-bottom:.75rem"><p style="font-weight:700;color:#1e40af;margin:0 0 .2rem;font-size:.88rem">Option B — Pay Manually via M-Pesa Paybill</p><p style="color:#1e40af;font-size:.82rem;margin:0">Paybill <b>247247</b> · Account <b>153316</b> · Amount <b>KES 700</b><br>Then send screenshot to your upline below.</p></div>
         <div style="background:var(--ym);border:1.5px solid var(--y);border-radius:var(--rs);padding:.85rem;margin-bottom:.85rem">
-          <p style="font-weight:700;color:#78350f;margin:0 0 .5rem;font-size:.88rem">Step 3 — Send Screenshot to Your Upline</p>
+          <p style="font-weight:700;color:#78350f;margin:0 0 .5rem;font-size:.88rem">Step 2 (Manual only) — Send Screenshot to Your Upline</p>
           <div style="background:#fff;border:1px solid var(--y);border-radius:.4rem;padding:.65rem"><p style="font-size:.7rem;color:var(--gray-400);margin:0 0 .1rem">Your Upline</p><p style="font-weight:800;margin:0;color:var(--gray-900)" id="uplineName">Loading…</p><p style="font-size:.8rem;color:var(--gray-500);margin:.1rem 0 0" id="uplinePhone"></p><p style="font-size:.8rem;color:var(--gray-500);margin:.05rem 0 0" id="uplineEmail"></p></div>
         </div>
         <button onclick="doActivation()" style="width:100%;background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border:none;padding:.95rem;font-size:1rem;font-weight:800;border-radius:.65rem;cursor:pointer;font-family:inherit">Activate My Account — KES 700</button>
@@ -489,6 +488,26 @@ table.ref-table tr:hover td{background:var(--gray-50)}
 <div class="modal" id="transcriptionModal"><div class="mbox" style="max-width:680px"><button class="mclose" onclick="closeModal('transcriptionModal')">&#10005;</button><h3 id="transcriptionModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="transcriptionModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.85rem"><strong style="font-size:.82rem">Instructions:</strong><div id="transcriptionModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div style="margin-bottom:1rem"><strong style="font-size:.82rem">Audio:</strong><audio id="transcriptionAudio" controls style="width:100%;margin-top:.5rem"></audio></div><div class="fg"><label class="fl">Your Transcription <span style="font-weight:400;color:var(--gray-400)">(min 20 chars)</span></label><textarea id="transcriptionText" class="fc" rows="7" placeholder="Type the transcription here…"></textarea><div style="font-size:.75rem;color:var(--gray-400);text-align:right;margin-top:.2rem" id="transcriptionCharCount">0 chars</div></div><button id="transcriptionSubmitBtn" class="btn btn-p wf">Submit Transcription</button></div></div>
 
 <div class="modal" id="dataentryModal"><div class="mbox"><button class="mclose" onclick="closeModal('dataentryModal')">&#10005;</button><h3 id="dataentryModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="dataentryModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.85rem"><strong style="font-size:.82rem">Instructions:</strong><div id="dataentryModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div id="dataentryTemplateSection" style="display:none;margin-bottom:.85rem"><a id="dataentryTemplateLink" href="javascript:void(0)" onclick="smartDownload(this.dataset.url,this.dataset.pid,'template')" data-url="" data-pid="" class="btn btn-o btn-sm">Download Template File</a></div><div class="fg"><label class="fl">Upload Completed File <span style="font-weight:400;color:var(--gray-400)">(PDF, Word, Excel, CSV &middot; Max 20MB)</span></label><input type="file" id="dataentryFileInput" class="fc" accept=".pdf,.doc,.docx,.xlsx,.csv"></div><button id="dataentrySubmitBtn" class="btn btn-p wf" style="margin-top:.5rem">Submit Data Entry</button></div></div>
+
+
+<!-- DEPOSIT MODAL -->
+<div class="modal" id="depositModal">
+  <div class="mbox" style="max-width:440px">
+    <button class="mclose" onclick="closeModal('depositModal')">&#10005;</button>
+    <h3 style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem">Deposit to Wallet</h3>
+    <p style="color:var(--gray-500);font-size:.85rem;margin-bottom:1.25rem">Pay securely via Card or M-Pesa. Amount reflects instantly.</p>
+    <div class="fg">
+      <label class="fl">Amount (KES)</label>
+      <input type="number" id="depositAmount" class="fc" placeholder="e.g. 700" min="10" step="1">
+    </div>
+    <p style="font-size:.78rem;color:var(--gray-400);margin:.35rem 0 1rem">Minimum KES 10 · Powered by Paystack</p>
+    <button id="depositBtn" onclick="initiateDeposit()" class="btn btn-p wf">Pay via Card / M-Pesa</button>
+    <p id="depositMsg" style="display:none;text-align:center;font-size:.85rem;margin:.65rem 0 0;font-weight:600"></p>
+    <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--gray-100)">
+      <p style="font-size:.75rem;color:var(--gray-400);text-align:center;margin:0">🔒 Secured by Paystack · SSL encrypted</p>
+    </div>
+  </div>
+</div>
 
 <div id="_toast"></div>
 
@@ -893,7 +912,9 @@ async function loadWithdraw(){
       hel.innerHTML=hist.withdrawals.map(w=>{
         const isPoints=w.type==='points';
         const label=isPoints?`${w.pointsRedeemed||0} pts → KES ${w.amount}`:`KES ${w.amount}`;
-        return `<div class="hrow"><div><div class="hm">${label} <span class="bdg ${isPoints?'by':'bb'}">${isPoints?'POINTS':'KES'}</span></div><div class="hs">${new Date(w.requestedAt).toLocaleDateString()} · ${(w.paymentMethod||'').toUpperCase()}${w.adminNotes?' · '+w.adminNotes:''}${w.transactionReference?' · Ref: '+w.transactionReference:''}</div></div><span class="bdg ${w.status==='completed'?'bg':w.status==='pending'?'by':'br'}">${(w.status||'').toUpperCase()}</span></div>`;
+        const txnCode = w.transactionReference ? `<div style="font-size:.75rem;color:var(--g);font-weight:700;margin-top:.2rem">Txn Code: ${w.transactionReference}</div>` : '';
+        const rejNote = w.status==='rejected'&&w.adminNotes ? `<div style="font-size:.73rem;color:#dc2626;margin-top:.15rem">Reason: ${w.adminNotes}</div>` : '';
+        return `<div class="hrow"><div><div class="hm">${label} <span class="bdg ${isPoints?'by':'bb'}">${isPoints?'POINTS':'KES'}</span></div><div class="hs">${new Date(w.requestedAt).toLocaleDateString()} · ${(w.paymentMethod||'').toUpperCase()}${w.adminNotes&&w.status!=='rejected'?' · '+w.adminNotes:''}</div>${txnCode}${rejNote}</div><span class="bdg ${w.status==='completed'?'bg':w.status==='pending'?'by':'br'}">${(w.status||'').toUpperCase()}</span></div>`;
       }).join('');
     } else hel.innerHTML='<p style="color:var(--gray-400);text-align:center;padding:.75rem;font-size:.85rem">No withdrawal history yet.</p>';
   }catch(err){console.error('Withdraw:',err);}
@@ -1063,6 +1084,85 @@ async function markAllRead(){try{await apiFetch('/api/notifications/mark-read',{
 async function markOneRead(id,el){try{await apiFetch(`/api/notifications/mark-read/${id}`,{method:'POST'});el.classList.remove('unread');el.querySelector('.ndot')?.remove();loadNotifications();}catch(e){}}
 setInterval(loadNotifications,60000);
 </script>
+
+/* ── PAYSTACK DEPOSIT ── */
+function openDepositModal(){
+  document.getElementById('depositAmount').value='';
+  document.getElementById('depositMsg').style.display='none';
+  openModal('depositModal');
+}
+
+async function initiateDeposit(){
+  const amtEl = document.getElementById('depositAmount');
+  const msgEl = document.getElementById('depositMsg');
+  const btn   = document.getElementById('depositBtn');
+  const amount = parseFloat(amtEl.value);
+  if (!amount || amount < 10){ showDepositMsg('Enter a valid amount (min KES 10).',false); return; }
+  btn.disabled=true; btn.textContent='Initializing…';
+  msgEl.style.display='none';
+  try {
+    const d = await apiFetch('/api/paystack/initialize',{method:'POST',body:JSON.stringify({amount})});
+    // Open Paystack popup using their inline JS
+    if(typeof PaystackPop !== 'undefined'){
+      const handler = PaystackPop.setup({
+        key:       window._PAYSTACK_PUBLIC_KEY,
+        email:     (JSON.parse(localStorage.getItem('user')||'{}')).email || '',
+        amount:    Math.round(amount * 100),
+        ref:       d.reference,
+        currency:  'KES',
+        onClose:   function(){ btn.disabled=false; btn.textContent='Pay via Card / M-Pesa'; },
+        callback:  async function(response){
+          btn.textContent='Verifying…';
+          try {
+            const v = await apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:response.reference})});
+            closeModal('depositModal');
+            toast(v.message||'Deposit successful!');
+            loadDashboard();
+            if(typeof loadWithdraw==='function') setTimeout(loadWithdraw,600);
+          } catch(e){
+            showDepositMsg(e.message,false);
+            btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
+          }
+        }
+      });
+      handler.openIframe();
+    } else {
+      // Fallback: redirect to Paystack hosted page
+      window.open(d.authorizationUrl,'_blank');
+      showDepositMsg('Complete payment in the new tab, then refresh your dashboard.',true);
+      btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
+    }
+  } catch(e){
+    showDepositMsg(e.message,false);
+    btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
+  }
+}
+
+function showDepositMsg(msg,ok){
+  const el=document.getElementById('depositMsg');
+  el.textContent=msg; el.style.display='block';
+  el.style.color=ok?'var(--g)':'#dc2626';
+}
+
+// Check if returning from Paystack redirect
+(async function checkDepositReturn(){
+  if(window.location.hash.includes('deposit-success')){
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('reference') || urlParams.get('trxref');
+    if(ref){
+      try{
+        const v = await apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:ref})});
+        toast(v.message||'Deposit confirmed!');
+        loadDashboard();
+      }catch(e){ toast('Could not verify payment: '+e.message, false); }
+      history.replaceState(null,'',window.location.pathname);
+    }
+  }
+})();
+
+</script>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script>window._PAYSTACK_PUBLIC_KEY='pk_live_YOUR_PUBLIC_KEY_HERE';</script>
 <script src="/offline.js"></script>
 </body>
 </html>
