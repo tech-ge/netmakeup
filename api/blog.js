@@ -293,4 +293,49 @@ router.get('/admin/pending-submissions', authMiddleware, requireAdmin, async (re
   }
 });
 
+
+// ADMIN: Edit blog
+router.put('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    const { title, description, content, category, maxBidders, reward } = req.body;
+    if (title)       blog.title       = title;
+    if (description) blog.description = description;
+    if (content)     blog.content     = content;
+    if (category)    blog.category    = category;
+    if (maxBidders)  blog.maxBidders  = maxBidders;
+    if (reward)      blog.reward      = reward;
+    await blog.save();
+    res.json({ message: 'Blog updated.', blog });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ADMIN: Close blog (stop accepting new bids)
+router.post('/admin/:id/close', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    blog.isOpen = false;
+    await blog.save();
+    res.json({ message: 'Blog closed.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ADMIN: Delete blog
+router.delete('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    await Blog.deleteOne({ _id: blog._id });
+    res.json({ message: 'Blog deleted.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
