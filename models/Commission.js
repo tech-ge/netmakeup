@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const CommissionSchema = new mongoose.Schema({
   fromUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   toUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  level: { type: Number, required: true, min: 1, max: 4 },
+  level: { type: Number, required: true, min: 0, max: 4 },  // 0 = deposit/system record
   amount: { type: Number, required: true, min: 0 },
   type: {
     type: String,
@@ -15,7 +15,8 @@ const CommissionSchema = new mongoose.Schema({
       'writing_earning',
       'dataentry_earning',
       'points_conversion',
-      'points_withdrawal_payout'  // paid from profit pool, not user wallet
+      'points_withdrawal_payout',  // paid from profit pool, not user wallet
+      'deposit'                    // Paystack wallet top-up
     ],
     default: 'referral_commission'
   },
