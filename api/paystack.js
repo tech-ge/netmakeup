@@ -98,9 +98,22 @@ router.post('/verify', authMiddleware, async (req, res) => {
     if (alreadyProcessed)
       return res.status(400).json({ error: 'This payment has already been credited.' });
 
-    const response = await paystackRequest('GET', `/transaction/verify/${encodeURIComponent(reference)}`);
-    if (!response.status || response.data.status !== 'success')
-      return res.status(400).json({ error: 'Payment not successful. Please try again or contact support.' });
+    // Retry up to 4 times with 3s delay — M-Pesa STK push can be 'pending' briefly
+    let response, attempts = 0;
+    while (attempts < 4) {
+      response = await paystackRequest('GET', `/transaction/verify/${encodeURIComponent(reference)}`);
+      if (response.status && response.data.status === 'success') break;
+      if (response.status && response.data.status === 'abandoned') break; // user cancelled
+      attempts++;
+      if (attempts < 4) await new Promise(r => setTimeout(r, 3000));
+    }
+    if (!response.status || response.data.status !== 'success') {
+      const ps = response?.data?.status || 'unknown';
+      return res.status(400).json({ error: ps === 'abandoned'
+        ? 'Payment was cancelled or not completed.'
+        : `Payment status: ${ps}. If you were charged, contact support with ref: ${reference}`
+      });
+    }
 
     const amountKES = response.data.amount / 100;
     const userId    = response.data.metadata?.userId || req.userId;
