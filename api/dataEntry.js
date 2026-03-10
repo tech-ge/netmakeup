@@ -3,7 +3,7 @@ const DataEntry = require('../models/DataEntry');
 const User = require('../models/Users');
 const Notification = require('../models/Notification');
 const Commission = require('../models/Commission');
-const { uploadDocument, deleteFile } = require('../config/cloudinary');
+const { uploadMixed, uploadDocument, deleteFile } = require('../config/cloudinary');
 const { authMiddleware, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -69,12 +69,12 @@ router.get('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// POST /api/dataentry/:id/submit — upload completed data entry file
+// POST /api/dataentry/:id/submit — upload completed data entry file or image
 router.post('/:id/submit', authMiddleware,
-  uploadDocument.single('file'),
+  uploadMixed.single('file'),
   async (req, res) => {
     try {
-      if (!req.file) return res.status(400).json({ error: 'A PDF or Word document is required.' });
+      if (!req.file) return res.status(400).json({ error: 'Please upload a file (image: jpg/png/gif/webp or document: pdf/doc/docx/xlsx/csv).' });
 
       const job = await DataEntry.findById(req.params.id);
       if (!job) return res.status(404).json({ error: 'Job not found' });
@@ -94,6 +94,7 @@ router.post('/:id/submit', authMiddleware,
       }
 
       const ext = req.file.originalname.split('.').pop().toLowerCase();
+      const isImage = ['jpg','jpeg','png','gif','webp','bmp','tiff'].includes(ext);
 
       job.submissions.push({
         userId:       req.userId,
