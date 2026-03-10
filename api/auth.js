@@ -41,7 +41,8 @@ async function verifyOTP(user, code, expectedReason) {
 // ══════════════════════════════════════════════════════════════════
 router.post('/signup', async (req, res) => {
   try {
-    const { username, email, phone, password, inviteCode } = req.body;
+    const { username, email, phone, password, inviteCode, referrerCode } = req.body;
+    const code = (inviteCode || referrerCode || '').trim();
 
     if (!username || !email || !phone || !password)
       return res.status(400).json({ error: 'All fields are required.' });
@@ -64,9 +65,10 @@ router.post('/signup', async (req, res) => {
 
     // Find referrer
     let referrer = null;
-    if (inviteCode) {
-      referrer = await User.findOne({ uniqueInviteCode: inviteCode.trim().toUpperCase() });
-      if (!referrer) return res.status(400).json({ error: 'Invalid invite code.' });
+    if (code) {
+      // Case-insensitive search so codes work regardless of how user types them
+      referrer = await User.findOne({ uniqueInviteCode: { $regex: new RegExp('^' + code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'i') } });
+      if (!referrer) return res.status(400).json({ error: 'Invalid invite code. Please check and try again.' });
     }
 
     // Generate unique invite code and link for new user
@@ -80,7 +82,7 @@ router.post('/signup', async (req, res) => {
       phone:                  phone.trim(),
       password,
       referrerId:             referrer?._id || null,
-      registrationInviteCode: inviteCode?.trim().toUpperCase() || null,
+      registrationInviteCode: code || null,
       uniqueInviteCode:       userInviteCode,
       inviteLink:             `${baseUrl}/?ref=${userInviteCode}`,
       emailVerified:          false,
