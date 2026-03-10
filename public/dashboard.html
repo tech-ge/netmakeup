@@ -226,11 +226,6 @@ table.ref-table tr:hover td{background:var(--gray-50)}
     <div class="sc"><div class="slbl">Active Referrals</div><div class="sval" id="dashActiveReferrals">0</div><div class="ssub" id="dashInactiveReferrals">0 inactive</div></div>
     <div class="sc"><div class="slbl">Total Earned</div><div class="sval" id="dashTotalEarnings">0</div></div>
   </div>
-  <div style="margin-bottom:1.5rem">
-    <button onclick="openDepositModal()" class="btn btn-p wf" style="display:flex;align-items:center;justify-content:center;gap:.5rem;font-size:.95rem">
-      <span>+ Deposit via Card / M-Pesa</span>
-    </button>
-  </div>
 
   <div id="pointsConversionCard" style="display:none;background:#fff;border:1.5px solid var(--g);border-radius:var(--radius);padding:1.1rem 1.25rem;margin-bottom:1.5rem;box-shadow:var(--sh)">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
@@ -492,7 +487,7 @@ table.ref-table tr:hover td{background:var(--gray-50)}
 
 <div class="modal" id="transcriptionModal"><div class="mbox" style="max-width:680px"><button class="mclose" onclick="closeModal('transcriptionModal')">&#10005;</button><h3 id="transcriptionModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="transcriptionModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.85rem"><strong style="font-size:.82rem">Instructions:</strong><div id="transcriptionModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div style="margin-bottom:1rem"><strong style="font-size:.82rem">Audio:</strong><audio id="transcriptionAudio" controls style="width:100%;margin-top:.5rem"></audio></div><div class="fg"><label class="fl">Your Transcription <span style="font-weight:400;color:var(--gray-400)">(min 20 chars)</span></label><textarea id="transcriptionText" class="fc" rows="7" placeholder="Type the transcription here…"></textarea><div style="font-size:.75rem;color:var(--gray-400);text-align:right;margin-top:.2rem" id="transcriptionCharCount">0 chars</div></div><button id="transcriptionSubmitBtn" class="btn btn-p wf">Submit Transcription</button></div></div>
 
-<div class="modal" id="dataentryModal"><div class="mbox"><button class="mclose" onclick="closeModal('dataentryModal')">&#10005;</button><h3 id="dataentryModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="dataentryModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.85rem"><strong style="font-size:.82rem">Instructions:</strong><div id="dataentryModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div id="dataentryTemplateSection" style="display:none;margin-bottom:.85rem"><a id="dataentryTemplateLink" href="javascript:void(0)" onclick="smartDownload(this.dataset.url,this.dataset.pid,'template')" data-url="" data-pid="" class="btn btn-o btn-sm">Download Template File</a></div><div class="fg"><label class="fl">Upload Completed File <span style="font-weight:400;color:var(--gray-400)">(PDF, Word, Excel, CSV &middot; Max 20MB)</span></label><input type="file" id="dataentryFileInput" class="fc" accept=".pdf,.doc,.docx,.xlsx,.csv"></div><button id="dataentrySubmitBtn" class="btn btn-p wf" style="margin-top:.5rem">Submit Data Entry</button></div></div>
+<div class="modal" id="dataentryModal"><div class="mbox"><button class="mclose" onclick="closeModal('dataentryModal')">&#10005;</button><h3 id="dataentryModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="dataentryModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.85rem"><strong style="font-size:.82rem">Instructions:</strong><div id="dataentryModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div id="dataentryTemplateSection" style="display:none;margin-bottom:.85rem"><a id="dataentryTemplateLink" href="javascript:void(0)" onclick="smartDownload(this.dataset.url,this.dataset.pid,'template')" data-url="" data-pid="" class="btn btn-o btn-sm">Download Template File</a></div><div class="fg"><label class="fl">Upload Completed File <span style="font-weight:400;color:var(--gray-400)">(Images: jpg, png, gif, webp &middot; Docs: pdf, doc, docx, xlsx, csv &middot; Max 20MB)</span></label><input type="file" id="dataentryFileInput" class="fc" accept=".pdf,.doc,.docx,.xlsx,.csv,.jpg,.jpeg,.png,.gif,.webp,.bmp"></div><div id="dataentryProgress" style="display:none;margin-top:.75rem"><div style="background:#e5e7eb;border-radius:999px;height:8px;overflow:hidden"><div id="dataentryProgressBar" style="height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);width:0%;transition:width .3s;border-radius:999px"></div></div><p id="dataentryProgressText" style="font-size:.78rem;color:var(--gray-500);text-align:center;margin:.35rem 0 0">Uploading…</p></div><button id="dataentrySubmitBtn" class="btn btn-p wf" style="margin-top:.5rem">Submit Data Entry</button></div></div>
 
 
 <!-- DEPOSIT MODAL -->
@@ -626,7 +621,7 @@ async function doActivation(){
 async function loadDashboard(){
   try{
     const data=await apiFetch('/api/users/dashboard');currentUser=data;
-    localStorage.setItem('user',JSON.stringify({id:data.profile.id,username:data.profile.username,email:data.profile.email,packageType:data.profile.packageType,isAdmin:false}));
+    localStorage.setItem('user',JSON.stringify({id:data.profile.id,username:data.profile.username,packageType:data.profile.packageType,isAdmin:false}));
     _isActive=data.profile.packageType!=='not_active';
     if(!_isActive){
       // Inactive: show dashboard but with banner and locked tasks
@@ -834,13 +829,60 @@ async function openDataentryModal(id){
   if(!_isActive){toast('Activate your account to submit tasks.',false);return;}
   try{const d=await apiFetch(`/api/dataentry/${id}`);const j=d.job;_activeDataentryId=id;document.getElementById('dataentryModalTitle').textContent=j.title;document.getElementById('dataentryModalDesc').textContent=j.description;document.getElementById('dataentryModalInstructions').textContent=j.instructions;const tp=document.getElementById('dataentryTemplateSection');if(j.templateUrl){tp.style.display='block';const tl=document.getElementById('dataentryTemplateLink');tl.dataset.url=j.templateUrl;tl.dataset.pid=j.templatePublicId||'';}else tp.style.display='none';document.getElementById('dataentryFileInput').value='';openModal('dataentryModal');}catch(err){toast('Error: '+err.message,false);}
 }
-document.getElementById('dataentrySubmitBtn').addEventListener('click',async()=>{
+document.getElementById('dataentrySubmitBtn').addEventListener('click',function(){
   if(!_activeDataentryId)return;
-  const f=document.getElementById('dataentryFileInput').files[0];if(!f){toast('Select a file.',false);return;}
-  const b=document.getElementById('dataentrySubmitBtn');b.disabled=true;b.textContent='Uploading…';
-  try{const fd=new FormData();fd.append('file',f);const d=await apiFetch(`/api/dataentry/${_activeDataentryId}/submit`,{method:'POST',body:fd});toast(d.message);closeModal('dataentryModal');loadDataentry();}
-  catch(err){toast(err.message,false);}
-  finally{b.disabled=false;b.textContent='Submit Data Entry';}
+  const f=document.getElementById('dataentryFileInput').files[0];
+  if(!f){toast('Please select a file to upload.',false);return;}
+
+  // Validate file size client-side
+  if(f.size>20*1024*1024){toast('File too large. Maximum size is 20MB.',false);return;}
+
+  const b=document.getElementById('dataentrySubmitBtn');
+  const prog=document.getElementById('dataentryProgress');
+  const bar=document.getElementById('dataentryProgressBar');
+  const progTxt=document.getElementById('dataentryProgressText');
+
+  b.disabled=true; b.textContent='Uploading…'; prog.style.display='block'; bar.style.width='0%';
+
+  const fd=new FormData(); fd.append('file',f);
+  const xhr=new XMLHttpRequest();
+
+  // Progress tracking
+  xhr.upload.addEventListener('progress',function(e){
+    if(e.lengthComputable){
+      const pct=Math.round((e.loaded/e.total)*100);
+      bar.style.width=pct+'%';
+      progTxt.textContent=pct<100?`Uploading… ${pct}%`:'Processing on server…';
+    }
+  });
+
+  xhr.addEventListener('load',function(){
+    b.disabled=false; b.textContent='Submit Data Entry'; prog.style.display='none';
+    try{
+      const d=JSON.parse(xhr.responseText);
+      if(xhr.status>=200&&xhr.status<300){
+        toast(d.message||'✅ Submission uploaded! Pending admin review.');
+        closeModal('dataentryModal'); loadDataentry();
+      } else {
+        toast(d.error||'Upload failed. Please try again.',false);
+      }
+    }catch(e){ toast('Server error. Please try again.',false); }
+  });
+
+  xhr.addEventListener('error',function(){
+    b.disabled=false; b.textContent='Submit Data Entry'; prog.style.display='none';
+    toast('Network error. Check your connection and try again.',false);
+  });
+
+  xhr.addEventListener('timeout',function(){
+    b.disabled=false; b.textContent='Submit Data Entry'; prog.style.display='none';
+    toast('Upload timed out. Try a smaller file or check your connection.',false);
+  });
+
+  xhr.open('POST',`/api/dataentry/${_activeDataentryId}/submit`);
+  xhr.timeout=120000; // 2 min timeout for large files
+  xhr.setRequestHeader('Authorization','Bearer '+localStorage.getItem('token'));
+  xhr.send(fd);
 });
 
 async function smartDownload(url,pid,fn){if(!url)return;try{const p=await fetch(url,{method:'HEAD'}).catch(()=>null);if(p&&p.ok){const a=document.createElement('a');a.href=url;a.target='_blank';a.download=fn||'download';document.body.appendChild(a);a.click();document.body.removeChild(a);return;}}catch(e){}if(!pid||pid===url){window.open(url,'_blank');return;}try{const d=await apiFetch(`/api/dataentry/file/signed?publicId=${encodeURIComponent(pid)}&fileName=${encodeURIComponent(fn||'download')}`);if(d.url)window.open(d.url,'_blank');else window.open(url,'_blank');}catch(e){window.open(url,'_blank');}}
@@ -1091,19 +1133,6 @@ setInterval(loadNotifications,60000);
 
 
 /* ── PAYSTACK DEPOSIT ── */
-// Bust SW cache so wallet balance is always fresh after deposit
-async function bustWalletCache(){
-  try{
-    if(!('caches' in window)) return;
-    const keys = await caches.keys();
-    for(const k of keys){
-      const c = await caches.open(k);
-      await c.delete('/api/users/dashboard');
-      await c.delete('/api/users/profile');
-    }
-  }catch(e){}
-}
-
 function openDepositModal(){
   document.getElementById('depositAmount').value='';
   document.getElementById('depositMsg').style.display='none';
@@ -1115,87 +1144,55 @@ async function initiateDeposit(){
   const msgEl = document.getElementById('depositMsg');
   const btn   = document.getElementById('depositBtn');
   const amount = parseFloat(amtEl.value);
-  if(!amount || amount < 10){ showDepositMsg('Enter a valid amount (min KES 10).', false); return; }
-
-  btn.disabled = true; btn.textContent = 'Initializing…';
-  msgEl.style.display = 'none';
-
+  if (!amount || amount < 10){ showDepositMsg('Enter a valid amount (min KES 10).',false); return; }
+  btn.disabled=true; btn.textContent='Initializing…';
+  msgEl.style.display='none';
   try {
-    // Server returns { authorizationUrl, reference, accessCode, email }
-    const d = await apiFetch('/api/paystack/initialize', {method:'POST', body:JSON.stringify({amount})});
-
-    const userEmail = d.email;
-    if(!userEmail){
-      showDepositMsg('Could not load your email. Please refresh and try again.', false);
-      btn.disabled = false; btn.textContent = 'Pay via Card / M-Pesa';
-      return;
+    const d = await apiFetch('/api/paystack/initialize',{method:'POST',body:JSON.stringify({amount})});
+    // Open Paystack popup using their inline JS
+    if(typeof PaystackPop !== 'undefined'){
+      const handler = PaystackPop.setup({
+        key:      window._PAYSTACK_PUBLIC_KEY,
+        email:    (JSON.parse(localStorage.getItem('user')||'{}')).email || '',
+        amount:   Math.round(amount * 100),
+        ref:      d.reference,
+        currency: 'KES',
+        onClose: function(){
+          btn.disabled=false;
+          btn.textContent='Pay via Card / M-Pesa';
+        },
+        onSuccess: function(response){
+          btn.textContent='Verifying…';
+          apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:response.reference||response.trxref})})
+            .then(function(v){
+              closeModal('depositModal');
+              toast(v.message||'Deposit successful!');
+              loadDashboard();
+              if(typeof loadWithdraw==='function') setTimeout(loadWithdraw,600);
+            })
+            .catch(function(e){
+              showDepositMsg(e.message,false);
+              btn.disabled=false;
+              btn.textContent='Pay via Card / M-Pesa';
+            });
+        },
+        onCancel: function(){
+          btn.disabled=false;
+          btn.textContent='Pay via Card / M-Pesa';
+        }
+      });
+      handler.openIframe();
+    } else {
+      // Fallback: redirect to Paystack hosted page
+      window.open(d.authorizationUrl,'_blank');
+      showDepositMsg('Complete payment in the new tab, then refresh your dashboard.',true);
+      btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
     }
-
-    if(typeof PaystackPop === 'undefined'){
-      showDepositMsg('Redirecting to payment page…', true);
-      window.location.href = d.authorizationUrl;
-      return;
-    }
-
-    const handler = PaystackPop.setup({
-      key:      window._PAYSTACK_PUBLIC_KEY,
-      email:    userEmail,
-      amount:   Math.round(amount * 100),
-      ref:      d.reference,
-      currency: 'KES',
-      onClose: function(){
-        btn.disabled = false;
-        btn.textContent = 'Pay via Card / M-Pesa';
-      },
-      onSuccess: function(response){
-        btn.textContent = 'Verifying…';
-        const ref = (response && (response.reference || response.trxref)) || d.reference;
-
-        // Use direct fetch with 40s timeout — apiFetch only allows 25s
-        // M-Pesa STK push can take up to ~12s on the backend retry loop
-        const ctrl  = new AbortController();
-        const timer = setTimeout(function(){ ctrl.abort(); }, 40000);
-
-        fetch('/api/paystack/verify', {
-          method:  'POST',
-          headers: {'Content-Type':'application/json', 'Authorization':'Bearer '+localStorage.getItem('token')},
-          body:    JSON.stringify({reference: ref}),
-          signal:  ctrl.signal
-        })
-        .then(function(r){ clearTimeout(timer); return r.json(); })
-        .then(function(v){
-          btn.disabled = false; btn.textContent = 'Pay via Card / M-Pesa';
-          if(v.error) throw new Error(v.error);
-          closeModal('depositModal');
-          toast(v.message || 'Deposit successful! Your balance has been updated.');
-          // Bust SW cache then reload so balance shows fresh from server
-          bustWalletCache().then(function(){
-            loadDashboard();
-            if(typeof loadWithdraw === 'function') setTimeout(loadWithdraw, 800);
-          });
-        })
-        .catch(function(e){
-          clearTimeout(timer);
-          btn.disabled = false; btn.textContent = 'Pay via Card / M-Pesa';
-          showDepositMsg(
-            'Payment received (Ref: ' + ref + '). Your balance will update shortly. If not, contact support with this reference.',
-            true
-          );
-        });
-      },
-      onCancel: function(){
-        btn.disabled = false;
-        btn.textContent = 'Pay via Card / M-Pesa';
-      }
-    });
-    handler.openIframe();
-
   } catch(e){
-    showDepositMsg(e.message, false);
-    btn.disabled = false; btn.textContent = 'Pay via Card / M-Pesa';
+    showDepositMsg(e.message,false);
+    btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
   }
 }
-
 
 function showDepositMsg(msg,ok){
   const el=document.getElementById('depositMsg');
@@ -1219,9 +1216,8 @@ function showDepositMsg(msg,ok){
   }
 })();
 </script>
-<script>window._PAYSTACK_PUBLIC_KEY='pk_live_7def999fbc94b9848100cceecc0cdee15cb93cba';</script>
 <script src="https://js.paystack.co/v1/inline.js"></script>
-
+<script>window._PAYSTACK_PUBLIC_KEY='pk_live_7def999fbc94b9848100cceecc0cdee15cb93cba';</script>
 <script src="/offline.js"></script>
 </body>
 </html>
