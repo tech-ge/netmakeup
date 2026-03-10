@@ -6,7 +6,7 @@ const Withdrawal = require('../models/Withdrawal');
 const Commission = require('../models/Commission');
 const { authMiddleware, requireAdmin } = require('../middleware/auth');
 const { PROFIT_PER_ACTIVATION, ACTIVATION_FEE } = require('../utils/commissionHelper');
-const { sendCustomAdminEmail, wrap } = require('../utils/emailHelper');
+const { sendCustomAdminEmail } = require('../utils/emailHelper');
 const { Resend } = require('resend');
 const _resend = new Resend(process.env.RESEND_API_KEY);
 const EMAIL_FROM = process.env.EMAIL_FROM || 'TechGeo Network <noreply@techgeo.co.ke>';
@@ -598,11 +598,16 @@ router.post('/send-bulk-email', authMiddleware, requireAdmin, async (req, res) =
       from:    EMAIL_FROM,
       to:      [user.email],
       subject,
-      html:    wrap(`
-        <p>Hi <strong>${user.username}</strong>,</p>
-        <div style="margin:1rem 0;line-height:1.7;color:#374151">${message.replace(/\n/g,'<br>')}</div>
-        <p style="margin-top:1.5rem;color:#6b7280;font-size:.85rem">— TechGeo Network Team</p>
-      `)
+      html:    `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:2rem">
+        <div style="background:linear-gradient(135deg,#16a34a,#15803d);padding:1.25rem 1.75rem;border-radius:.75rem .75rem 0 0">
+          <h2 style="color:#fff;margin:0;font-size:1.2rem">TechGeo Network</h2>
+        </div>
+        <div style="background:#fff;border:1px solid #e5e7eb;border-top:none;padding:1.5rem 1.75rem;border-radius:0 0 .75rem .75rem">
+          <p>Hi <strong>${user.username}</strong>,</p>
+          <div style="margin:1rem 0;line-height:1.7;color:#374151">${message.replace(/\n/g,'<br>')}</div>
+          <p style="margin-top:1.5rem;color:#6b7280;font-size:.85rem">— TechGeo Network Team</p>
+        </div>
+      </div>`
     }));
 
     // Resend batch allows max 100 per call — chunk accordingly
