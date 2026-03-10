@@ -131,6 +131,7 @@
     <button class="tb" data-tab="transcription">🎙️ Transcription</button>
     <button class="tb" data-tab="dataentry">📂 Data Entry</button>
     <button class="tb" data-tab="withdrawals">💸 Withdrawals</button>
+    <button class="tb" data-tab="emails">📧 Send Emails</button>
   </div>
 </div>
 
@@ -415,6 +416,64 @@
   <div id="adminWithdrawalsList"><p style="color:var(--gray-500)">Click Load to fetch withdrawals.</p></div>
 </div>
 
+<!-- ======= EMAIL MANAGEMENT ======= -->
+<div class="tc" id="tab-emails">
+  <div style="display:flex;gap:1rem;margin-bottom:1.5rem">
+    <div style="flex:1;background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:1rem">
+      <h4 style="font-size:.85rem;font-weight:800;margin-bottom:.5rem">📧 Send Email to Individual User</h4>
+      <div class="fg">
+        <label class="fl">Username or Email</label>
+        <input type="text" id="emailSearchInput" placeholder="Search user..." class="fc" autocomplete="off" style="width:100%">
+        <div id="emailSearchResults" class="sr" style="display:none;width:100%;top:100%;left:0;right:0;margin-top:.25rem"></div>
+      </div>
+      <div class="fg">
+        <label class="fl">User ID</label>
+        <input type="text" id="emailUserId" placeholder="Auto-filled after selection" class="fc" style="width:100%;background:var(--gray-50)" disabled>
+      </div>
+      <div class="fg">
+        <label class="fl">Subject *</label>
+        <input type="text" id="emailSubject" placeholder="Email subject..." class="fc" style="width:100%">
+      </div>
+      <div class="fg">
+        <label class="fl">Message *</label>
+        <textarea id="emailMessage" placeholder="Email body (HTML allowed)..." class="fc" style="width:100%;min-height:120px;font-family:monospace;font-size:.8rem"></textarea>
+      </div>
+      <button onclick="sendSingleEmail()" class="btn btp wfull">📧 Send Email</button>
+    </div>
+
+    <div style="flex:1;background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:1rem">
+      <h4 style="font-size:.85rem;font-weight:800;margin-bottom:.5rem">🎯 Broadcast to Multiple Users</h4>
+      <div class="fg">
+        <label class="fl">Filter by Status</label>
+        <select id="bulkStatus" class="fc" style="width:100%">
+          <option value="">All users</option>
+          <option value="active">Active only</option>
+          <option value="pending">Pending only</option>
+          <option value="suspended">Suspended only</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Filter by Package</label>
+        <select id="bulkPackage" class="fc" style="width:100%">
+          <option value="">All packages</option>
+          <option value="normal">Activated (normal)</option>
+          <option value="not_active">Not Activated</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Subject *</label>
+        <input type="text" id="bulkSubject" placeholder="Email subject..." class="fc" style="width:100%">
+      </div>
+      <div class="fg">
+        <label class="fl">Message *</label>
+        <textarea id="bulkMessage" placeholder="Email body (HTML allowed)..." class="fc" style="width:100%;min-height:120px;font-family:monospace;font-size:.8rem"></textarea>
+      </div>
+      <button onclick="sendBulkEmail()" class="btn btb wfull">🎯 Broadcast</button>
+    </div>
+  </div>
+  <div id="emailStatus" style="display:none"></div>
+</div>
+
 <!-- EDIT MODAL -->
 <div id="editModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;overflow-y:auto;padding:2rem 1rem">
   <div style="background:#fff;max-width:480px;margin:0 auto;border-radius:var(--rad);padding:1.5rem;position:relative">
@@ -467,7 +526,7 @@ let qCount = 0;
 function switchTab(name) {
   document.querySelectorAll('.tb').forEach(b => b.classList.toggle('on', b.dataset.tab===name));
   document.querySelectorAll('.tc').forEach(c => c.classList.toggle('on', c.id==='tab-'+name));
-  const fns = {overview:loadAdminDashboard,users:loadAdminUsers,blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs,withdrawals:()=>{}};
+  const fns = {overview:loadAdminDashboard,users:loadAdminUsers,blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs,withdrawals:()=>{},emails:()=>{}};
   if (fns[name]) fns[name]();
 }
 document.querySelectorAll('.tb').forEach(b => b.addEventListener('click', ()=>switchTab(b.dataset.tab)));
@@ -1115,6 +1174,97 @@ async function rejectWithdrawal(id) {
     toast('Withdrawal rejected. User notified, funds unchanged.');
     loadAdminWithdrawals();
   } catch(err) { alert('❌ '+err.message); }
+}
+
+// ============ EMAIL MANAGEMENT ============
+// Search and autocomplete users for single email
+let emailSearchTimeout;
+document.getElementById('emailSearchInput')?.addEventListener('input', async (e) => {
+  clearTimeout(emailSearchTimeout);
+  const val = e.target.value.trim();
+  const resultsDiv = document.getElementById('emailSearchResults');
+  if (val.length < 2) { resultsDiv.style.display = 'none'; return; }
+  
+  emailSearchTimeout = setTimeout(async () => {
+    try {
+      const data = await aF(`/api/admin/dashboard/stats`);
+      // For now, show a simple message — ideally you'd have a dedicated /api/users/search endpoint
+      resultsDiv.innerHTML = '<div class="sri" style="padding:1.5rem;text-align:center;color:var(--gray-500);font-size:.75rem">Search feature requires a dedicated search endpoint. Please paste user ID directly or use bulk email.</div>';
+      resultsDiv.style.display = 'block';
+    } catch(err) {
+      resultsDiv.innerHTML = '<div class="sri" style="color:var(--r)">Search error</div>';
+      resultsDiv.style.display = 'block';
+    }
+  }, 300);
+});
+
+// Send email to individual user
+async function sendSingleEmail() {
+  const userId = document.getElementById('emailUserId').value.trim();
+  const subject = document.getElementById('emailSubject').value.trim();
+  const message = document.getElementById('emailMessage').value.trim();
+  
+  if (!userId) { alert('⚠️ Please enter or select a User ID'); return; }
+  if (!subject) { alert('⚠️ Subject is required'); return; }
+  if (!message) { alert('⚠️ Message is required'); return; }
+  
+  if (!confirm(`Send email to user?\n\nSubject: ${subject.substring(0,50)}...`)) return;
+  
+  try {
+    const statusDiv = document.getElementById('emailStatus');
+    statusDiv.innerHTML = '<div class="msg" style="background:#dbeafe;color:#1e40af;border:1px solid #93c5fd">📧 Sending email...</div>';
+    statusDiv.style.display = 'block';
+    
+    await aF(`/api/admin/send-email`, {
+      method: 'POST',
+      body: JSON.stringify({ userId, subject, message })
+    });
+    
+    statusDiv.innerHTML = '<div class="msg mok">✅ Email sent successfully to user!</div>';
+    document.getElementById('emailUserId').value = '';
+    document.getElementById('emailSubject').value = '';
+    document.getElementById('emailMessage').value = '';
+    setTimeout(() => { statusDiv.style.display = 'none'; }, 4000);
+  } catch(err) {
+    document.getElementById('emailStatus').innerHTML = `<div class="msg merr">❌ ${err.message}</div>`;
+  }
+}
+
+// Send bulk email to filtered users
+async function sendBulkEmail() {
+  const status = document.getElementById('bulkStatus').value;
+  const packageType = document.getElementById('bulkPackage').value;
+  const subject = document.getElementById('bulkSubject').value.trim();
+  const message = document.getElementById('bulkMessage').value.trim();
+  
+  if (!subject) { alert('⚠️ Subject is required'); return; }
+  if (!message) { alert('⚠️ Message is required'); return; }
+  
+  const filterText = `${status||'All statuses'} · ${packageType||'All packages'}`;
+  if (!confirm(`Broadcast email to users?\n\nFilter: ${filterText}\nSubject: ${subject.substring(0,40)}...`)) return;
+  
+  try {
+    const statusDiv = document.getElementById('emailStatus');
+    statusDiv.innerHTML = '<div class="msg" style="background:#dbeafe;color:#1e40af;border:1px solid #93c5fd">📧 Broadcasting to users...</div>';
+    statusDiv.style.display = 'block';
+    
+    await aF(`/api/admin/send-bulk-email`, {
+      method: 'POST',
+      body: JSON.stringify({
+        subject,
+        message,
+        ...(status && { status }),
+        ...(packageType && { packageType })
+      })
+    });
+    
+    statusDiv.innerHTML = '<div class="msg mok">✅ Broadcast sent! Check response for recipient count.</div>';
+    document.getElementById('bulkSubject').value = '';
+    document.getElementById('bulkMessage').value = '';
+    setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
+  } catch(err) {
+    document.getElementById('emailStatus').innerHTML = `<div class="msg merr">❌ ${err.message}</div>`;
+  }
 }
 
 // ============ SMART FILE DOWNLOAD ============
