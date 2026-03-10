@@ -1060,7 +1060,7 @@ async function uploadAudioToCloudinary(file) {
     fd.append('signature', signature);
     fd.append('api_key', api_key);
     fd.append('folder', folder);
-    fd.append('resource_type', 'video'); // Cloudinary stores audio under video type
+    // resource_type goes in the URL, NOT in FormData — adding it to FormData breaks the signature
 
     const xhr = new XMLHttpRequest();
 
