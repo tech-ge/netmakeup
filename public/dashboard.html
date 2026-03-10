@@ -227,6 +227,13 @@ table.ref-table tr:hover td{background:var(--gray-50)}
     <div class="sc"><div class="slbl">Total Earned</div><div class="sval" id="dashTotalEarnings">0</div></div>
   </div>
 
+  <!-- Deposit button — visible to ALL users -->
+  <div style="margin-bottom:1.25rem">
+    <button onclick="openDepositModal()" style="width:100%;background:linear-gradient(135deg,var(--g),#15803d);color:#fff;border:none;padding:.8rem 1.25rem;font-size:.92rem;font-weight:800;border-radius:var(--radius);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:.5rem;box-shadow:0 2px 8px rgba(22,163,74,.25)">
+      <span style="font-size:1.1rem">💳</span> Deposit via Card / M-Pesa
+    </button>
+  </div>
+
   <div id="pointsConversionCard" style="display:none;background:#fff;border:1.5px solid var(--g);border-radius:var(--radius);padding:1.1rem 1.25rem;margin-bottom:1.5rem;box-shadow:var(--sh)">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
       <div><p style="font-weight:800;color:var(--gray-900);margin:0">Convert Points to KES</p><p style="font-size:.82rem;color:var(--gray-500);margin:.15rem 0 0">You have <strong id="currentPoints">0</strong> pts &asymp; <strong id="pointsKES">KES 0</strong></p></div>
