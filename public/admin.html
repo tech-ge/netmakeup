@@ -354,13 +354,23 @@
         <div class="fg"><label class="fl">Description *</label><input type="text" id="transcriptionJobDesc" class="fc" required></div>
       </div>
       <div class="fg"><label class="fl">Instructions for transcribers *</label><textarea id="transcriptionJobInstructions" class="fc" rows="3" required></textarea></div>
-      <div class="fg"><label class="fl">Audio File (MP3, WAV, M4A — max 50MB) *</label><input type="file" id="transcriptionJobAudio" class="fc" accept=".mp3,.wav,.m4a,.ogg,.webm" required></div>
+      <div class="fg">
+  <label class="fl">Audio File (MP3, WAV, M4A — max 50MB) *</label>
+  <input type="file" id="transcriptionJobAudio" class="fc" accept=".mp3,.wav,.m4a,.ogg,.aac,.webm">
+  <div id="audioUploadProgress" style="display:none;margin-top:.6rem">
+    <div style="background:#e5e7eb;border-radius:999px;height:8px;overflow:hidden">
+      <div id="audioProgressBar" style="height:100%;background:linear-gradient(90deg,#7c3aed,#a78bfa);width:0%;transition:width .3s;border-radius:999px"></div>
+    </div>
+    <p id="audioProgressText" style="font-size:.78rem;color:#6b7280;text-align:center;margin:.3rem 0 0">Uploading to Cloudinary…</p>
+  </div>
+  <div id="audioUploadDone" style="display:none;margin-top:.5rem;font-size:.82rem;color:#16a34a;font-weight:600">✅ Audio uploaded successfully</div>
+</div>
       <div class="fr3">
         <div class="fg"><label class="fl">Points Reward</label><input type="number" id="transcriptionJobReward" class="fc" value="50" min="1"></div>
         <div class="fg"><label class="fl">Max Workers</label><input type="number" id="transcriptionJobMaxWorkers" class="fc" value="50" min="1"></div>
         <div class="fg"><label class="fl">Deadline (optional)</label><input type="date" id="transcriptionJobDeadline" class="fc"></div>
       </div>
-      <button onclick="createTranscriptionJob()" class="btn btp">🎙️ Upload & Create</button>
+      <button onclick="createTranscriptionJob()" id="createTranscriptionBtn" class="btn btp">🎙️ Upload & Create Job</button>
     </div>
   </div>
   <div class="c">
@@ -1031,27 +1041,100 @@ async function loadWritingSubmissions(jobId,title) {
 }
 
 // ============ TRANSCRIPTION ============
+// Upload audio directly to Cloudinary — bypasses Vercel 4.5MB limit
+async function uploadAudioToCloudinary(file) {
+  return new Promise((resolve, reject) => {
+    // IMPORTANT: replace 'techgeo_audio' with your actual unsigned upload preset name
+    const CLOUD_NAME   = 'REPLACE_WITH_YOUR_CLOUD_NAME'; // e.g. dxyz123
+    const UPLOAD_PRESET = 'techgeo_audio';                // unsigned preset name
+
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', UPLOAD_PRESET);
+    fd.append('folder', 'techgeo/audio');
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable) {
+        const pct = Math.round((e.loaded / e.total) * 100);
+        document.getElementById('audioProgressBar').style.width = pct + '%';
+        document.getElementById('audioProgressText').textContent =
+          pct < 100 ? `Uploading… ${pct}%` : 'Processing audio…';
+      }
+    });
+
+    xhr.addEventListener('load', () => {
+      try {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.status === 200 && data.secure_url) {
+          resolve({ url: data.secure_url, publicId: data.public_id });
+        } else {
+          reject(new Error(data.error?.message || 'Cloudinary upload failed'));
+        }
+      } catch(e) { reject(new Error('Upload response error')); }
+    });
+
+    xhr.addEventListener('error', () => reject(new Error('Network error during audio upload')));
+    xhr.addEventListener('timeout', () => reject(new Error('Audio upload timed out')));
+
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`);
+    xhr.timeout = 300000; // 5 minutes for large audio
+    xhr.send(fd);
+  });
+}
+
 async function createTranscriptionJob() {
-  const af=document.getElementById('transcriptionJobAudio').files[0];
+  const af = document.getElementById('transcriptionJobAudio').files[0];
+  const title = document.getElementById('transcriptionJobTitle').value.trim();
+  const desc  = document.getElementById('transcriptionJobDesc').value.trim();
+  const instr = document.getElementById('transcriptionJobInstructions').value.trim();
+
+  if (!title || !desc || !instr) { msg('createTranscriptionMsg','❌ Title, description and instructions are required.',false); return; }
   if (!af) { msg('createTranscriptionMsg','❌ Audio file required.',false); return; }
-  const mEl=document.getElementById('createTranscriptionMsg');
-  mEl.textContent='Uploading audio file...'; mEl.className='msg mok'; mEl.style.display='block';
-  const fd=new FormData();
-  fd.append('audio',af);
-  fd.append('title',document.getElementById('transcriptionJobTitle').value);
-  fd.append('description',document.getElementById('transcriptionJobDesc').value);
-  fd.append('instructions',document.getElementById('transcriptionJobInstructions').value);
-  fd.append('reward',document.getElementById('transcriptionJobReward').value);
-  fd.append('maxWorkers',document.getElementById('transcriptionJobMaxWorkers').value);
-  const dl=document.getElementById('transcriptionJobDeadline').value;
-  if(dl) fd.append('deadline',dl);
+  if (af.size > 50 * 1024 * 1024) { msg('createTranscriptionMsg','❌ Audio file must be under 50MB.',false); return; }
+
+  const btn = document.getElementById('createTranscriptionBtn');
+  btn.disabled = true; btn.textContent = 'Uploading…';
+  document.getElementById('audioUploadProgress').style.display = 'block';
+  document.getElementById('audioUploadDone').style.display = 'none';
+  document.getElementById('audioProgressBar').style.width = '0%';
+
+  const mEl = document.getElementById('createTranscriptionMsg');
+  mEl.style.display = 'none';
+
   try {
-    const data = await aF('/api/transcriptions/admin/create', { method: 'POST', body: fd });
-    msg('createTranscriptionMsg','✅ Transcription job created!',true);
-    ['transcriptionJobTitle','transcriptionJobDesc','transcriptionJobInstructions'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('transcriptionJobAudio').value='';
+    // Step 1: Upload audio directly to Cloudinary
+    const { url: audioUrl, publicId: audioPublicId } = await uploadAudioToCloudinary(af);
+    document.getElementById('audioUploadProgress').style.display = 'none';
+    document.getElementById('audioUploadDone').style.display = 'block';
+
+    // Step 2: Save job to our server (just JSON — no file, tiny payload)
+    const payload = {
+      title, description: desc, instructions: instr,
+      audioUrl, audioPublicId,
+      reward:     document.getElementById('transcriptionJobReward').value,
+      maxWorkers: document.getElementById('transcriptionJobMaxWorkers').value,
+      deadline:   document.getElementById('transcriptionJobDeadline').value || null
+    };
+
+    const data = await aF('/api/transcriptions/admin/create', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+    msg('createTranscriptionMsg', '✅ Transcription job created!', true);
+    ['transcriptionJobTitle','transcriptionJobDesc','transcriptionJobInstructions'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('transcriptionJobAudio').value = '';
+    document.getElementById('audioUploadDone').style.display = 'none';
     loadAdminTranscriptionJobs();
-  } catch(err) { msg('createTranscriptionMsg','❌ '+err.message,false); }
+
+  } catch(err) {
+    msg('createTranscriptionMsg', '❌ ' + err.message, false);
+    document.getElementById('audioUploadProgress').style.display = 'none';
+  } finally {
+    btn.disabled = false; btn.textContent = '🎙️ Upload & Create Job';
+  }
 }
 async function loadAdminTranscriptionJobs() {
   const el=document.getElementById('adminTranscriptionJobsList');
@@ -1177,46 +1260,26 @@ async function rejectWithdrawal(id) {
 }
 
 // ============ EMAIL MANAGEMENT ============
-// Search users for single email — searches by username or email
+// Search and autocomplete users for single email
 let emailSearchTimeout;
 document.getElementById('emailSearchInput')?.addEventListener('input', async (e) => {
   clearTimeout(emailSearchTimeout);
   const val = e.target.value.trim();
   const resultsDiv = document.getElementById('emailSearchResults');
   if (val.length < 2) { resultsDiv.style.display = 'none'; return; }
+  
   emailSearchTimeout = setTimeout(async () => {
     try {
-      const data = await aF(`/api/admin/users/all`);
-      const users = (data.users || []).filter(u =>
-        u.username?.toLowerCase().includes(val.toLowerCase()) ||
-        u.email?.toLowerCase().includes(val.toLowerCase())
-      ).slice(0, 6);
-      if (!users.length) {
-        resultsDiv.innerHTML = '<div class="sri" style="padding:.75rem;color:var(--gray-500);font-size:.8rem">No users found</div>';
-      } else {
-        resultsDiv.innerHTML = users.map(u => `
-          <div class="sri" onclick="selectEmailUser('${u.id}','${u.username}','${u.email}')"
-               style="padding:.6rem .85rem;cursor:pointer;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div style="font-weight:700;font-size:.85rem">${u.username}</div>
-              <div style="font-size:.75rem;color:var(--gray-500)">${u.email}</div>
-            </div>
-            <span style="font-size:.7rem;background:#f0fdf4;color:#15803d;padding:.2rem .5rem;border-radius:.3rem">${u.status}</span>
-          </div>`).join('');
-      }
+      const data = await aF(`/api/admin/dashboard/stats`);
+      // For now, show a simple message — ideally you'd have a dedicated /api/users/search endpoint
+      resultsDiv.innerHTML = '<div class="sri" style="padding:1.5rem;text-align:center;color:var(--gray-500);font-size:.75rem">Search feature requires a dedicated search endpoint. Please paste user ID directly or use bulk email.</div>';
       resultsDiv.style.display = 'block';
     } catch(err) {
-      resultsDiv.innerHTML = '<div class="sri" style="color:var(--r);padding:.5rem">Search error</div>';
+      resultsDiv.innerHTML = '<div class="sri" style="color:var(--r)">Search error</div>';
       resultsDiv.style.display = 'block';
     }
-  }, 350);
+  }, 300);
 });
-
-function selectEmailUser(id, username, email) {
-  document.getElementById('emailUserId').value = id;
-  document.getElementById('emailSearchInput').value = username + ' — ' + email;
-  document.getElementById('emailSearchResults').style.display = 'none';
-}
 
 // Send email to individual user
 async function sendSingleEmail() {
