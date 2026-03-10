@@ -6,7 +6,7 @@ const { sendOTP }        = require('../utils/emailHelper');
 
 const router = express.Router();
 
-// ── Generate a 6-digit  OTP ────────────────────────────────────────────────────
+// ── Generate a 6-digit OTP ────────────────────────────────────────────────────
 function makeOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
@@ -181,13 +181,6 @@ router.post('/login', async (req, res) => {
       await user.incLoginAttempts();
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
-
-    if (!user.emailVerified)
-      return res.status(403).json({
-        error:  'Please verify your email first.',
-        userId: user._id,
-        step:   'verify_email',
-      });
 
     if (user.status === 'suspended')
       return res.status(403).json({ error: 'Account suspended. Contact support.' });
