@@ -628,7 +628,7 @@ async function doActivation(){
 async function loadDashboard(){
   try{
     const data=await apiFetch('/api/users/dashboard');currentUser=data;
-    localStorage.setItem('user',JSON.stringify({id:data.profile.id,username:data.profile.username,packageType:data.profile.packageType,isAdmin:false}));
+    localStorage.setItem('user',JSON.stringify({id:data.profile.id,username:data.profile.username,email:data.profile.email||'',packageType:data.profile.packageType,isAdmin:false}));
     _isActive=data.profile.packageType!=='not_active';
     if(!_isActive){
       // Inactive: show dashboard but with banner and locked tasks
@@ -1160,7 +1160,7 @@ async function initiateDeposit(){
     if(typeof PaystackPop !== 'undefined'){
       const handler = PaystackPop.setup({
         key:      window._PAYSTACK_PUBLIC_KEY,
-        email:    (JSON.parse(localStorage.getItem('user')||'{}')).email || '',
+        email:    (()=>{ try { const u=JSON.parse(localStorage.getItem('user')||'{}'); return u.email || currentUser?.profile?.email || ''; } catch(e){ return currentUser?.profile?.email || ''; } })(),
         amount:   Math.round(amount * 100),
         ref:      d.reference,
         currency: 'KES',
