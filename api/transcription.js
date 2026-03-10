@@ -65,8 +65,10 @@ router.get('/admin/sign-upload', authMiddleware, requireAdmin, (req, res) => {
     const timestamp  = Math.round(Date.now() / 1000);
     const folder     = 'techgeo/audio';
 
+    // Only include params that go into the FormData in the signature
+    // resource_type is a query param in the URL, NOT signed
     const signature = cloudinary.utils.api_sign_request(
-      { timestamp, folder, resource_type: 'video' },
+      { timestamp, folder },
       process.env.CLOUDINARY_API_SECRET
     );
 
