@@ -6,7 +6,7 @@ const { sendOTP }        = require('../utils/emailHelper');
 
 const router = express.Router();
 
-// ── Generate a 6-digit OTP ────────────────────────────────────────────────────
+// ── Generate a 6-digit  OTP ────────────────────────────────────────────────────
 function makeOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
