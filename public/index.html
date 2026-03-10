@@ -758,6 +758,9 @@
           </div>
         </div>
         <button type="submit" class="btn-auth" id="loginBtn">Login</button>
+        <div style="text-align:center;margin-top:.75rem">
+          <a href="#" onclick="showSection('forgot')" style="font-size:.85rem;color:var(--primary,#16a34a);text-decoration:none;font-weight:600">Forgot password?</a>
+        </div>
       </form>
       <div class="auth-switch">No account? <a href="#join" class="nav-trigger" data-section="join">Join Now</a></div>
     </div>
@@ -809,6 +812,70 @@
         <button type="submit" class="btn-auth" id="signupBtn">Create Account</button>
       </form>
       <div class="auth-switch">Already a member? <a href="#login" class="nav-trigger" data-section="login">Login</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== OTP VERIFICATION (after register) ===== -->
+<section id="verify" class="page-section" style="display:none;">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <div class="auth-title">Verify Your Email</div>
+      <div class="auth-sub">We sent a 6-digit code to your email. Enter it below.</div>
+      <div id="verifyError" class="alert-err"></div>
+      <div id="verifySuccess" class="alert-err" style="background:#f0fdf4;border-color:#86efac;color:#15803d;display:none"></div>
+      <div class="form-group" style="margin-top:1.25rem">
+        <label class="form-label">6-Digit Code</label>
+        <input type="text" id="otpInput" class="form-control" maxlength="6" placeholder="e.g. 483921" style="font-size:1.5rem;letter-spacing:.3em;text-align:center;font-weight:700">
+      </div>
+      <button onclick="submitOTP()" class="btn-auth" id="otpBtn">Verify Email</button>
+      <div style="text-align:center;margin-top:.75rem">
+        <a href="#" onclick="resendOTP()" style="font-size:.85rem;color:var(--primary,#16a34a);text-decoration:none;font-weight:600">Resend code</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FORGOT PASSWORD ===== -->
+<section id="forgot" class="page-section" style="display:none;">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <a href="#" onclick="showSection('login')" class="auth-back">&#8592; Back to Login</a>
+      <div class="auth-title">Reset Password</div>
+      <div class="auth-sub" id="forgotSub">Enter your email and we'll send you a reset code.</div>
+      <div id="forgotError" class="alert-err"></div>
+
+      <!-- Step 1: enter email -->
+      <div id="forgotStep1">
+        <div class="form-group" style="margin-top:1rem">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="forgotEmail" class="form-control" placeholder="you@example.com">
+        </div>
+        <button onclick="requestForgotOTP()" class="btn-auth" id="forgotBtn">Send Reset Code</button>
+        <div style="text-align:center;margin-top:.75rem">
+          <a href="#" onclick="showSection('login')" style="font-size:.85rem;color:var(--primary,#16a34a);text-decoration:none;font-weight:600">Back to login</a>
+        </div>
+      </div>
+
+      <!-- Step 2: enter OTP + new password -->
+      <div id="forgotStep2" style="display:none">
+        <div class="form-group" style="margin-top:1rem">
+          <label class="form-label">6-Digit Code (from email)</label>
+          <input type="text" id="forgotOtp" class="form-control" maxlength="6" placeholder="e.g. 483921" style="font-size:1.4rem;letter-spacing:.25em;text-align:center;font-weight:700">
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input type="password" id="forgotNewPw" class="form-control" minlength="6" placeholder="Enter new password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input type="password" id="forgotConfirmPw" class="form-control" minlength="6" placeholder="Repeat new password">
+        </div>
+        <button onclick="confirmForgotReset()" class="btn-auth" id="forgotResetBtn">Reset Password</button>
+        <div style="text-align:center;margin-top:.75rem">
+          <a href="#" onclick="requestForgotOTP()" style="font-size:.85rem;color:var(--primary,#16a34a);text-decoration:none;font-weight:600">Resend code</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1021,18 +1088,114 @@ document.getElementById('signupForm').addEventListener('submit', async function(
         email: document.getElementById('signupEmail').value.trim(),
         phone: document.getElementById('signupPhone').value.trim(),
         password: document.getElementById('signupPassword').value,
-        referrerCode: referrerCode
+        inviteCode: referrerCode
       })
     });
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    window.location.href = '/dashboard.html';
+    // Save userId for OTP verification step
+    localStorage.setItem('pendingUserId', data.userId);
+    // Show OTP verification screen
+    showSection('verify');
   } catch(err) {
     errEl.textContent = err.message; errEl.style.display = 'block';
   } finally {
     btn.textContent = 'Create Account'; btn.disabled = false;
   }
 });
+
+/* ── VERIFY EMAIL OTP (after register) ── */
+async function submitOTP() {
+  var btn    = document.getElementById('otpBtn');
+  var errEl  = document.getElementById('verifyError');
+  var okEl   = document.getElementById('verifySuccess');
+  var code   = document.getElementById('otpInput').value.trim();
+  var userId = localStorage.getItem('pendingUserId');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+  if (!code || code.length !== 6) { errEl.textContent = 'Enter the 6-digit code from your email.'; errEl.style.display = 'block'; return; }
+  if (!userId) { errEl.textContent = 'Session expired. Please register again.'; errEl.style.display = 'block'; return; }
+  btn.textContent = 'Verifying...'; btn.disabled = true;
+  try {
+    var data = await apiFetch('/api/auth/verify-email', {
+      method: 'POST',
+      body: JSON.stringify({ userId: userId, otp: code })
+    });
+    localStorage.removeItem('pendingUserId');
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    okEl.textContent = '✅ Email verified! Redirecting...';
+    okEl.style.display = 'block';
+    setTimeout(function() { window.location.href = '/dashboard.html'; }, 1200);
+  } catch(err) {
+    errEl.textContent = err.message; errEl.style.display = 'block';
+    btn.textContent = 'Verify Email'; btn.disabled = false;
+  }
+}
+
+/* ── RESEND OTP ── */
+async function resendOTP() {
+  var userId = localStorage.getItem('pendingUserId');
+  if (!userId) { alert('Session expired. Please register again.'); showSection('join'); return; }
+  try {
+    await apiFetch('/api/auth/resend-otp', { method: 'POST', body: JSON.stringify({ userId: userId }) });
+    document.getElementById('verifySuccess').textContent = '📧 New code sent to your email.';
+    document.getElementById('verifySuccess').style.display = 'block';
+    document.getElementById('verifyError').style.display = 'none';
+  } catch(err) {
+    document.getElementById('verifyError').textContent = err.message;
+    document.getElementById('verifyError').style.display = 'block';
+  }
+}
+
+/* ── FORGOT PASSWORD — Step 1: request OTP ── */
+var _forgotUserId = null;
+async function requestForgotOTP() {
+  var btn   = document.getElementById('forgotBtn');
+  var errEl = document.getElementById('forgotError');
+  var email = document.getElementById('forgotEmail').value.trim();
+  errEl.style.display = 'none';
+  if (!email) { errEl.textContent = 'Enter your email address.'; errEl.style.display = 'block'; return; }
+  btn.textContent = 'Sending...'; btn.disabled = true;
+  try {
+    var data = await apiFetch('/api/auth/forgot-password/request', {
+      method: 'POST',
+      body: JSON.stringify({ email: email })
+    });
+    _forgotUserId = data.userId;
+    document.getElementById('forgotSub').textContent = 'Code sent to ' + email + '. Enter it below with your new password.';
+    document.getElementById('forgotStep1').style.display = 'none';
+    document.getElementById('forgotStep2').style.display = '';
+  } catch(err) {
+    errEl.textContent = err.message; errEl.style.display = 'block';
+  } finally {
+    btn.textContent = 'Send Reset Code'; btn.disabled = false;
+  }
+}
+
+/* ── FORGOT PASSWORD — Step 2: confirm OTP + new password ── */
+async function confirmForgotReset() {
+  var btn    = document.getElementById('forgotResetBtn');
+  var errEl  = document.getElementById('forgotError');
+  var otp    = document.getElementById('forgotOtp').value.trim();
+  var newPw  = document.getElementById('forgotNewPw').value;
+  var confPw = document.getElementById('forgotConfirmPw').value;
+  errEl.style.display = 'none';
+  if (!otp || otp.length !== 6)   { errEl.textContent = 'Enter the 6-digit code from your email.'; errEl.style.display = 'block'; return; }
+  if (!newPw || newPw.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.style.display = 'block'; return; }
+  if (newPw !== confPw)           { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+  if (!_forgotUserId)             { errEl.textContent = 'Session expired. Please start again.'; errEl.style.display = 'block'; return; }
+  btn.textContent = 'Resetting...'; btn.disabled = true;
+  try {
+    await apiFetch('/api/auth/forgot-password/confirm', {
+      method: 'POST',
+      body: JSON.stringify({ userId: _forgotUserId, otp: otp, newPassword: newPw })
+    });
+    alert('✅ Password reset successful! Please log in with your new password.');
+    _forgotUserId = null;
+    showSection('login');
+  } catch(err) {
+    errEl.textContent = err.message; errEl.style.display = 'block';
+    btn.textContent = 'Reset Password'; btn.disabled = false;
+  }
+}
 </script>
 <script src="/offline.js"></script>
 </body>
