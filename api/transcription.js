@@ -57,6 +57,31 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
+// GET /api/transcriptions/admin/sign-upload — generate signed params for direct Cloudinary upload
+// Browser calls this first, then uploads directly to Cloudinary using the signature
+router.get('/admin/sign-upload', authMiddleware, requireAdmin, (req, res) => {
+  try {
+    const cloudinary = require('cloudinary').v2;
+    const timestamp  = Math.round(Date.now() / 1000);
+    const folder     = 'techgeo/audio';
+
+    const signature = cloudinary.utils.api_sign_request(
+      { timestamp, folder, resource_type: 'video' },
+      process.env.CLOUDINARY_API_SECRET
+    );
+
+    res.json({
+      timestamp,
+      signature,
+      folder,
+      api_key:    process.env.CLOUDINARY_API_KEY,
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/transcriptions/:id — get single job details
 router.get('/:id', authMiddleware, async (req, res) => {
   try {
@@ -131,31 +156,6 @@ router.post('/:id/submit', authMiddleware, async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 // ADMIN ROUTES
 // ─────────────────────────────────────────────────────────────
-
-// GET /api/transcriptions/admin/sign-upload — generate signed params for direct Cloudinary upload
-// Browser calls this first, then uploads directly to Cloudinary using the signature
-router.get('/admin/sign-upload', authMiddleware, requireAdmin, (req, res) => {
-  try {
-    const cloudinary = require('cloudinary').v2;
-    const timestamp  = Math.round(Date.now() / 1000);
-    const folder     = 'techgeo/audio';
-
-    const signature = cloudinary.utils.api_sign_request(
-      { timestamp, folder, resource_type: 'video' },
-      process.env.CLOUDINARY_API_SECRET
-    );
-
-    res.json({
-      timestamp,
-      signature,
-      folder,
-      api_key:    process.env.CLOUDINARY_API_KEY,
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // POST /api/transcriptions/admin/create
 // Browser uploads audio DIRECTLY to Cloudinary, sends back the URL + publicId
