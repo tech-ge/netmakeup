@@ -1041,17 +1041,26 @@ async function loadWritingSubmissions(jobId,title) {
 }
 
 // ============ TRANSCRIPTION ============
-// Upload audio directly to Cloudinary — bypasses Vercel 4.5MB limit
+// Upload audio directly to Cloudinary using a server-generated signature
+// Flow: get signed params from our server → upload directly to Cloudinary (bypasses Vercel 4.5MB limit)
 async function uploadAudioToCloudinary(file) {
-  return new Promise((resolve, reject) => {
-    // IMPORTANT: replace 'techgeo_audio' with your actual unsigned upload preset name
-    const CLOUD_NAME   = 'REPLACE_WITH_YOUR_CLOUD_NAME'; // e.g. dxyz123
-    const UPLOAD_PRESET = 'techgeo_audio';                // unsigned preset name
+  // Step 1: get signature from our server (no API key in browser)
+  const token = localStorage.getItem('token');
+  const signRes = await fetch('/api/transcriptions/admin/sign-upload', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  if (!signRes.ok) throw new Error('Could not get upload signature from server');
+  const { timestamp, signature, folder, api_key, cloud_name } = await signRes.json();
 
+  // Step 2: upload directly to Cloudinary using the signature
+  return new Promise((resolve, reject) => {
     const fd = new FormData();
     fd.append('file', file);
-    fd.append('upload_preset', UPLOAD_PRESET);
-    fd.append('folder', 'techgeo/audio');
+    fd.append('timestamp', timestamp);
+    fd.append('signature', signature);
+    fd.append('api_key', api_key);
+    fd.append('folder', folder);
+    fd.append('resource_type', 'video'); // Cloudinary stores audio under video type
 
     const xhr = new XMLHttpRequest();
 
@@ -1076,10 +1085,10 @@ async function uploadAudioToCloudinary(file) {
     });
 
     xhr.addEventListener('error', () => reject(new Error('Network error during audio upload')));
-    xhr.addEventListener('timeout', () => reject(new Error('Audio upload timed out')));
+    xhr.addEventListener('timeout', () => reject(new Error('Audio upload timed out — try a smaller file')));
 
-    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`);
-    xhr.timeout = 300000; // 5 minutes for large audio
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${cloud_name}/video/upload`);
+    xhr.timeout = 300000; // 5 minutes
     xhr.send(fd);
   });
 }
