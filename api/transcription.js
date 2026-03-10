@@ -3,7 +3,7 @@ const Transcription = require('../models/Transcription');
 const User = require('../models/Users');
 const Notification = require('../models/Notification');
 const Commission = require('../models/Commission');
-const { uploadAudio, deleteFile } = require('../config/cloudinary');
+const { deleteFile } = require('../config/cloudinary');
 const { authMiddleware, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -132,40 +132,40 @@ router.post('/:id/submit', authMiddleware, async (req, res) => {
 // ADMIN ROUTES
 // ─────────────────────────────────────────────────────────────
 
-// POST /api/transcriptions/admin/create — upload audio + create job
-router.post('/admin/create', authMiddleware, requireAdmin,
-  uploadAudio.single('audio'),
-  async (req, res) => {
-    try {
-      if (!req.file) return res.status(400).json({ error: 'Audio file is required.' });
+// POST /api/transcriptions/admin/create
+// Browser uploads audio DIRECTLY to Cloudinary, sends back the URL + publicId
+router.post('/admin/create', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { title, description, instructions, reward, maxWorkers, deadline, audioUrl, audioPublicId } = req.body;
 
-      const { title, description, instructions, reward, maxWorkers, deadline } = req.body;
-      if (!title || !description || !instructions) {
-        return res.status(400).json({ error: 'Title, description and instructions are required.' });
-      }
-
-      const job = new Transcription({
-        title:        title.trim(),
-        description:  description.trim(),
-        instructions: instructions.trim(),
-        audioUrl:     req.file.path,        // Cloudinary URL
-        audioPublicId: req.file.filename,   // Cloudinary public_id
-        reward:       parseInt(reward) || 50,
-        maxWorkers:   parseInt(maxWorkers) || 50,
-        deadline:     deadline ? new Date(deadline) : null
-      });
-
-      await job.save();
-
-      res.status(201).json({
-        message: '✅ Transcription job created.',
-        job: { id: job._id, title: job.title, audioUrl: job.audioUrl }
-      });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+    if (!title || !description || !instructions) {
+      return res.status(400).json({ error: 'Title, description and instructions are required.' });
     }
+    if (!audioUrl) {
+      return res.status(400).json({ error: 'Audio file is required. Please upload the audio first.' });
+    }
+
+    const job = new Transcription({
+      title:         title.trim(),
+      description:   description.trim(),
+      instructions:  instructions.trim(),
+      audioUrl,
+      audioPublicId: audioPublicId || '',
+      reward:        parseInt(reward) || 50,
+      maxWorkers:    parseInt(maxWorkers) || 50,
+      deadline:      deadline ? new Date(deadline) : null
+    });
+
+    await job.save();
+
+    res.status(201).json({
+      message: '✅ Transcription job created.',
+      job: { id: job._id, title: job.title, audioUrl: job.audioUrl }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-);
+});
 
 // GET /api/transcriptions/admin/all — all jobs for admin management
 router.get('/admin/all', authMiddleware, requireAdmin, async (req, res) => {
