@@ -8,7 +8,7 @@ const { sendWithdrawalSubmitted, sendWithdrawalPaid, sendWithdrawalRejected } = 
 
 const router = express.Router();
 
-// ─── EAT (UTC+3) helpers ──────────────────────────────────────────────────────
+// ─── EAT (UTC+3)helpers ──────────────────────────────────────────────────────
 function nowEAT()    { return new Date(Date.now() + 3 * 60 * 60 * 1000); }
 function getEATDay() { return nowEAT().getUTCDay(); }
 function eatDayBounds() {
