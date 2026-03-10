@@ -1,8 +1,12 @@
-const express = require('express');
-const jwt     = require('jsonwebtoken');
-const User    = require('../models/Users');
+const express      = require('express');
+const jwt          = require('jsonwebtoken');
+const mongoose     = require('mongoose');
+const User         = require('../models/Users');
+const Commission   = require('../models/Commission');
+const Notification = require('../models/Notification');
 const { authMiddleware } = require('../middleware/auth');
 const { sendOTP }        = require('../utils/emailHelper');
+const { distributeReferralCommissions, ACTIVATION_FEE } = require('../utils/commissionHelper');
 
 const router = express.Router();
 
@@ -305,5 +309,66 @@ router.post('/forgot-password/confirm', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// ══════════════════════════════════════════════════════════════════
+// ACTIVATE PACKAGE — deducts KES 700 from wallet, distributes commissions
+// POST /api/auth/activate-package
+// ══════════════════════════════════════════════════════════════════
+router.post('/activate-package', authMiddleware, async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const user = await User.findById(req.userId).session(session);
+    if (!user) { await session.abortTransaction(); return res.status(404).json({ error: 'User not found.' }); }
+    if (user.packageType === 'normal') { await session.abortTransaction(); return res.status(400).json({ error: 'Account already activated.' }); }
+    if (user.primaryWallet.balance < ACTIVATION_FEE) {
+      await session.abortTransaction();
+      return res.status(400).json({ error: `Insufficient balance. You need KES ${ACTIVATION_FEE} to activate. Current balance: KES ${user.primaryWallet.balance}.` });
+    }
+
+    // Deduct activation fee
+    user.primaryWallet.balance -= ACTIVATION_FEE;
+    user.packageType     = 'normal';
+    user.status          = 'active';
+    user.hasActivated    = true;
+    user.packageActivatedAt = new Date();
+    user.activatedAt        = new Date();
+    await user.save({ session });
+
+    // Distribute commissions up 4 levels
+    await distributeReferralCommissions(user, 'activation', session);
+
+    // Update referrer's activeReferrals + stats
+    if (user.referrerId) {
+      await User.findByIdAndUpdate(user.referrerId, {
+        $addToSet: { activeReferrals: user._id },
+        $inc: { 'stats.totalReferrals': 1, 'stats.activeDirectReferrals': 1 }
+      }, { session });
+    }
+
+    await session.commitTransaction();
+
+    // Notification (non-blocking, outside session)
+    Notification.create({
+      userId:  user._id,
+      type:    'activation',
+      title:   '🎉 Account Activated!',
+      message: `Your account is now active. KES ${ACTIVATION_FEE} deducted. Welcome to TechGeo Network!`,
+    }).catch(() => {});
+
+    res.json({
+      message: '🎉 Account activated successfully! You can now earn commissions and complete tasks.',
+      newBalance: user.primaryWallet.balance,
+      packageType: 'normal',
+      status: 'active'
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    res.status(500).json({ error: err.message });
+  } finally {
+    session.endSession();
+  }
+});
+
 
 module.exports = router;
