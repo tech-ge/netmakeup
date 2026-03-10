@@ -77,10 +77,8 @@ router.post('/points', authMiddleware, async (req, res) => {
       message: `Your request to redeem ${redeemable} pts → KES ${kesValue} is pending admin approval.`,
       metadata: { withdrawalId: withdrawal._id } });
 
-    // Email confirmation
-    sendWithdrawalSubmitted(user.email, user.username, kesValue, 'points', withdrawal._id.toString()).catch(() => {});
-
     console.log(`🎯 POINTS WITHDRAWAL REQUEST: ${redeemable} pts → KES ${kesValue} for ${user.username} | pending admin approval`);
+    sendWithdrawalSubmitted(user.email, user.username, kesValue, 'points', withdrawal._id.toString()).catch(() => {});
 
     res.status(201).json({
       message: `✅ Request submitted. KES ${kesValue} will be sent after admin approval.`,
@@ -134,10 +132,8 @@ router.post('/kes', authMiddleware, async (req, res) => {
       message: `Your KES ${withdrawAmount} withdrawal request is pending admin approval.`,
       metadata: { withdrawalId: withdrawal._id } });
 
-    // Email confirmation
-    sendWithdrawalSubmitted(user.email, user.username, withdrawAmount, 'kes', withdrawal._id.toString()).catch(() => {});
-
     console.log(`💸 KES WITHDRAWAL REQUEST: KES ${withdrawAmount} from ${user.username} | pending admin approval`);
+    sendWithdrawalSubmitted(user.email, user.username, withdrawAmount, 'kes', withdrawal._id.toString()).catch(() => {});
 
     res.status(201).json({
       message: '✅ Withdrawal request submitted. Pending admin approval.',
@@ -258,13 +254,9 @@ router.post('/admin/:id/complete', authMiddleware, requireAdmin, async (req, res
       metadata: { withdrawalId: withdrawal._id, amount: withdrawal.amount, type: withdrawal.type, transactionCode }
     });
 
-    // Email the user
+    // Email user — paid
     const paidUser = withdrawal.userId;
-    sendWithdrawalPaid(
-      paidUser.email, paidUser.username,
-      withdrawal.amount, withdrawal.type,
-      transactionCode, withdrawal.paymentMethod
-    ).catch(() => {});
+    sendWithdrawalPaid(paidUser.email, paidUser.username, withdrawal.amount, withdrawal.type, transactionCode, withdrawal.paymentMethod).catch(() => {});
 
     res.json({
       message: 'Withdrawal approved and processed.',
@@ -299,12 +291,9 @@ router.post('/admin/:id/reject', authMiddleware, requireAdmin, async (req, res) 
       metadata: { withdrawalId: withdrawal._id, amount: withdrawal.amount, type: withdrawal.type }
     });
 
-    // Email the user
+    // Email user — rejected
     const rejUser = withdrawal.userId;
-    sendWithdrawalRejected(
-      rejUser.email, rejUser.username,
-      withdrawal.amount, withdrawal.type, withdrawal.adminNotes
-    ).catch(() => {});
+    sendWithdrawalRejected(rejUser.email, rejUser.username, withdrawal.amount, withdrawal.type, withdrawal.adminNotes).catch(() => {});
 
     res.json({ message: 'Withdrawal rejected. User funds are unchanged.' });
   } catch (error) { res.status(500).json({ error: error.message }); }
