@@ -4,6 +4,36 @@ const User = require('../models/Users');
 const Notification = require('../models/Notification');
 const Commission = require('../models/Commission');
 const { uploadMixed, uploadDocument, deleteFile } = require('../config/cloudinary');
+
+// Local mixed uploader fallback — accepts both images and documents
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const { cloudinary } = require('../config/cloudinary');
+
+const _mixedStorage = new CloudinaryStorage({
+  cloudinary,
+  params: (req, file) => {
+    const ext = file.originalname.split('.').pop().toLowerCase();
+    const isImage = ['jpg','jpeg','png','gif','webp','bmp','tiff'].includes(ext);
+    return {
+      folder:        isImage ? 'techgeo/images' : 'techgeo/documents',
+      resource_type: isImage ? 'image' : 'raw',
+      access_mode:   'public',
+      public_id: `${isImage?'img':'doc'}_${Date.now()}_${file.originalname.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9._-]/g,'').replace(/\.[^.]+$/,'')}`
+    };
+  }
+});
+
+const _uploadMixed = multer({
+  storage: _mixedStorage,
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = file.originalname.split('.').pop().toLowerCase();
+    const allowed = ['pdf','doc','docx','xlsx','xls','csv','jpg','jpeg','png','gif','webp','bmp','tiff'];
+    if (allowed.includes(ext)) return cb(null, true);
+    cb(new Error(`Allowed: images (jpg,png,gif,webp) or documents (pdf,doc,docx,xlsx,csv). Got: ${file.mimetype}`));
+  }
+});
 const { authMiddleware, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -71,7 +101,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
 
 // POST /api/dataentry/:id/submit — upload completed data entry file or image
 router.post('/:id/submit', authMiddleware,
-  uploadMixed.single('file'),
+  _uploadMixed.single('file'),
   async (req, res) => {
     try {
       if (!req.file) return res.status(400).json({ error: 'Please upload a file (image: jpg/png/gif/webp or document: pdf/doc/docx/xlsx/csv).' });
