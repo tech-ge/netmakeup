@@ -1177,26 +1177,46 @@ async function rejectWithdrawal(id) {
 }
 
 // ============ EMAIL MANAGEMENT ============
-// Search and autocomplete users for single email
+// Search users for single email — searches by username or email
 let emailSearchTimeout;
 document.getElementById('emailSearchInput')?.addEventListener('input', async (e) => {
   clearTimeout(emailSearchTimeout);
   const val = e.target.value.trim();
   const resultsDiv = document.getElementById('emailSearchResults');
   if (val.length < 2) { resultsDiv.style.display = 'none'; return; }
-  
   emailSearchTimeout = setTimeout(async () => {
     try {
-      const data = await aF(`/api/admin/dashboard/stats`);
-      // For now, show a simple message — ideally you'd have a dedicated /api/users/search endpoint
-      resultsDiv.innerHTML = '<div class="sri" style="padding:1.5rem;text-align:center;color:var(--gray-500);font-size:.75rem">Search feature requires a dedicated search endpoint. Please paste user ID directly or use bulk email.</div>';
+      const data = await aF(`/api/admin/users/all`);
+      const users = (data.users || []).filter(u =>
+        u.username?.toLowerCase().includes(val.toLowerCase()) ||
+        u.email?.toLowerCase().includes(val.toLowerCase())
+      ).slice(0, 6);
+      if (!users.length) {
+        resultsDiv.innerHTML = '<div class="sri" style="padding:.75rem;color:var(--gray-500);font-size:.8rem">No users found</div>';
+      } else {
+        resultsDiv.innerHTML = users.map(u => `
+          <div class="sri" onclick="selectEmailUser('${u.id}','${u.username}','${u.email}')"
+               style="padding:.6rem .85rem;cursor:pointer;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700;font-size:.85rem">${u.username}</div>
+              <div style="font-size:.75rem;color:var(--gray-500)">${u.email}</div>
+            </div>
+            <span style="font-size:.7rem;background:#f0fdf4;color:#15803d;padding:.2rem .5rem;border-radius:.3rem">${u.status}</span>
+          </div>`).join('');
+      }
       resultsDiv.style.display = 'block';
     } catch(err) {
-      resultsDiv.innerHTML = '<div class="sri" style="color:var(--r)">Search error</div>';
+      resultsDiv.innerHTML = '<div class="sri" style="color:var(--r);padding:.5rem">Search error</div>';
       resultsDiv.style.display = 'block';
     }
-  }, 300);
+  }, 350);
 });
+
+function selectEmailUser(id, username, email) {
+  document.getElementById('emailUserId').value = id;
+  document.getElementById('emailSearchInput').value = username + ' — ' + email;
+  document.getElementById('emailSearchResults').style.display = 'none';
+}
 
 // Send email to individual user
 async function sendSingleEmail() {
