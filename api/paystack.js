@@ -211,18 +211,33 @@ router.post('/webhook', async (req, res) => {
 
       if (!userId) return;
 
+      // Prevent double-credit
       const exists = await Commission.findOne({
         'metadata.paystackReference': reference,
         'metadata.recordType':        'deposit'
       });
-      if (exists) return;
+      if (exists) {
+        console.log(`WEBHOOK DEPOSIT DUPLICATE BLOCKED: ref: ${reference}`);
+        return;
+      }
 
-      await User.findByIdAndUpdate(userId, { $inc: { 'primaryWallet.balance': amountKES } });
+      // Fetch user and credit wallet
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $inc: { 'primaryWallet.balance': amountKES } },
+        { new: true }
+      );
 
+      if (!user) {
+        console.error(`WEBHOOK DEPOSIT FAILED: User not found | userId: ${userId} | ref: ${reference}`);
+        return;
+      }
+
+      // Log deposit
       try {
         await Commission.create({
-          fromUserId:  userId,
-          toUserId:    userId,
+          fromUserId:  user._id,
+          toUserId:    user._id,
           level:       0,
           amount:      amountKES,
           type:        'deposit',
@@ -240,9 +255,10 @@ router.post('/webhook', async (req, res) => {
         console.error('Webhook deposit log skipped:', logErr.message);
       }
 
+      // Create notification
       try {
         await Notification.create({
-          userId:   userId,
+          userId:   user._id,
           type:     'deposit_confirmed',
           title:    'Deposit Confirmed',
           message:  `KES ${amountKES} has been added to your wallet. Ref: ${reference}`,
@@ -252,7 +268,10 @@ router.post('/webhook', async (req, res) => {
         console.error('Webhook notification skipped:', notifErr.message);
       }
 
-      console.log(`WEBHOOK DEPOSIT: KES ${amountKES} -> userId: ${userId} | ref: ${reference}`);
+      // Send confirmation email (non-blocking)
+      sendDepositConfirmed(user.email, user.username, amountKES, reference).catch(() => {});
+
+      console.log(`WEBHOOK DEPOSIT: KES ${amountKES} -> ${user.username} | ref: ${reference}`);
     }
   } catch (error) {
     console.error('Webhook error:', error.message);
