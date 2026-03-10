@@ -1,1336 +1,610 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <link rel="icon" type="image/jpeg" href="https://port.techgeo.co.ke/logo.jpeg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechGeo — Admin Panel</title>
-  <link rel="stylesheet" href="/css/style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-  <style>
-    :root{--g:#16a34a;--gd:#15803d;--r:#ef4444;--y:#f59e0b;--b:#3b82f6;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-500:#6b7280;--gray-700:#374151;--rad:.65rem;--sh:0 2px 12px rgba(0,0,0,.07)}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Inter',system-ui,sans-serif;color:var(--gray-700);background:var(--gray-50);font-size:.88rem;line-height:1.5}
-    /* TOPNAV */
-    .tnav{background:#111827;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;position:sticky;top:0;z-index:200}
-    .tlogo{color:#fff;font-weight:800;font-size:1rem;display:flex;align-items:center;gap:.4rem;text-decoration:none}
-    .tlogo svg{stroke:#4ade80}
-    /* TABS */
-    .tabbar{background:#fff;border-bottom:2px solid var(--gray-200);overflow-x:auto;white-space:nowrap;padding:0 1rem;position:sticky;top:52px;z-index:190}
-    .tbtns{display:inline-flex}
-    .tb{display:inline-flex;align-items:center;gap:.3rem;padding:.65rem 1rem;border:none;background:none;font-weight:600;font-size:.8rem;cursor:pointer;color:var(--gray-500);border-bottom:2.5px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:.15s}
-    .tb:hover{color:var(--gray-700)}
-    .tb.on{color:var(--g);border-bottom-color:var(--g)}
-    /* CONTENT */
-    .tc{display:none;padding:1.25rem;max-width:1280px;margin:0 auto}
-    .tc.on{display:block}
-    /* UNIVERSAL CARD */
-    .c{background:#fff;border:1px solid var(--gray-200);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden;margin-bottom:1.1rem}
-    .ch{background:var(--gray-50);padding:.6rem 1rem;border-bottom:1px solid var(--gray-200);font-weight:700;font-size:.82rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem}
-    .cb{padding:.9rem 1rem}
-    /* STAT STRIP */
-    .sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.85rem;margin-bottom:1.1rem}
-    .sb{background:#fff;border:1px solid var(--gray-200);border-radius:var(--rad);padding:.9rem 1rem;text-align:center;box-shadow:var(--sh)}
-    .sv{font-size:1.5rem;font-weight:800;color:var(--g)}
-    .sl{font-size:.7rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.04em;margin-top:.15rem}
-    /* USER CARDS - Image 1 style */
-    .ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
-    .ucard{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:1rem;box-shadow:var(--sh);transition:.15s}
-    .ucard:hover{border-color:#86efac;box-shadow:0 4px 16px rgba(22,163,74,.1)}
-    .ucard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.6rem}
-    .ucard-name{font-weight:800;font-size:.95rem;margin-bottom:.1rem}
-    .ucard-sub{font-size:.75rem;color:var(--gray-500);margin-bottom:.05rem}
-    .ucard-meta{display:flex;align-items:center;gap:.5rem;margin:.5rem 0}
-    .ucard-wallet{background:#f0fdf4;color:var(--g);padding:.2rem .6rem;border-radius:.35rem;font-weight:800;font-size:.8rem;border:1px solid #bbf7d0}
-    .ucard-pts{background:#fef3c7;color:#b45309;padding:.2rem .6rem;border-radius:.35rem;font-weight:800;font-size:.8rem;border:1px solid #fde68a}
-    .ucard-ref{font-size:.72rem;color:var(--gray-500);margin:.3rem 0}
-    .ucard-btns{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem}
-    /* TASK CARDS - Image 2 style */
-    .jgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
-    .jcard{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:1rem;box-shadow:var(--sh);border-top:3px solid var(--g)}
-    .jcard-title{font-weight:800;font-size:.9rem;margin-bottom:.2rem}
-    .jcard-desc{font-size:.78rem;color:var(--gray-500);margin-bottom:.6rem;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-    .jcard-stats{display:flex;gap:1rem;margin:.6rem 0;font-size:.75rem}
-    .jcs{text-align:center}
-    .jcs-n{font-weight:800;font-size:.95rem}
-    .jcs-l{color:var(--gray-500);font-size:.68rem;margin-top:.05rem}
-    .jcard-btns{display:flex;gap:.4rem;flex-wrap:wrap;padding-top:.6rem;border-top:1px solid var(--gray-100)}
-    /* WITHDRAWAL BOXES */
-    .wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
-    .wcard{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:1rem;box-shadow:var(--sh);border-left:4px solid var(--y)}
-    .wcard.done{border-left-color:var(--g)}
-    .wcard.rej{border-left-color:var(--r)}
-    /* REVIEW BOXES */
-    .rbox{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:.85rem;margin-bottom:.7rem;border-left:4px solid #8b5cf6}
-    /* FORMS */
-    .fg{margin-bottom:.8rem}
-    .fl{display:block;font-weight:600;font-size:.78rem;margin-bottom:.25rem;color:var(--gray-700)}
-    .fc{width:100%;padding:.48rem .7rem;border:1.5px solid var(--gray-200);border-radius:.45rem;font-size:.85rem;outline:none;transition:.15s;background:#fff}
-    .fc:focus{border-color:var(--g);box-shadow:0 0 0 2px rgba(22,163,74,.1)}
-    .fr2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
-    .fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
-    /* BUTTONS */
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.25rem;padding:.38rem .8rem;border-radius:.4rem;font-weight:700;font-size:.78rem;cursor:pointer;border:none;transition:.15s;white-space:nowrap}
-    .btp{background:var(--g);color:#fff}.btp:hover{background:var(--gd)}
-    .btd{background:var(--r);color:#fff}.btd:hover{background:#dc2626}
-    .btw{background:var(--y);color:#fff}.btw:hover{background:#d97706}
-    .btg{background:none;border:1.5px solid var(--gray-200);color:var(--gray-700)}.btg:hover{background:var(--gray-100)}
-    .btb{background:#2563eb;color:#fff}.btb:hover{background:#1d4ed8}
-    .wfull{width:100%}
-    /* BADGES */
-    .badge{display:inline-flex;align-items:center;gap:.2rem;padding:.18rem .55rem;border-radius:999px;font-size:.7rem;font-weight:700}
-    .bg{background:#dcfce7;color:#16a34a}
-    .by{background:#fef3c7;color:#b45309}
-    .br{background:#fee2e2;color:#dc2626}
-    .bb{background:#dbeafe;color:#1e40af}
-    .bgr{background:var(--gray-100);color:var(--gray-500)}
-    /* MSG */
-    .msg{padding:.5rem .8rem;border-radius:.4rem;font-size:.8rem;margin-bottom:.75rem}
-    .mok{background:#dcfce7;color:#16a34a;border:1px solid #86efac}
-    .merr{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5}
-    /* SEARCH */
-    .sr{border:1.5px solid var(--gray-200);border-radius:.4rem;background:#fff;max-height:200px;overflow-y:auto;position:absolute;z-index:300;width:100%}
-    .sri{padding:.45rem .75rem;cursor:pointer;font-size:.8rem;border-bottom:1px solid var(--gray-100)}
-    .sri:hover{background:var(--gray-50)}
-    .pos-rel{position:relative}
-    /* CHART */
-    .chart-wrap{position:relative;height:220px}
-    /* GRAPH GRID */
-    .gg{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.1rem}
-    /* P&L box */
-    .pnl-box{background:#fff;border-radius:var(--rad);border:1px solid var(--gray-200);padding:1rem;box-shadow:var(--sh)}
-    .pnl-title{font-weight:700;font-size:.85rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.35rem}
-    .pnl-row{display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px dashed var(--gray-100);font-size:.82rem}
-    .pnl-row:last-child{border-bottom:none;font-weight:800;padding-top:.5rem}
-    .pnl-pos{color:var(--g);font-weight:700}
-    .pnl-neg{color:var(--r);font-weight:700}
-    @media(max-width:640px){.fr2,.fr3,.gg{grid-template-columns:1fr}.ugrid,.jgrid,.wgrid{grid-template-columns:1fr}}
-  </style>
-</head>
-<body>
+const express = require('express');
+const Blog = require('../models/Blog');
+const Survey = require('../models/Survey');
+const User = require('../models/Users');
+const Withdrawal = require('../models/Withdrawal');
+const Commission = require('../models/Commission');
+const { authMiddleware, requireAdmin } = require('../middleware/auth');
+const { PROFIT_PER_ACTIVATION, ACTIVATION_FEE } = require('../utils/commissionHelper');
+const { sendCustomAdminEmail } = require('../utils/emailHelper');
 
-<nav class="tnav">
-  <a href="/admin.html" class="tlogo">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M6 6L4 4M18 18l2 2M6 18l-2 2M18 6l2-2"/><circle cx="12" cy="12" r="4"/></svg>
-    TechGeo Admin
-  </a>
-  <div style="display:flex;align-items:center;gap:.75rem">
-    <span id="adminName" style="color:#9ca3af;font-size:.8rem"></span>
-    <button class="btn btd" onclick="adminLogout()">Logout</button>
-  </div>
-</nav>
+const router = express.Router();
 
-<div class="tabbar">
-  <div class="tbtns">
-    <button class="tb on" data-tab="overview">📊 Overview</button>
-    <button class="tb" data-tab="deposits">💰 Deposits</button>
-    <button class="tb" data-tab="users">👥 Users</button>
-    <button class="tb" data-tab="blogs">📝 Blogs</button>
-    <button class="tb" data-tab="surveys">📋 Surveys</button>
-    <button class="tb" data-tab="writing">✍️ Writing</button>
-    <button class="tb" data-tab="transcription">🎙️ Transcription</button>
-    <button class="tb" data-tab="dataentry">📂 Data Entry</button>
-    <button class="tb" data-tab="withdrawals">💸 Withdrawals</button>
-    <button class="tb" data-tab="emails">📧 Send Emails</button>
-  </div>
-</div>
-
-<!-- ======= OVERVIEW ======= -->
-<div class="tc on" id="tab-overview">
-  <div class="sg">
-    <div class="sb"><div class="sv" id="ovTotal">—</div><div class="sl">Total Users</div></div>
-    <div class="sb"><div class="sv" id="ovActive">—</div><div class="sl">Active Users</div></div>
-    <div class="sb"><div class="sv" id="ovNotAct">—</div><div class="sl">Not Activated</div></div>
-    <div class="sb"><div class="sv" id="ovWithdraw">—</div><div class="sl">Pending Withdrawals</div></div>
-    <div class="sb" style="cursor:pointer" onclick="switchTab('blogs')"><div class="sv" style="color:#f59e0b" id="ovBlogs">0</div><div class="sl">📝 Blog Reviews</div></div>
-    <div class="sb" style="cursor:pointer" onclick="switchTab('surveys')"><div class="sv" style="color:#3b82f6" id="ovSurveys">0</div><div class="sl">📋 Survey Reviews</div></div>
-    <div class="sb" style="cursor:pointer" onclick="switchTab('writing')"><div class="sv" style="color:#8b5cf6" id="ovWriting">0</div><div class="sl">✍️ Writing</div></div>
-    <div class="sb" style="cursor:pointer" onclick="switchTab('transcription')"><div class="sv" style="color:#ec4899" id="ovTranscription">0</div><div class="sl">🎙️ Transcription</div></div>
-    <div class="sb" style="cursor:pointer" onclick="switchTab('dataentry')"><div class="sv" style="color:#14b8a6" id="ovDataentry">0</div><div class="sl">📂 Data Entry</div></div>
-  </div>
-
-  <!-- P&L PANELS -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;margin-bottom:1.1rem">
-
-    <!-- 💰 WALLET P&L -->
-    <div class="pnl-box">
-      <div class="pnl-title">💰 Activation Wallet — Profit & Loss</div>
-      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.45rem;padding:.55rem .75rem;margin-bottom:.75rem;font-size:.75rem;color:#166534;line-height:1.5">
-        Each activated user pays <b>KES 700</b> · KES 450 → commissions · <b>KES 250 → profit</b>
-      </div>
-      <div class="pnl-row"><span>Active users</span><span id="plActiveCount" style="font-weight:800">0</span></div>
-      <div class="pnl-row"><span>Total collected (× KES 700)</span><span class="pnl-pos" id="plWalletIn">KES 0</span></div>
-      <div class="pnl-row"><span style="color:#6b7280">− Commissions (× KES 450)</span><span class="pnl-neg" id="plCommissions">− KES 0</span></div>
-      <div class="pnl-row" style="border-top:2px solid #16a34a;margin-top:.4rem;padding-top:.5rem">
-        <span style="font-weight:800">💼 Net Wallet Profit</span>
-        <span id="plWalletNet" class="pnl-pos" style="font-size:1.05rem">KES 0</span>
-      </div>
-      <div class="chart-wrap" style="margin-top:.85rem;height:160px"><canvas id="walletChart"></canvas></div>
-    </div>
-
-    <!-- 👥 REFERRALS P&L -->
-    <div class="pnl-box">
-      <div class="pnl-title">👥 Referral Commissions — Paid vs In System</div>
-      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:.45rem;padding:.55rem .75rem;margin-bottom:.75rem;font-size:.75rem;color:#1e40af;line-height:1.5">
-        KES 200+150+75+25 = KES 450 distributed per activation across 4 referral levels
-      </div>
-      <div class="pnl-row"><span>Total commissions distributed</span><span class="pnl-pos" id="plRefTotal">KES 0</span></div>
-      <div class="pnl-row"><span>Currently in user KES wallets</span><span id="plRefInWallets" style="color:#1e40af;font-weight:700">KES 0</span></div>
-      <div class="pnl-row"><span style="color:#6b7280">− Already withdrawn (paid out)</span><span class="pnl-neg" id="plRefWithdrawn">− KES 0</span></div>
-      <div class="pnl-row" style="border-top:2px solid #3b82f6;margin-top:.4rem;padding-top:.5rem">
-        <span style="font-weight:800">📊 Pending in wallets (liability)</span>
-        <span id="plRefPending" style="color:#f59e0b;font-weight:800;font-size:1.05rem">KES 0</span>
-      </div>
-      <div class="chart-wrap" style="margin-top:.85rem;height:160px"><canvas id="refChart"></canvas></div>
-    </div>
-
-    <!-- ⭐ POINTS / TASKS P&L -->
-    <div class="pnl-box">
-      <div class="pnl-title">⭐ Points Wallet — Task Economy P&L</div>
-      <div style="background:#fefce8;border:1px solid #fde047;border-radius:.45rem;padding:.55rem .75rem;margin-bottom:.75rem;font-size:.75rem;color:#854d0e;line-height:1.5">
-        Points earned from tasks are redeemed as KES on Tuesdays (separate from KES wallet)
-      </div>
-      <div class="pnl-row"><span>Wallet profit (task reward pool)</span><span class="pnl-pos" id="plPtsSrcProfit">KES 0</span></div>
-      <div class="pnl-row"><span>Pts held by users (unredeemed)</span><span id="plPtsHeld" style="color:#6b7280;font-weight:700">0 pts</span></div>
-      <div class="pnl-row"><span style="color:#6b7280">− Points redeemed &amp; paid (Tuesdays)</span><span class="pnl-neg" id="plPtsAlreadyPaid">− KES 0</span></div>
-      <div class="pnl-row"><span style="color:#ef4444">− Points redeemed, NOT yet paid</span><span class="pnl-neg" id="plPtsUnpaid">− KES 0</span></div>
-      <div class="pnl-row" style="border-top:2px solid #f59e0b;margin-top:.4rem;padding-top:.5rem">
-        <span style="font-weight:800">⭐ Points Profit Balance</span>
-        <span id="plPtsNet" class="pnl-pos" style="font-size:1.05rem">KES 0</span>
-      </div>
-      <div class="chart-wrap" style="margin-top:.85rem;height:160px"><canvas id="pointsChart"></canvas></div>
-    </div>
-
-  </div>
-
-  <!-- RECENT ACTIVITY -->
-  <div class="c">
-    <div class="ch">📋 Recent Registrations <button onclick="switchTab('users')" class="btn btg" style="font-size:.73rem">View All →</button></div>
-    <div class="cb" id="ovRecentUsers">Loading...</div>
-  </div>
-</div>
-
-<!-- ======= DEPOSITS ======= -->
-<div class="tc" id="tab-deposits">
-  <div class="c" style="max-width:480px">
-    <div class="ch">💰 Deposit Balance to User</div>
-    <div class="cb">
-      <div id="depositMsg" class="msg" style="display:none"></div>
-      <div class="fg pos-rel">
-        <label class="fl">Search User (username or email)</label>
-        <input type="text" id="depositSearch" class="fc" placeholder="Type username or email...">
-        <div id="depositSearchResults" class="sr" style="display:none"></div>
-      </div>
-      <div class="fg">
-        <label class="fl">Selected User</label>
-        <input type="text" id="depositUserDisplay" class="fc" readonly placeholder="Select from search results" style="background:var(--gray-50)">
-        <input type="hidden" id="depositUserId">
-      </div>
-      <div class="fr2">
-        <div class="fg"><label class="fl">Amount (KES)</label><input type="number" id="depositAmount" class="fc" placeholder="700" min="1"></div>
-        <div class="fg"><label class="fl">M-Pesa Reference</label><input type="text" id="depositReference" class="fc" placeholder="Optional"></div>
-      </div>
-      <button onclick="doDeposit()" class="btn btp wfull">💰 Deposit to Wallet</button>
-    </div>
-  </div>
-</div>
-
-<!-- ======= USERS ======= -->
-<div class="tc" id="tab-users">
-  <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem">
-    <h3 style="font-size:.95rem">User Management</h3>
-    <select id="uFilterStatus" class="fc" style="width:auto">
-      <option value="all">All Status</option><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option>
-    </select>
-    <select id="uFilterPkg" class="fc" style="width:auto">
-      <option value="all">All Packages</option><option value="not_active">Not Activated</option><option value="normal">Activated</option>
-    </select>
-    <input type="text" id="uSearch" class="fc" style="width:auto;max-width:180px" placeholder="Search name/email...">
-    <button onclick="loadAdminUsers()" class="btn btg">Filter</button>
-    <span id="uCount" style="font-size:.75rem;color:var(--gray-500)"></span>
-  </div>
-  <div id="adminUsersList"><p style="color:var(--gray-500)">Loading...</p></div>
-</div>
-
-<!-- ======= BLOGS ======= -->
-<div class="tc" id="tab-blogs">
-  <div class="c">
-    <div class="ch">Create New Blog Task</div>
-    <div class="cb">
-      <div id="createBlogMsg" class="msg" style="display:none"></div>
-      <div class="fr2">
-        <div class="fg"><label class="fl">Title *</label><input type="text" id="blogTitle" class="fc" required></div>
-        <div class="fg"><label class="fl">Category</label><input type="text" id="blogCategory" class="fc" placeholder="general"></div>
-      </div>
-      <div class="fg"><label class="fl">Description (shown to users) *</label><input type="text" id="blogDescription" class="fc" required></div>
-      <div class="fg"><label class="fl">Full Instructions / Writing Prompt *</label><textarea id="blogContent" class="fc" rows="4" required></textarea></div>
-      <div class="fr2">
-        <div class="fg"><label class="fl">Points Reward</label><input type="number" id="blogReward" class="fc" value="100" min="1"></div>
-        <div class="fg"><label class="fl">Max Writers (slots)</label><input type="number" id="blogMaxBidders" class="fc" value="50" min="1"></div>
-      </div>
-      <button onclick="createBlog()" class="btn btp">📝 Create Blog Task</button>
-    </div>
-  </div>
-  <div class="c">
-    <div class="ch">All Blog Tasks <button onclick="loadAdminBlogs()" class="btn btg" style="font-size:.72rem">↻ Refresh</button></div>
-    <div class="cb" id="adminBlogsList">Loading...</div>
-  </div>
-  <div class="c">
-    <div class="ch" id="blogReviewHeader">Pending Blog Reviews — select a task above</div>
-    <div class="cb" id="adminBlogSubmissions"><p style="color:var(--gray-500)">Click "Review" on a blog task above.</p></div>
-  </div>
-</div>
-
-<!-- ======= SURVEYS ======= -->
-<div class="tc" id="tab-surveys">
-  <div class="c">
-    <div class="ch">Create New Survey</div>
-    <div class="cb">
-      <div id="createSurveyMsg" class="msg" style="display:none"></div>
-      <div class="fr2">
-        <div class="fg"><label class="fl">Title *</label><input type="text" id="surveyTitle" class="fc" required></div>
-        <div class="fg"><label class="fl">Max Responses</label><input type="number" id="surveyMaxResponses" class="fc" value="100" min="1"></div>
-      </div>
-      <div class="fr2">
-        <div class="fg"><label class="fl">Description *</label><input type="text" id="surveyDescription" class="fc" required></div>
-        <div class="fg"><label class="fl">Points Reward</label><input type="number" id="surveyReward" class="fc" value="100" min="1"></div>
-      </div>
-      <div id="questionsBuilder">
-        <label class="fl" style="margin-bottom:.4rem">Questions</label>
-        <div id="questionsList"></div>
-        <button type="button" onclick="addQuestion()" class="btn btg" style="margin-top:.4rem;font-size:.75rem">+ Add Question</button>
-      </div>
-      <button onclick="createSurvey()" class="btn btp" style="margin-top:.85rem">📋 Create Survey</button>
-    </div>
-  </div>
-  <div class="c">
-    <div class="ch">All Surveys <button onclick="loadAdminSurveys()" class="btn btg" style="font-size:.72rem">↻ Refresh</button></div>
-    <div class="cb" id="adminSurveysList">Loading...</div>
-  </div>
-  <div class="c">
-    <div class="ch">Pending Survey Reviews</div>
-    <div class="cb" id="adminSurveySubmissions"><p style="color:var(--gray-500)">Click "Review" on a survey above.</p></div>
-  </div>
-</div>
-
-<!-- ======= WRITING ======= -->
-<div class="tc" id="tab-writing">
-  <div class="c">
-    <div class="ch">Create Writing Job</div>
-    <div class="cb">
-      <div id="createWritingMsg" class="msg" style="display:none"></div>
-      <div class="fr2">
-        <div class="fg"><label class="fl">Title *</label><input type="text" id="writingJobTitle" class="fc" required></div>
-        <div class="fg"><label class="fl">Word Count (e.g. 500-800 words)</label><input type="text" id="writingJobWordCount" class="fc" placeholder="optional"></div>
-      </div>
-      <div class="fg"><label class="fl">Description *</label><input type="text" id="writingJobDesc" class="fc" required></div>
-      <div class="fg"><label class="fl">Full Instructions *</label><textarea id="writingJobInstructions" class="fc" rows="4" required></textarea></div>
-      <div class="fr3">
-        <div class="fg"><label class="fl">Points Reward</label><input type="number" id="writingJobReward" class="fc" value="100" min="1"></div>
-        <div class="fg"><label class="fl">Max Workers (slots)</label><input type="number" id="writingJobMaxWorkers" class="fc" value="50" min="1"></div>
-        <div class="fg"><label class="fl">Deadline (optional)</label><input type="date" id="writingJobDeadline" class="fc"></div>
-      </div>
-      <button onclick="createWritingJob()" class="btn btp">✍️ Create Writing Job</button>
-    </div>
-  </div>
-  <div class="c">
-    <div class="ch">All Writing Jobs <button onclick="loadAdminWritingJobs()" class="btn btg" style="font-size:.72rem">↻ Refresh</button></div>
-    <div class="cb" id="adminWritingJobsList">Loading...</div>
-  </div>
-  <div class="c">
-    <div class="ch">Pending Writing Reviews</div>
-    <div class="cb" id="adminWritingSubmissions"><p style="color:var(--gray-500)">Click "Review" on a job above.</p></div>
-  </div>
-</div>
-
-<!-- ======= TRANSCRIPTION ======= -->
-<div class="tc" id="tab-transcription">
-  <div class="c">
-    <div class="ch">Create Transcription Job</div>
-    <div class="cb">
-      <div id="createTranscriptionMsg" class="msg" style="display:none"></div>
-      <div class="fr2">
-        <div class="fg"><label class="fl">Title *</label><input type="text" id="transcriptionJobTitle" class="fc" required></div>
-        <div class="fg"><label class="fl">Description *</label><input type="text" id="transcriptionJobDesc" class="fc" required></div>
-      </div>
-      <div class="fg"><label class="fl">Instructions for transcribers *</label><textarea id="transcriptionJobInstructions" class="fc" rows="3" required></textarea></div>
-      <div class="fg"><label class="fl">Audio File (MP3, WAV, M4A — max 50MB) *</label><input type="file" id="transcriptionJobAudio" class="fc" accept=".mp3,.wav,.m4a,.ogg,.webm" required></div>
-      <div class="fr3">
-        <div class="fg"><label class="fl">Points Reward</label><input type="number" id="transcriptionJobReward" class="fc" value="50" min="1"></div>
-        <div class="fg"><label class="fl">Max Workers</label><input type="number" id="transcriptionJobMaxWorkers" class="fc" value="50" min="1"></div>
-        <div class="fg"><label class="fl">Deadline (optional)</label><input type="date" id="transcriptionJobDeadline" class="fc"></div>
-      </div>
-      <button onclick="createTranscriptionJob()" class="btn btp">🎙️ Upload & Create</button>
-    </div>
-  </div>
-  <div class="c">
-    <div class="ch">All Transcription Jobs <button onclick="loadAdminTranscriptionJobs()" class="btn btg" style="font-size:.72rem">↻ Refresh</button></div>
-    <div class="cb" id="adminTranscriptionJobsList">Loading...</div>
-  </div>
-  <div class="c">
-    <div class="ch">Pending Transcription Reviews</div>
-    <div class="cb" id="adminTranscriptionSubmissions"><p style="color:var(--gray-500)">Click "Review" on a job above.</p></div>
-  </div>
-</div>
-
-<!-- ======= DATA ENTRY ======= -->
-<div class="tc" id="tab-dataentry">
-  <div class="c">
-    <div class="ch">Create Data Entry Job</div>
-    <div class="cb">
-      <div id="createDataentryMsg" class="msg" style="display:none"></div>
-      <div class="fr2">
-        <div class="fg"><label class="fl">Title *</label><input type="text" id="dataentryJobTitle" class="fc" required></div>
-        <div class="fg"><label class="fl">Description *</label><input type="text" id="dataentryJobDesc" class="fc" required></div>
-      </div>
-      <div class="fg"><label class="fl">Instructions *</label><textarea id="dataentryJobInstructions" class="fc" rows="3" required></textarea></div>
-      <div class="fg"><label class="fl">Template File (optional — PDF/Excel/Word)</label><input type="file" id="dataentryJobTemplate" class="fc" accept=".pdf,.doc,.docx,.xlsx,.csv"></div>
-      <div class="fr3">
-        <div class="fg"><label class="fl">Points Reward</label><input type="number" id="dataentryJobReward" class="fc" value="75" min="1"></div>
-        <div class="fg"><label class="fl">Max Workers</label><input type="number" id="dataentryJobMaxWorkers" class="fc" value="50" min="1"></div>
-        <div class="fg"><label class="fl">Deadline (optional)</label><input type="date" id="dataentryJobDeadline" class="fc"></div>
-      </div>
-      <button onclick="createDataentryJob()" class="btn btp">📂 Create Data Entry Job</button>
-    </div>
-  </div>
-  <div class="c">
-    <div class="ch">All Data Entry Jobs <button onclick="loadAdminDataentryJobs()" class="btn btg" style="font-size:.72rem">↻ Refresh</button></div>
-    <div class="cb" id="adminDataentryJobsList">Loading...</div>
-  </div>
-  <div class="c">
-    <div class="ch">Pending Data Entry Reviews</div>
-    <div class="cb" id="adminDataentrySubmissions"><p style="color:var(--gray-500)">Click "Review" on a job above.</p></div>
-  </div>
-</div>
-
-<!-- ======= WITHDRAWALS ======= -->
-<div class="tc" id="tab-withdrawals">
-  <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem">
-    <h3 style="font-size:.95rem">Withdrawal Requests</h3>
-    <select id="wdFilterStatus" class="fc" style="width:auto">
-      <option value="pending">Pending</option><option value="completed">Completed</option><option value="rejected">Rejected</option>
-    </select>
-    <button onclick="loadAdminWithdrawals()" class="btn btg">Load</button>
-    <span id="wdCount" style="font-size:.75rem;color:var(--gray-500)"></span>
-  </div>
-  <div id="adminWithdrawalsList"><p style="color:var(--gray-500)">Click Load to fetch withdrawals.</p></div>
-</div>
-
-<!-- ======= EMAIL MANAGEMENT ======= -->
-<div class="tc" id="tab-emails">
-  <div style="display:flex;gap:1rem;margin-bottom:1.5rem">
-    <div style="flex:1;background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:1rem">
-      <h4 style="font-size:.85rem;font-weight:800;margin-bottom:.5rem">📧 Send Email to Individual User</h4>
-      <div class="fg">
-        <label class="fl">Username or Email</label>
-        <input type="text" id="emailSearchInput" placeholder="Search user..." class="fc" autocomplete="off" style="width:100%">
-        <div id="emailSearchResults" class="sr" style="display:none;width:100%;top:100%;left:0;right:0;margin-top:.25rem"></div>
-      </div>
-      <div class="fg">
-        <label class="fl">User ID</label>
-        <input type="text" id="emailUserId" placeholder="Auto-filled after selection" class="fc" style="width:100%;background:var(--gray-50)" disabled>
-      </div>
-      <div class="fg">
-        <label class="fl">Subject *</label>
-        <input type="text" id="emailSubject" placeholder="Email subject..." class="fc" style="width:100%">
-      </div>
-      <div class="fg">
-        <label class="fl">Message *</label>
-        <textarea id="emailMessage" placeholder="Email body (HTML allowed)..." class="fc" style="width:100%;min-height:120px;font-family:monospace;font-size:.8rem"></textarea>
-      </div>
-      <button onclick="sendSingleEmail()" class="btn btp wfull">📧 Send Email</button>
-    </div>
-
-    <div style="flex:1;background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:1rem">
-      <h4 style="font-size:.85rem;font-weight:800;margin-bottom:.5rem">🎯 Broadcast to Multiple Users</h4>
-      <div class="fg">
-        <label class="fl">Filter by Status</label>
-        <select id="bulkStatus" class="fc" style="width:100%">
-          <option value="">All users</option>
-          <option value="active">Active only</option>
-          <option value="pending">Pending only</option>
-          <option value="suspended">Suspended only</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label class="fl">Filter by Package</label>
-        <select id="bulkPackage" class="fc" style="width:100%">
-          <option value="">All packages</option>
-          <option value="normal">Activated (normal)</option>
-          <option value="not_active">Not Activated</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label class="fl">Subject *</label>
-        <input type="text" id="bulkSubject" placeholder="Email subject..." class="fc" style="width:100%">
-      </div>
-      <div class="fg">
-        <label class="fl">Message *</label>
-        <textarea id="bulkMessage" placeholder="Email body (HTML allowed)..." class="fc" style="width:100%;min-height:120px;font-family:monospace;font-size:.8rem"></textarea>
-      </div>
-      <button onclick="sendBulkEmail()" class="btn btb wfull">🎯 Broadcast</button>
-    </div>
-  </div>
-  <div id="emailStatus" style="display:none"></div>
-</div>
-
-<!-- EDIT MODAL -->
-<div id="editModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;overflow-y:auto;padding:2rem 1rem">
-  <div style="background:#fff;max-width:480px;margin:0 auto;border-radius:var(--rad);padding:1.5rem;position:relative">
-    <button onclick="closeEditModal()" style="position:absolute;top:.75rem;right:.75rem;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--gray-500)">✕</button>
-    <h3 id="editModalTitle" style="margin-bottom:1rem;font-size:.95rem"></h3>
-    <div id="editModalBody"></div>
-    <button onclick="saveEdit()" class="btn btp wfull" style="margin-top:.85rem">Save Changes</button>
-  </div>
-</div>
-
-<script>
-// ============ AUTH ============
-const _at = localStorage.getItem('adminToken') || localStorage.getItem('token');
-const _au = (() => { try { return JSON.parse(localStorage.getItem('user')||'null'); } catch(e){return null;} })();
-if (!_at || !_au || !_au.isAdmin) { window.location.href = '/index.html'; }
-if (_au) document.getElementById('adminName').textContent = '👤 ' + _au.username;
-
-function adminLogout() { localStorage.clear(); window.location.href = '/index.html'; }
-async function aF(url, opts={}) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 20000);
+// ==================== DEPOSIT BALANCE ====================
+router.post('/deposit-balance', authMiddleware, requireAdmin, async (req, res) => {
   try {
-    const isFormData = opts.body instanceof FormData;
-    const headers = { 'Authorization': `Bearer ${_at}` };
-    if (!isFormData) headers['Content-Type'] = 'application/json';
-    const res = await fetch(url, { ...opts, headers, signal: controller.signal });
-    clearTimeout(timer);
-    let data;
-    try { data = await res.json(); } catch(e) { data = {}; }
-    if (res.status === 401) { adminLogout(); throw new Error('Session expired.'); }
-    if (!res.ok) throw new Error(data.error || data.message || `Error ${res.status}`);
-    return data;
-  } catch(err) {
-    clearTimeout(timer);
-    if (err.name === 'AbortError') throw new Error('Request timed out. Check your connection.');
-    throw err;
-  }
-}
-function msg(id, txt, ok=true) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = txt; el.className = 'msg ' + (ok?'mok':'merr'); el.style.display = 'block';
-  setTimeout(()=>{ el.style.display='none'; }, 5000);
-}
-function fmt(n) { return new Intl.NumberFormat().format(Math.round(n||0)); }
-function fmtKES(n) { return 'KES ' + fmt(n); }
-
-// ============ TABS ============
-let qCount = 0;
-function switchTab(name) {
-  document.querySelectorAll('.tb').forEach(b => b.classList.toggle('on', b.dataset.tab===name));
-  document.querySelectorAll('.tc').forEach(c => c.classList.toggle('on', c.id==='tab-'+name));
-  const fns = {overview:loadAdminDashboard,users:loadAdminUsers,blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs,withdrawals:()=>{},emails:()=>{}};
-  if (fns[name]) fns[name]();
-}
-document.querySelectorAll('.tb').forEach(b => b.addEventListener('click', ()=>switchTab(b.dataset.tab)));
-
-// ============ CHARTS ============
-let walletChart, refChart, pointsChart;
-function initCharts(w, r, p) {
-  if (walletChart) walletChart.destroy();
-  if (refChart) refChart.destroy();
-  if (pointsChart) pointsChart.destroy();
-
-  const mkDoughnut = (id, labels, data, colors) => new Chart(document.getElementById(id).getContext('2d'), {
-    type: 'doughnut',
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }] },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '62%',
-      plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, padding: 8 } },
-        tooltip: { callbacks: { label: ctx => ` KES ${ctx.parsed.toLocaleString()}` } } } }
-  });
-  const mkBar = (id, labels, data, colors) => new Chart(document.getElementById(id).getContext('2d'), {
-    type: 'bar',
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 4, borderSkipped: false }] },
-    options: { responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: { y: { ticks: { font: { size: 9 }, callback: v => 'KES '+v.toLocaleString() }, grid: { color: '#f3f4f6' } },
-                x: { ticks: { font: { size: 9 } }, grid: { display: false } } } }
-  });
-
-  walletChart = mkDoughnut('walletChart', ['Commissions (KES 450/user)', 'Profit (KES 250/user)'], [w.commissions, w.profit], ['#fca5a5','#86efac']);
-  refChart    = mkBar('refChart', ['In Wallets', 'Withdrawn'], [r.inWallets, r.withdrawn], ['#93c5fd','#fca5a5']);
-  pointsChart = mkBar('pointsChart', ['Profit Pool', 'Paid Out', 'Pending Payout'], [p.balance, p.paid, p.pending], ['#86efac','#fca5a5','#fde047']);
-}
-
-// ============ OVERVIEW ============
-async function loadAdminDashboard() {
-  try {
-    const data = await aF('/api/admin/dashboard/stats');
-    document.getElementById('ovTotal').textContent = data.users?.total || 0;
-    document.getElementById('ovActive').textContent = data.users?.active || 0;
-    document.getElementById('ovNotAct').textContent = data.packages?.notActivated || 0;
-    document.getElementById('ovWithdraw').textContent = data.pendingWithdrawals || 0;
-    document.getElementById('ovBlogs').textContent = data.pendingReviews?.blogs || 0;
-    document.getElementById('ovSurveys').textContent = data.pendingReviews?.surveys || 0;
-    document.getElementById('ovWriting').textContent = data.pendingReviews?.writing || 0;
-    document.getElementById('ovTranscription').textContent = data.pendingReviews?.transcription || 0;
-    document.getElementById('ovDataentry').textContent = data.pendingReviews?.dataEntry || 0;
-    // ── P&L ─────────────────────────────────────────────────────
-    // Fetch profit-summary + all withdrawal records in parallel
-    let ps = {};
-    let allWithdrawals = [];
-    try {
-      const [psData, wdData] = await Promise.all([
-        aF('/api/admin/profit-summary').catch(()=>({})),
-        aF('/api/withdrawals/admin/all').catch(()=>({withdrawals:[]}))
-      ]);
-      ps = psData;
-      allWithdrawals = wdData.withdrawals || [];
-    } catch(e) { console.warn('P&L fetch error:', e.message); }
-
-    // Tally withdrawals from the live data directly — don't trust cached counts
-    let kesWithdrawnCompleted = 0, kesWithdrawnPending = 0;
-    let ptsWithdrawnCompleted = 0, ptsWithdrawnPending = 0;
-    allWithdrawals.forEach(w => {
-      const amt = w.amount || 0;
-      if (w.type === 'kes') {
-        if (w.status === 'completed') kesWithdrawnCompleted += amt;
-        else if (w.status === 'pending' || w.status === 'approved') kesWithdrawnPending += amt;
-      } else if (w.type === 'points') {
-        if (w.status === 'completed') ptsWithdrawnCompleted += amt;
-        else if (w.status === 'pending' || w.status === 'approved') ptsWithdrawnPending += amt;
-      }
-    });
-
-    // Wallet P&L — activation money
-    const activeUsers     = data.users?.active || ps.activations?.count || 0;
-    const totalCollected  = activeUsers * 700;
-    const commissionsPaid = activeUsers * 450;
-    const walletProfit    = activeUsers * 250;
-
-    document.getElementById('plActiveCount').textContent = activeUsers + ' users';
-    document.getElementById('plWalletIn').textContent    = fmtKES(totalCollected);
-    document.getElementById('plCommissions').textContent = '− ' + fmtKES(commissionsPaid);
-    const wNetEl = document.getElementById('plWalletNet');
-    wNetEl.textContent = fmtKES(walletProfit);
-    wNetEl.className   = walletProfit >= 0 ? 'pnl-pos' : 'pnl-neg';
-
-    // Referral P&L — commissions in wallets vs already cashed out
-    // totalKesInUserWallets = sum of all primaryWallet.balance (from profit-summary)
-    const refInWallets = ps.businessHealth?.totalKesInUserWallets || 0;
-    // kesWithdrawnCompleted = real sum from withdrawal records (type:kes, status:completed)
-    const refWithdrawn = kesWithdrawnCompleted;
-    document.getElementById('plRefTotal').textContent     = fmtKES(commissionsPaid);
-    document.getElementById('plRefInWallets').textContent = fmtKES(refInWallets);
-    document.getElementById('plRefWithdrawn').textContent = '− ' + fmtKES(refWithdrawn);
-    const refPendEl = document.getElementById('plRefPending');
-    refPendEl.textContent = fmtKES(refInWallets);
-    refPendEl.className   = refInWallets > walletProfit ? 'pnl-neg' : 'pnl-pos';
-
-    // Points P&L — task rewards paid from profit pool
-    const totalPtsHeld = ps.businessHealth?.totalPointsInSystem || 0;
-    const ptsHeldKES   = ps.businessHealth?.totalPointsOutstandingKesValue || Math.round(totalPtsHeld / 10);
-    // Use real withdrawal sums — not cached aggregates
-    const ptsPaidKES    = ptsWithdrawnCompleted;   // already paid out on Tuesdays
-    const ptsPendingKES = ptsWithdrawnPending;      // redeemed but awaiting Tuesday payout
-    const ptsBalance    = walletProfit - ptsPaidKES - ptsPendingKES;
-
-    document.getElementById('plPtsSrcProfit').textContent   = fmtKES(walletProfit);
-    document.getElementById('plPtsHeld').textContent        = fmt(totalPtsHeld) + ' pts ≈ ' + fmtKES(ptsHeldKES);
-    document.getElementById('plPtsAlreadyPaid').textContent = '− ' + fmtKES(ptsPaidKES);
-    document.getElementById('plPtsUnpaid').textContent      = '− ' + fmtKES(ptsPendingKES);
-    const pNetEl = document.getElementById('plPtsNet');
-    pNetEl.textContent = fmtKES(ptsBalance);
-    pNetEl.className   = ptsBalance >= 0 ? 'pnl-pos' : 'pnl-neg';
-
-    // Charts
-    initCharts(
-      { commissions: commissionsPaid, profit: walletProfit },
-      { inWallets: refInWallets, withdrawn: refWithdrawn },
-      { balance: Math.max(0,ptsBalance), paid: ptsPaidKES, pending: ptsPendingReal }
-    );
-    // Recent users
-    const rec = document.getElementById('ovRecentUsers');
-    if (data.recentUsers && data.recentUsers.length) {
-      rec.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem">' +
-        data.recentUsers.map(u => `<div style="display:flex;align-items:center;gap:.6rem;padding:.5rem;border:1px solid var(--gray-200);border-radius:.45rem;background:var(--gray-50)">
-          <div style="width:32px;height:32px;border-radius:50%;background:var(--g);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;flex-shrink:0">${(u.username||'?').slice(0,2).toUpperCase()}</div>
-          <div><div style="font-weight:700;font-size:.82rem">${u.username}</div>
-          <div style="font-size:.7rem;color:var(--gray-500)">${new Date(u.createdAt).toLocaleDateString()}</div></div>
-          <span class="badge ${u.packageType!=='not_active'?'bg':'by'}" style="margin-left:auto">${u.packageType!=='not_active'?'Active':'Pending'}</span></div>`).join('') + '</div>';
-    } else { rec.innerHTML = '<p style="color:var(--gray-500)">No recent registrations.</p>'; }
-  } catch(err) { console.error('Overview:', err); }
-}
-
-// ============ DEPOSITS ============
-let depositTimer;
-document.getElementById('depositSearch').addEventListener('input', function() {
-  clearTimeout(depositTimer);
-  const q = this.value.trim();
-  const res = document.getElementById('depositSearchResults');
-  if (q.length < 2) { res.style.display='none'; return; }
-  depositTimer = setTimeout(async () => {
-    try {
-      const data = await aF(`/api/admin/users/all?status=all&limit=20`);
-      const filtered = (data.users||[]).filter(u =>
-        u.username.toLowerCase().includes(q.toLowerCase()) ||
-        (u.email||'').toLowerCase().includes(q.toLowerCase())
-      ).slice(0, 7);
-      if (!filtered.length) { res.style.display='none'; return; }
-      res.style.display='block';
-      res.innerHTML = filtered.map(u =>
-        `<div class="sri" onclick="selectDepUser('${u.id}','${u.username}','${u.email||''}')">
-          <strong>${u.username}</strong> — ${u.email} <span style="color:var(--g);font-size:.72rem">| KES ${u.walletBalance||0}</span>
-        </div>`).join('');
-    } catch(e) { res.style.display='none'; }
-  }, 300);
-});
-document.addEventListener('click', e => { if (!e.target.closest('.pos-rel')) document.getElementById('depositSearchResults').style.display='none'; });
-function selectDepUser(id, username, email) {
-  document.getElementById('depositUserId').value = id;
-  document.getElementById('depositUserDisplay').value = `${username} (${email})`;
-  document.getElementById('depositSearch').value = '';
-  document.getElementById('depositSearchResults').style.display = 'none';
-}
-async function doDeposit() {
-  const userId = document.getElementById('depositUserId').value.trim();
-  const amount = parseFloat(document.getElementById('depositAmount').value);
-  const reference = document.getElementById('depositReference').value.trim();
-  if (!userId) { msg('depositMsg','❌ Please select a user first.',false); return; }
-  if (!amount || amount < 1) { msg('depositMsg','❌ Enter a valid amount.',false); return; }
-  try {
-    const data = await aF('/api/admin/deposit-balance', {method:'POST', body:JSON.stringify({userId, amount, reason:'activation_deposit', reference})});
-    msg('depositMsg', `✅ Deposited KES ${amount} to ${data.user?.username||'user'}. New balance: KES ${data.transaction?.newBalance||amount}`, true);
-    document.getElementById('depositAmount').value = ''; document.getElementById('depositReference').value = '';
-    document.getElementById('depositUserId').value = ''; document.getElementById('depositUserDisplay').value = '';
-  } catch(err) { msg('depositMsg','❌ '+err.message,false); }
-}
-
-// ============ USERS ============
-async function loadAdminUsers() {
-  const status = document.getElementById('uFilterStatus').value||'all';
-  const pkg = document.getElementById('uFilterPkg').value||'all';
-  const search = document.getElementById('uSearch')?.value?.toLowerCase()||'';
-  const el = document.getElementById('adminUsersList');
-  el.innerHTML = '<p style="color:var(--gray-500)">Loading users...</p>';
-  try {
-    const data = await aF(`/api/admin/users/all?status=${status}&packageType=${pkg}`);
-    let users = data.users||[];
-    if (search) users = users.filter(u => u.username.toLowerCase().includes(search) || (u.email||'').toLowerCase().includes(search));
-    document.getElementById('uCount').textContent = `${users.length} user(s)`;
-    if (!users.length) { el.innerHTML='<p style="color:var(--gray-500)">No users found.</p>'; return; }
-    el.innerHTML = '<div class="ugrid">' + users.map(u => {
-      const init = (u.username||'?').slice(0,2).toUpperCase();
-      const isActive = u.packageType !== 'not_active';
-      const isSusp = u.status === 'suspended';
-      return `<div class="ucard">
-        <div class="ucard-top">
-          <div style="display:flex;align-items:center;gap:.6rem">
-            <div style="width:38px;height:38px;border-radius:50%;background:${isActive?'var(--g)':'#9ca3af'};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">${init}</div>
-            <div>
-              <div class="ucard-name">${u.username}</div>
-              <div class="ucard-sub">${u.email||''}</div>
-              <div class="ucard-sub">${u.phone||''}</div>
-            </div>
-          </div>
-          <span class="badge ${isActive?'bg':'by'}">${isActive?'✅ Active':'⏳ Inactive'}</span>
-        </div>
-        <div class="ucard-meta">
-          <span class="ucard-wallet">KES ${fmt(u.walletBalance||0)}</span>
-          <span class="ucard-pts">${fmt(u.pointsBalance||0)} pts</span>
-          ${isSusp?'<span class="badge br">Suspended</span>':''}
-        </div>
-        <div class="ucard-ref">Ref: ${u.referredBy?.username||'—'}</div>
-        <div class="ucard-btns">
-          <button onclick="quickDeposit('${u.id}','${u.username}')" class="btn btp">💰 Deposit</button>
-          ${isSusp
-            ? `<button onclick="unsuspendUser('${u.id}','${u.username}')" class="btn btg">✅ Unsuspend</button>`
-            : `<button onclick="suspendUser('${u.id}','${u.username}')" class="btn btw">⚠️ Suspend</button>`}
-          <button onclick="deleteUser('${u.id}','${u.username}','${isActive}')" class="btn btd">🗑️</button>
-        </div>
-      </div>`;
-    }).join('') + '</div>';
-  } catch(err) { el.innerHTML = `<p style="color:var(--r)">${err.message}</p>`; }
-}
-
-function quickDeposit(userId, username) {
-  const amount = parseFloat(prompt(`💰 Deposit to ${username}:\nAmount (KES):`)||'0');
-  if (!amount || amount<1) return;
-  const ref = prompt('M-Pesa reference (optional):') || '';
-  aF('/api/admin/deposit-balance', {method:'POST', body:JSON.stringify({userId, amount, reason:'activation_deposit', reference:ref})})
-    .then(d => { alert(`✅ KES ${amount} deposited to ${username}.`); loadAdminUsers(); })
-    .catch(e => alert('❌ '+e.message));
-}
-function suspendUser(id, username) {
-  if (!confirm(`Suspend @${username}?`)) return;
-  aF(`/api/admin/users/${id}/suspend`, {method:'POST'}).then(()=>{alert('User suspended.');loadAdminUsers();}).catch(e=>alert('❌ '+e.message));
-}
-function unsuspendUser(id, username) {
-  if (!confirm(`Unsuspend @${username}?`)) return;
-  aF(`/api/admin/users/${id}/unsuspend`, {method:'POST'}).then(()=>{alert('Unsuspended.');loadAdminUsers();}).catch(e=>alert('❌ '+e.message));
-}
-function deleteUser(id, username, isActive) {
-  const warn = isActive==='true' ? '⚠️ This user is ACTIVE.\n' : '';
-  if (!confirm(`${warn}DELETE @${username}? This cannot be undone.`)) return;
-  aF(`/api/admin/users/${id}`, {method:'DELETE'}).then(()=>{alert('Deleted.');loadAdminUsers();}).catch(e=>alert('❌ '+e.message));
-}
-
-// ============ TASK CARD RENDERER (Image 2 style) ============
-function renderJobCard(job, type) {
-  const submitted = job.submitted || job.currentBidders || job.currentWorkers || 0;
-  const approved = job.approved || 0;
-  const pending = job.pending || job.pendingReview || 0;
-  const isOpen = job.status === 'open' || !job.status;
-  const reviewFn = {
-    blogs: `loadBlogSubmissions('${job.id}','${escQ(job.title)}')`,
-    surveys: `loadSurveySubmissions('${job.id}','${escQ(job.title)}')`,
-    writing: `loadWritingSubmissions('${job.id}','${escQ(job.title)}')`,
-    transcription: `loadTranscriptionSubmissions('${job.id}','${escQ(job.title)}')`,
-    dataentry: `loadDataentrySubmissions('${job.id}','${escQ(job.title)}')`
-  }[type];
-  const editFn = `openEditModal('${type}','${job.id}','${escQ(job.title)}',${job.reward},${job.maxBidders||job.maxWorkers||50},${job.maxBidders||job.maxWorkers||50})`;
-  const delFn = `deleteJob('${type}','${job.id}')`;
-  const closeFn = `closeJob('${type}','${job.id}')`;
-  return `<div class="jcard">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
-      <div class="jcard-title">${job.title}</div>
-      <span class="badge ${isOpen?'bg':'bgr'}" style="flex-shrink:0;margin-left:.4rem">${job.status||'open'}</span>
-    </div>
-    <div class="jcard-desc">${job.description||''}</div>
-    ${job.wordCount?`<div style="font-size:.72rem;color:#1e40af;margin-bottom:.2rem">📝 ${job.wordCount}</div>`:''}
-    ${job.deadline?`<div style="font-size:.72rem;color:#b45309;margin-bottom:.2rem">⏰ Due: ${new Date(job.deadline).toLocaleDateString()}</div>`:''}
-    ${job.audioUrl?`<audio src="${job.audioUrl}" controls style="width:100%;height:28px;margin:.3rem 0"></audio>`:''}
-    ${job.templateUrl?`<a href="javascript:void(0)" onclick="smartDownload('${job.templateUrl}','${job.templatePublicId||''}','${escQ(job.title)}_template')" style="font-size:.72rem;color:var(--g);cursor:pointer">📥 Template</a>`:''}
-    <div class="jcard-stats">
-      <div class="jcs"><div class="jcs-n" style="color:#3b82f6">📝 ${submitted}</div><div class="jcs-l">submitted</div></div>
-      <div class="jcs"><div class="jcs-n" style="color:#16a34a">✅ ${approved}</div><div class="jcs-l">approved</div></div>
-      <div class="jcs"><div class="jcs-n" style="color:#f59e0b">⏳ ${pending}</div><div class="jcs-l">pending</div></div>
-      <div class="jcs"><div class="jcs-n">⭐${job.reward||0}</div><div class="jcs-l">pts</div></div>
-    </div>
-    <div class="jcard-btns">
-      ${pending>0?`<button onclick="${reviewFn}" class="btn btp" style="font-size:.72rem">Review (${pending})</button>`:''}
-      <button onclick="${editFn}" class="btn btg" style="font-size:.72rem">✏️ Edit</button>
-      ${isOpen?`<button onclick="${closeFn}" class="btn btw" style="font-size:.72rem">✅ Close</button>`:''}
-      <button onclick="${delFn}" class="btn btd" style="font-size:.72rem">🗑️</button>
-    </div>
-  </div>`;
-}
-function escQ(s) { return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;').slice(0,60); }
-
-// ============ EDIT MODAL ============
-let _editType, _editId;
-function openEditModal(type, id, title, reward, maxWorkers) {
-  _editType=type; _editId=id;
-  document.getElementById('editModalTitle').textContent = 'Edit: '+title;
-  document.getElementById('editModalBody').innerHTML = `
-    <div class="fg"><label class="fl">Points Reward</label><input type="number" id="emReward" class="fc" value="${reward||100}" min="1"></div>
-    <div class="fg"><label class="fl">Max Workers / Slots</label><input type="number" id="emMax" class="fc" value="${maxWorkers||50}" min="1"></div>
-    <div class="fg"><label class="fl">Status</label><select id="emStatus" class="fc"><option value="open">Open</option><option value="closed">Closed</option></select></div>`;
-  document.getElementById('editModal').style.display='block';
-}
-function closeEditModal() { document.getElementById('editModal').style.display='none'; }
-async function saveEdit() {
-  const reward = parseInt(document.getElementById('emReward').value);
-  const max = parseInt(document.getElementById('emMax').value);
-  const status = document.getElementById('emStatus').value;
-  const urls = {blogs:`/api/admin/blogs/${_editId}`,surveys:`/api/admin/surveys/${_editId}`,writing:`/api/writing/admin/${_editId}`,transcription:`/api/transcriptions/admin/${_editId}`,dataentry:`/api/dataentry/admin/${_editId}`};
-  try {
-    await aF(urls[_editType], {method:'PUT', body:JSON.stringify({reward, maxBidders:max, maxWorkers:max, status})});
-    alert('✅ Updated!'); closeEditModal();
-    const reload = {blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs};
-    if(reload[_editType]) reload[_editType]();
-  } catch(err) { alert('❌ '+err.message); }
-}
-async function deleteJob(type, id) {
-  if (!confirm('Delete this job? All submissions will be lost.')) return;
-  const urls = {blogs:`/api/admin/blogs/${id}`,surveys:`/api/admin/surveys/${id}`,writing:`/api/writing/admin/${id}`,transcription:`/api/transcriptions/admin/${id}`,dataentry:`/api/dataentry/admin/${id}`};
-  try { await aF(urls[type], {method:'DELETE'}); const r={blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs}; r[type](); }
-  catch(err) { alert('❌ '+err.message); }
-}
-async function closeJob(type, id) {
-  const urls = {blogs:`/api/admin/blogs/${id}/close`,surveys:`/api/admin/surveys/${id}/close`,writing:`/api/writing/admin/${id}/close`,transcription:`/api/transcriptions/admin/${id}/close`,dataentry:`/api/dataentry/admin/${id}/close`};
-  try { await aF(urls[type], {method:'POST'}); const r={blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs}; r[type](); }
-  catch(err) { alert('❌ '+err.message); }
-}
-
-// ============ REVIEW RENDERER ============
-function renderReviewBoxes(submissions, type, jobId, titleEl, parentEl) {
-  const pending = (submissions||[]).filter(s=>s.status==='submitted');
-  if (titleEl) titleEl.textContent = `Pending Reviews — ${pending.length} to review`;
-  if (!pending.length) { parentEl.innerHTML='<p style="color:var(--gray-500)">No pending submissions.</p>'; return; }
-  const appFn = {
-    blogs: (s)=>`adminApprove('blogs','${jobId}','${s.userId}')`,
-    surveys: (s)=>`adminApprove('surveys','${jobId}','${s.userId}')`,
-    writing: (s)=>`adminApprove('writing','${jobId}','${s.userId}')`,
-    transcription: (s)=>`adminApprove('transcription','${jobId}','${s.userId}')`,
-    dataentry: (s)=>`adminApprove('dataentry','${jobId}','${s.userId}')`
-  };
-  const rejFn = {
-    blogs: (s)=>`adminReject('blogs','${jobId}','${s.userId}')`,
-    surveys: (s)=>`adminReject('surveys','${jobId}','${s.userId}')`,
-    writing: (s)=>`adminReject('writing','${jobId}','${s.userId}')`,
-    transcription: (s)=>`adminReject('transcription','${jobId}','${s.userId}')`,
-    dataentry: (s)=>`adminReject('dataentry','${jobId}','${s.userId}')`
-  };
-  parentEl.innerHTML = pending.map(s => `
-    <div class="rbox">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.3rem;margin-bottom:.4rem">
-        <div><strong style="font-size:.85rem">${s.username||'User'}</strong> <span style="font-size:.72rem;color:var(--gray-500)">${s.email||''}</span></div>
-        <span style="font-size:.7rem;color:var(--gray-500)">${s.submittedAt?new Date(s.submittedAt).toLocaleString():''}</span>
-      </div>
-      ${s.content ? `<details><summary style="cursor:pointer;font-size:.78rem;color:#8b5cf6;font-weight:600;margin:.25rem 0">View Submission</summary>
-        <p style="margin:.35rem 0;font-size:.8rem;background:var(--gray-50);padding:.6rem;border-radius:.35rem;white-space:pre-wrap;max-height:200px;overflow-y:auto">${s.content}</p></details>` : ''}
-      ${s.fileUrl ? `<p style="font-size:.78rem;margin:.25rem 0">📎 <a href="javascript:void(0)" onclick="smartDownload('${s.fileUrl}','${s.filePublicId||s.fileUrl}','${s.fileName||'submission'}')" style="color:var(--g);font-weight:600;cursor:pointer">${s.fileName||'Download File'}</a></p>` : ''}
-      ${Array.isArray(s.responses) ? `<details><summary style="cursor:pointer;font-size:.78rem;color:#3b82f6;font-weight:600;margin:.25rem 0">View Responses</summary>
-        <div style="margin:.35rem 0;font-size:.78rem;background:var(--gray-50);padding:.6rem;border-radius:.35rem">${s.responses.map((r,i)=>`<p style="margin:.15rem 0"><strong>Q${i+1}:</strong> ${r||'—'}</p>`).join('')}</div></details>` : ''}
-      <div style="display:flex;gap:.4rem;margin-top:.5rem">
-        <button onclick="${appFn[type](s)}" class="btn btp">✅ Approve + Award Points</button>
-        <button onclick="${rejFn[type](s)}" class="btn btd">❌ Reject</button>
-      </div>
-    </div>`).join('');
-}
-
-// UNIFIED APPROVE/REJECT
-async function adminApprove(type, jobId, userId) {
-  const endpts = {
-    blogs: `/api/admin/blogs/${jobId}/approve/${userId}`,
-    surveys: `/api/admin/surveys/${jobId}/approve/${userId}`,
-    writing: `/api/writing/admin/${jobId}/approve/${userId}`,
-    transcription: `/api/transcriptions/admin/${jobId}/approve/${userId}`,
-    dataentry: `/api/dataentry/admin/${jobId}/approve/${userId}`
-  };
-  try { await aF(endpts[type], {method:'POST', body:JSON.stringify({notes:'Approved'})}); alert('✅ Approved! Points awarded.'); const r={blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs}; r[type](); }
-  catch(err) { alert('❌ '+err.message); }
-}
-async function adminReject(type, jobId, userId) {
-  const reason = prompt('Reason for rejection:')||'Does not meet requirements';
-  const endpts = {
-    blogs: `/api/admin/blogs/${jobId}/reject/${userId}`,
-    surveys: `/api/admin/surveys/${jobId}/reject/${userId}`,
-    writing: `/api/writing/admin/${jobId}/reject/${userId}`,
-    transcription: `/api/transcriptions/admin/${jobId}/reject/${userId}`,
-    dataentry: `/api/dataentry/admin/${jobId}/reject/${userId}`
-  };
-  try { await aF(endpts[type], {method:'POST', body:JSON.stringify({reviewNotes:reason, reason})}); alert('Rejected.'); const r={blogs:loadAdminBlogs,surveys:loadAdminSurveys,writing:loadAdminWritingJobs,transcription:loadAdminTranscriptionJobs,dataentry:loadAdminDataentryJobs}; r[type](); }
-  catch(err) { alert('❌ '+err.message); }
-}
-
-// ============ BLOGS ============
-async function createBlog() {
-  const title = document.getElementById('blogTitle').value.trim();
-  const description = document.getElementById('blogDescription').value.trim();
-  const content = document.getElementById('blogContent').value.trim();
-  if (!title||!description||!content) { msg('createBlogMsg','❌ Title, description and content are required.',false); return; }
-  try {
-    await aF('/api/admin/blogs/create', {method:'POST', body:JSON.stringify({title,description,content,category:document.getElementById('blogCategory').value||'general',maxBidders:parseInt(document.getElementById('blogMaxBidders').value)||50,reward:parseInt(document.getElementById('blogReward').value)||100})});
-    msg('createBlogMsg','✅ Blog task created!',true);
-    ['blogTitle','blogDescription','blogContent'].forEach(id=>document.getElementById(id).value='');
-    loadAdminBlogs();
-  } catch(err) { msg('createBlogMsg','❌ '+err.message,false); }
-}
-async function loadAdminBlogs() {
-  const el = document.getElementById('adminBlogsList');
-  try {
-    const data = await aF('/api/admin/blogs/all');
-    const blogs = data.blogs||[];
-    if (!blogs.length) { el.innerHTML='<p style="color:var(--gray-500)">No blog tasks yet.</p>'; document.getElementById('adminBlogSubmissions').innerHTML='<p style="color:var(--gray-500)">No blogs yet.</p>'; return; }
-    el.innerHTML = '<div class="jgrid">'+blogs.map(b=>renderJobCard(b,'blogs')).join('')+'</div>';
-    const pending = blogs.filter(b=>(b.pending||b.pendingReview||0)>0);
-    if (pending.length) loadBlogSubmissions(pending[0].id, pending[0].title);
-    else document.getElementById('adminBlogSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending blog reviews.</p>';
-  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
-}
-async function loadBlogSubmissions(blogId, title) {
-  const el = document.getElementById('adminBlogSubmissions');
-  const hEl = document.getElementById('blogReviewHeader');
-  el.innerHTML='Loading submissions...';
-  try {
-    const data = await aF(`/api/admin/blogs/${blogId}/submissions`);
-    renderReviewBoxes(data.submissions||[], 'blogs', blogId, hEl, el);
-  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
-}
-
-// ============ SURVEYS ============
-function addQuestion() {
-  const i = qCount++;
-  const div = document.createElement('div');
-  div.id=`question_${i}`;
-  div.style.cssText='border:1px solid var(--gray-200);padding:.65rem;border-radius:.45rem;margin-bottom:.5rem;background:var(--gray-50)';
-  div.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem"><span style="font-weight:700;font-size:.78rem">Question ${i+1}</span><button type="button" onclick="this.closest('[id^=question_]').remove()" style="background:none;border:none;color:var(--r);cursor:pointer;font-size:.78rem">✕ Remove</button></div>
-  <div class="fg"><input type="text" name="qtext_${i}" class="fc" placeholder="Question text" required></div>
-  <div class="fr2">
-    <div class="fg"><select name="qtype_${i}" class="fc" onchange="toggleOpts(${i},this.value)"><option value="text">Text Answer</option><option value="multiple_choice">Multiple Choice</option><option value="rating">Rating 1–5</option><option value="yes_no">Yes/No</option></select></div>
-    <div id="qopts_${i}" style="display:none"><textarea name="qopts_${i}" class="fc" rows="2" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea></div>
-  </div>`;
-  document.getElementById('questionsList').appendChild(div);
-}
-function toggleOpts(i, type) { const el=document.getElementById(`qopts_${i}`); if(el) el.style.display=type==='multiple_choice'?'block':'none'; }
-async function createSurvey() {
-  const questions=[];
-  document.querySelectorAll('[id^="question_"]').forEach(div=>{
-    const i=div.id.split('_')[1];
-    const t=div.querySelector(`[name="qtext_${i}"]`)?.value.trim();
-    const type=div.querySelector(`[name="qtype_${i}"]`)?.value;
-    const optRaw=div.querySelector(`[name="qopts_${i}"]`)?.value||'';
-    const options=optRaw.split('\n').map(s=>s.trim()).filter(Boolean);
-    if(t) questions.push({question:t,type,options,required:true});
-  });
-  if (!questions.length) { msg('createSurveyMsg','❌ Add at least one question.',false); return; }
-  try {
-    await aF('/api/admin/surveys/create',{method:'POST',body:JSON.stringify({title:document.getElementById('surveyTitle').value,description:document.getElementById('surveyDescription').value,questions,maxResponses:parseInt(document.getElementById('surveyMaxResponses').value)||100,reward:parseInt(document.getElementById('surveyReward').value)||100})});
-    msg('createSurveyMsg','✅ Survey created!',true);
-    ['surveyTitle','surveyDescription'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('questionsList').innerHTML=''; qCount=0;
-    loadAdminSurveys();
-  } catch(err) { msg('createSurveyMsg','❌ '+err.message,false); }
-}
-async function loadAdminSurveys() {
-  const el=document.getElementById('adminSurveysList');
-  try {
-    const data=await aF('/api/admin/surveys/all');
-    const surveys=data.surveys||[];
-    if (!surveys.length) { el.innerHTML='<p style="color:var(--gray-500)">No surveys yet.</p>'; document.getElementById('adminSurveySubmissions').innerHTML='<p style="color:var(--gray-500)">No surveys yet.</p>'; return; }
-    el.innerHTML='<div class="jgrid">'+surveys.map(s=>renderJobCard(s,'surveys')).join('')+'</div>';
-    const pending=surveys.filter(s=>(s.pending||s.pendingReview||0)>0);
-    if (pending.length) loadSurveySubmissions(pending[0].id,pending[0].title);
-    else document.getElementById('adminSurveySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending reviews.</p>';
-  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
-}
-async function loadSurveySubmissions(surveyId,title) {
-  const el=document.getElementById('adminSurveySubmissions');
-  el.innerHTML='Loading...';
-  try { const data=await aF(`/api/admin/surveys/${surveyId}/submissions`); renderReviewBoxes(data.submissions||[],'surveys',surveyId,null,el); }
-  catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
-}
-
-// ============ WRITING ============
-async function createWritingJob() {
-  const t=document.getElementById('writingJobTitle').value.trim(); const d=document.getElementById('writingJobDesc').value.trim(); const ins=document.getElementById('writingJobInstructions').value.trim();
-  if (!t||!d||!ins) { msg('createWritingMsg','❌ Title, description and instructions required.',false); return; }
-  try {
-    await aF('/api/writing/admin/create',{method:'POST',body:JSON.stringify({title:t,description:d,instructions:ins,wordCount:document.getElementById('writingJobWordCount').value||null,maxWorkers:parseInt(document.getElementById('writingJobMaxWorkers').value)||50,reward:parseInt(document.getElementById('writingJobReward').value)||100,deadline:document.getElementById('writingJobDeadline').value||null})});
-    msg('createWritingMsg','✅ Writing job created!',true);
-    ['writingJobTitle','writingJobDesc','writingJobInstructions','writingJobWordCount'].forEach(id=>document.getElementById(id).value='');
-    loadAdminWritingJobs();
-  } catch(err) { msg('createWritingMsg','❌ '+err.message,false); }
-}
-async function loadAdminWritingJobs() {
-  const el=document.getElementById('adminWritingJobsList');
-  try {
-    const data=await aF('/api/writing/admin/all');
-    const jobs=data.jobs||[];
-    if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No writing jobs yet.</p>'; document.getElementById('adminWritingSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
-    el.innerHTML='<div class="jgrid">'+jobs.map(j=>renderJobCard(j,'writing')).join('')+'</div>';
-    const pending=jobs.filter(j=>(j.pending||0)>0);
-    if (pending.length) loadWritingSubmissions(pending[0].id,pending[0].title);
-    else document.getElementById('adminWritingSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending writing reviews.</p>';
-  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
-}
-async function loadWritingSubmissions(jobId,title) {
-  const el=document.getElementById('adminWritingSubmissions');
-  el.innerHTML='Loading...';
-  try { const data=await aF(`/api/writing/admin/${jobId}/submissions`); renderReviewBoxes(data.submissions||[],'writing',jobId,null,el); }
-  catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
-}
-
-// ============ TRANSCRIPTION ============
-async function createTranscriptionJob() {
-  const af=document.getElementById('transcriptionJobAudio').files[0];
-  if (!af) { msg('createTranscriptionMsg','❌ Audio file required.',false); return; }
-  const mEl=document.getElementById('createTranscriptionMsg');
-  mEl.textContent='Uploading audio file...'; mEl.className='msg mok'; mEl.style.display='block';
-  const fd=new FormData();
-  fd.append('audio',af);
-  fd.append('title',document.getElementById('transcriptionJobTitle').value);
-  fd.append('description',document.getElementById('transcriptionJobDesc').value);
-  fd.append('instructions',document.getElementById('transcriptionJobInstructions').value);
-  fd.append('reward',document.getElementById('transcriptionJobReward').value);
-  fd.append('maxWorkers',document.getElementById('transcriptionJobMaxWorkers').value);
-  const dl=document.getElementById('transcriptionJobDeadline').value;
-  if(dl) fd.append('deadline',dl);
-  try {
-    const data = await aF('/api/transcriptions/admin/create', { method: 'POST', body: fd });
-    msg('createTranscriptionMsg','✅ Transcription job created!',true);
-    ['transcriptionJobTitle','transcriptionJobDesc','transcriptionJobInstructions'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('transcriptionJobAudio').value='';
-    loadAdminTranscriptionJobs();
-  } catch(err) { msg('createTranscriptionMsg','❌ '+err.message,false); }
-}
-async function loadAdminTranscriptionJobs() {
-  const el=document.getElementById('adminTranscriptionJobsList');
-  try {
-    const data=await aF('/api/transcriptions/admin/all');
-    const jobs=data.jobs||[];
-    if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No transcription jobs yet.</p>'; document.getElementById('adminTranscriptionSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
-    el.innerHTML='<div class="jgrid">'+jobs.map(j=>renderJobCard(j,'transcription')).join('')+'</div>';
-    const pending=jobs.filter(j=>(j.pending||0)>0);
-    if (pending.length) loadTranscriptionSubmissions(pending[0].id,pending[0].title);
-    else document.getElementById('adminTranscriptionSubmissions').innerHTML='<p style="color:var(--gray-500)">No pending transcription reviews.</p>';
-  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
-}
-async function loadTranscriptionSubmissions(jobId,title) {
-  const el=document.getElementById('adminTranscriptionSubmissions');
-  el.innerHTML='Loading...';
-  try { const data=await aF(`/api/transcriptions/admin/${jobId}/submissions`); renderReviewBoxes(data.submissions||[],'transcription',jobId,null,el); }
-  catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
-}
-
-// ============ DATA ENTRY ============
-async function createDataentryJob() {
-  const fd=new FormData();
-  const t=document.getElementById('dataentryJobTitle').value.trim(); const d=document.getElementById('dataentryJobDesc').value.trim(); const ins=document.getElementById('dataentryJobInstructions').value.trim();
-  if (!t||!d||!ins) { msg('createDataentryMsg','❌ Title, description and instructions required.',false); return; }
-  fd.append('title',t); fd.append('description',d); fd.append('instructions',ins);
-  fd.append('reward',document.getElementById('dataentryJobReward').value);
-  fd.append('maxWorkers',document.getElementById('dataentryJobMaxWorkers').value);
-  const dl=document.getElementById('dataentryJobDeadline').value;
-  if(dl) fd.append('deadline',dl);
-  const tf=document.getElementById('dataentryJobTemplate').files[0];
-  if(tf) fd.append('template',tf);
-  try {
-    const data = await aF('/api/dataentry/admin/create', { method: 'POST', body: fd });
-    msg('createDataentryMsg','✅ Data entry job created!',true);
-    ['dataentryJobTitle','dataentryJobDesc','dataentryJobInstructions'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('dataentryJobTemplate').value='';
-    loadAdminDataentryJobs();
-  } catch(err) { msg('createDataentryMsg','❌ '+err.message,false); }
-}
-async function loadAdminDataentryJobs() {
-  const el=document.getElementById('adminDataentryJobsList');
-  try {
-    const data=await aF('/api/dataentry/admin/all');
-    const jobs=data.jobs||[];
-    if (!jobs.length) { el.innerHTML='<p style="color:var(--gray-500)">No data entry jobs yet.</p>'; document.getElementById('adminDataentrySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending.</p>'; return; }
-    el.innerHTML='<div class="jgrid">'+jobs.map(j=>renderJobCard(j,'dataentry')).join('')+'</div>';
-    const pending=jobs.filter(j=>(j.pending||0)>0);
-    if (pending.length) loadDataentrySubmissions(pending[0].id,pending[0].title);
-    else document.getElementById('adminDataentrySubmissions').innerHTML='<p style="color:var(--gray-500)">No pending data entry reviews.</p>';
-  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
-}
-async function loadDataentrySubmissions(jobId,title) {
-  const el=document.getElementById('adminDataentrySubmissions');
-  el.innerHTML='Loading...';
-  try { const data=await aF(`/api/dataentry/admin/${jobId}/submissions`); renderReviewBoxes(data.submissions||[],'dataentry',jobId,null,el); }
-  catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
-}
-
-// ============ WITHDRAWALS ============
-async function loadAdminWithdrawals() {
-  const status=document.getElementById('wdFilterStatus').value||'pending';
-  const el=document.getElementById('adminWithdrawalsList');
-  el.innerHTML='<p style="color:var(--gray-500)">Loading...</p>';
-  try {
-    const data=await aF(`/api/withdrawals/admin/all?status=${status}`);
-    const wds=data.withdrawals||[];
-    document.getElementById('wdCount').textContent=`${wds.length} request(s)`;
-    if (!wds.length) { el.innerHTML=`<p style="color:var(--gray-500)">No ${status} withdrawals.</p>`; return; }
-    el.innerHTML='<div class="wgrid">'+wds.map(w=>`
-      <div class="wcard ${w.status==='completed'?'done':w.status==='rejected'?'rej':''}">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
-          <div>
-            <div style="font-weight:800;font-size:.9rem">${w.username||'User'}</div>
-            <div style="font-size:.72rem;color:var(--gray-500)">${w.email||''} | ${w.phone||''}</div>
-          </div>
-          <span class="badge ${w.status==='completed'?'bg':w.status==='pending'?'by':'br'}">${(w.status||'pending').toUpperCase()}</span>
-        </div>
-        <div style="font-size:1.3rem;font-weight:800;color:var(--g);margin:.3rem 0">KES ${fmt(w.amount)}</div>
-        <div style="font-size:.75rem;color:var(--gray-700);margin:.2rem 0">
-          <strong>Method:</strong> ${(w.paymentMethod||'').toUpperCase()}
-          ${w.paymentDetails?.mpesaPhone?` · 📱 ${w.paymentDetails.mpesaPhone}`:''}
-          ${w.paymentDetails?.accountNumber?` · 🏦 ${w.paymentDetails.accountNumber}`:''}
-        </div>
-        ${w.type?`<div style="font-size:.72rem;color:var(--gray-500)">Type: ${w.type.toUpperCase()}${w.type==='points'?` · ${w.pointsRedeemed||0} pts`:''}</div>`:''}
-        <div style="font-size:.7rem;color:var(--gray-500);margin:.2rem 0">Requested: ${w.requestedAt?new Date(w.requestedAt).toLocaleString():''}</div>
-        ${w.transactionReference?`<div style="font-size:.78rem;background:#f0fdf4;border:1px solid #86efac;padding:.35rem .6rem;border-radius:.3rem;margin:.3rem 0;font-weight:700;color:#15803d">✅ Txn Code: ${w.transactionReference}</div>`:''}
-        ${w.adminNotes?`<div style="font-size:.75rem;background:var(--gray-50);padding:.35rem .5rem;border-radius:.3rem;margin:.3rem 0">📝 ${w.adminNotes}</div>`:''}
-        ${w.status==='pending'?`
-        <div style="margin-top:.75rem;border-top:1px solid var(--gray-100);padding-top:.65rem">
-          <input type="text" id="txnCode_${w.id}" placeholder="Enter M-Pesa/Bank txn code *" style="width:100%;padding:.5rem .7rem;border:1.5px solid var(--gray-200);border-radius:.4rem;font-size:.82rem;font-family:inherit;margin-bottom:.5rem;box-sizing:border-box">
-          <input type="text" id="txnNotes_${w.id}" placeholder="Notes (optional)" style="width:100%;padding:.5rem .7rem;border:1px solid var(--gray-200);border-radius:.4rem;font-size:.82rem;font-family:inherit;margin-bottom:.5rem;box-sizing:border-box">
-          <div style="display:flex;gap:.4rem">
-            <button onclick="completeWithdrawal('${w.id}')" class="btn btp" style="flex:1">✅ Approve & Mark Paid</button>
-            <button onclick="rejectWithdrawal('${w.id}')" class="btn btd">❌ Reject</button>
-          </div>
-        </div>`:''}
-        ${w.status==='rejected'&&w.adminNotes?`<div style="font-size:.74rem;color:#dc2626;margin-top:.25rem">Rejected: ${w.adminNotes}</div>`:''}
-      </div>`).join('')+'</div>';
-  } catch(err) { el.innerHTML=`<p style="color:var(--r)">${err.message}</p>`; }
-}
-async function completeWithdrawal(id) {
-  const txnInput = document.getElementById('txnCode_'+id);
-  const notesInput = document.getElementById('txnNotes_'+id);
-  const txnCode = txnInput ? txnInput.value.trim() : '';
-  const notes   = notesInput ? notesInput.value.trim() : '';
-  if (!txnCode) { alert('⚠️ Please enter the M-Pesa or bank transaction code before approving.'); return; }
-  if (!confirm(`Approve and mark KES withdrawal as paid?\nTxn Code: ${txnCode}`)) return;
-  try {
-    await aF(`/api/withdrawals/admin/${id}/complete`,{method:'POST',body:JSON.stringify({transactionCode:txnCode,adminNotes:notes||'Approved by admin'})});
-    toast('✅ Withdrawal approved. User notified.');
-    loadAdminWithdrawals();
-  } catch(err) { alert('❌ '+err.message); }
-}
-async function rejectWithdrawal(id) {
-  const notes = document.getElementById('txnNotes_'+id)?.value.trim() || prompt('Reason for rejection:') || 'Rejected';
-  if (!confirm('Reject this withdrawal? User funds will remain unchanged.')) return;
-  try {
-    await aF(`/api/withdrawals/admin/${id}/reject`,{method:'POST',body:JSON.stringify({adminNotes:notes})});
-    toast('Withdrawal rejected. User notified, funds unchanged.');
-    loadAdminWithdrawals();
-  } catch(err) { alert('❌ '+err.message); }
-}
-
-// ============ EMAIL MANAGEMENT ============
-// Search users for single email — searches by username or email
-let emailSearchTimeout;
-document.getElementById('emailSearchInput')?.addEventListener('input', async (e) => {
-  clearTimeout(emailSearchTimeout);
-  const val = e.target.value.trim();
-  const resultsDiv = document.getElementById('emailSearchResults');
-  if (val.length < 2) { resultsDiv.style.display = 'none'; return; }
-  emailSearchTimeout = setTimeout(async () => {
-    try {
-      const data = await aF(`/api/admin/users/all`);
-      const users = (data.users || []).filter(u =>
-        u.username?.toLowerCase().includes(val.toLowerCase()) ||
-        u.email?.toLowerCase().includes(val.toLowerCase())
-      ).slice(0, 6);
-      if (!users.length) {
-        resultsDiv.innerHTML = '<div class="sri" style="padding:.75rem;color:var(--gray-500);font-size:.8rem">No users found</div>';
-      } else {
-        resultsDiv.innerHTML = users.map(u => `
-          <div class="sri" onclick="selectEmailUser('${u.id}','${u.username}','${u.email}')"
-               style="padding:.6rem .85rem;cursor:pointer;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div style="font-weight:700;font-size:.85rem">${u.username}</div>
-              <div style="font-size:.75rem;color:var(--gray-500)">${u.email}</div>
-            </div>
-            <span style="font-size:.7rem;background:#f0fdf4;color:#15803d;padding:.2rem .5rem;border-radius:.3rem">${u.status}</span>
-          </div>`).join('');
-      }
-      resultsDiv.style.display = 'block';
-    } catch(err) {
-      resultsDiv.innerHTML = '<div class="sri" style="color:var(--r);padding:.5rem">Search error</div>';
-      resultsDiv.style.display = 'block';
+    const { userId, amount, reason = 'activation_deposit', reference } = req.body;
+    if (!userId || !amount || amount <= 0) {
+      return res.status(400).json({ error: 'userId and valid amount required.' });
     }
-  }, 350);
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+
+    const prev = user.primaryWallet.balance;
+    user.primaryWallet.balance += parseFloat(amount);
+    await user.save();
+
+    res.json({
+      message: 'Balance deposited. User can now click Activate.',
+      user: { id: user._id, username: user.username, email: user.email },
+      transaction: { amount, previousBalance: prev, newBalance: user.primaryWallet.balance, reason, reference: reference || null, timestamp: new Date() }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-function selectEmailUser(id, username, email) {
-  document.getElementById('emailUserId').value = id;
-  document.getElementById('emailSearchInput').value = username + ' — ' + email;
-  document.getElementById('emailSearchResults').style.display = 'none';
-}
-
-// Send email to individual user
-async function sendSingleEmail() {
-  const userId = document.getElementById('emailUserId').value.trim();
-  const subject = document.getElementById('emailSubject').value.trim();
-  const message = document.getElementById('emailMessage').value.trim();
-  
-  if (!userId) { alert('⚠️ Please enter or select a User ID'); return; }
-  if (!subject) { alert('⚠️ Subject is required'); return; }
-  if (!message) { alert('⚠️ Message is required'); return; }
-  
-  if (!confirm(`Send email to user?\n\nSubject: ${subject.substring(0,50)}...`)) return;
-  
+// ==================== DASHBOARD STATS ====================
+router.get('/dashboard/stats', authMiddleware, requireAdmin, async (req, res) => {
   try {
-    const statusDiv = document.getElementById('emailStatus');
-    statusDiv.innerHTML = '<div class="msg" style="background:#dbeafe;color:#1e40af;border:1px solid #93c5fd">📧 Sending email...</div>';
-    statusDiv.style.display = 'block';
-    
-    await aF(`/api/admin/send-email`, {
-      method: 'POST',
-      body: JSON.stringify({ userId, subject, message })
+    const [totalUsers, activeUsers, pendingUsers, suspendedUsers, notActivated, normalUsers,
+      totalWithdrawalsPending, blogSubmissions, surveySubmissions] = await Promise.all([
+      User.countDocuments({ isAdmin: false }),
+      User.countDocuments({ status: 'active', isAdmin: false }),
+      User.countDocuments({ status: 'pending', isAdmin: false }),
+      User.countDocuments({ status: 'suspended', isAdmin: false }),
+      User.countDocuments({ packageType: 'not_active', isAdmin: false }),
+      User.countDocuments({ packageType: 'normal', isAdmin: false }),
+      Withdrawal.countDocuments({ status: 'pending' }),
+      Blog.countDocuments({ 'bids.bidStatus': 'submitted' }),
+      Survey.countDocuments({ 'bids.bidStatus': 'submitted' })
+    ]);
+
+    const walletAgg = await User.aggregate([
+      { $match: { isAdmin: false } },
+      { $group: { _id: null, kesTotal: { $sum: '$primaryWallet.balance' }, ptsTotal: { $sum: '$pointsWallet.points' } } }
+    ]);
+
+    const totalRevenue = normalUsers * ACTIVATION_FEE;
+    const totalProfit = normalUsers * PROFIT_PER_ACTIVATION;
+    const paidPointsWithdrawals = await Withdrawal.aggregate([
+      { $match: { type: 'points', status: 'completed' } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+    const pointsPayoutCost = paidPointsWithdrawals[0]?.total || 0;
+
+    res.json({
+      users: { total: totalUsers, active: activeUsers, pending: pendingUsers, suspended: suspendedUsers },
+      packages: { notActivated, normal: normalUsers },
+      pendingWithdrawals: totalWithdrawalsPending,
+      pendingReviews: { blogs: blogSubmissions, surveys: surveySubmissions },
+      totalKesInWallets: walletAgg[0]?.kesTotal || 0,
+      totalPointsInSystem: walletAgg[0]?.ptsTotal || 0,
+      profit: {
+        totalRevenue,
+        profitPool: totalProfit,
+        pointsPayoutsCost: pointsPayoutCost,
+        netProfitPool: totalProfit - pointsPayoutCost
+      }
     });
-    
-    statusDiv.innerHTML = '<div class="msg mok">✅ Email sent successfully to user!</div>';
-    document.getElementById('emailUserId').value = '';
-    document.getElementById('emailSubject').value = '';
-    document.getElementById('emailMessage').value = '';
-    setTimeout(() => { statusDiv.style.display = 'none'; }, 4000);
-  } catch(err) {
-    document.getElementById('emailStatus').innerHTML = `<div class="msg merr">❌ ${err.message}</div>`;
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-}
+});
 
-// Send bulk email to filtered users
-async function sendBulkEmail() {
-  const status = document.getElementById('bulkStatus').value;
-  const packageType = document.getElementById('bulkPackage').value;
-  const subject = document.getElementById('bulkSubject').value.trim();
-  const message = document.getElementById('bulkMessage').value.trim();
-  
-  if (!subject) { alert('⚠️ Subject is required'); return; }
-  if (!message) { alert('⚠️ Message is required'); return; }
-  
-  const filterText = `${status||'All statuses'} · ${packageType||'All packages'}`;
-  if (!confirm(`Broadcast email to users?\n\nFilter: ${filterText}\nSubject: ${subject.substring(0,40)}...`)) return;
-  
+// ==================== P&L REPORT ====================
+// Revenue: KES 250 per activation (profit portion of KES 700 fee)
+// Costs: Points withdrawal payouts (from profit pool)
+// Business Health: KES in user wallets vs system cash position
+router.get('/profit-summary', authMiddleware, requireAdmin, async (req, res) => {
   try {
-    const statusDiv = document.getElementById('emailStatus');
-    statusDiv.innerHTML = '<div class="msg" style="background:#dbeafe;color:#1e40af;border:1px solid #93c5fd">📧 Broadcasting to users...</div>';
-    statusDiv.style.display = 'block';
-    
-    await aF(`/api/admin/send-bulk-email`, {
-      method: 'POST',
-      body: JSON.stringify({
-        subject,
-        message,
-        ...(status && { status }),
-        ...(packageType && { packageType })
-      })
+    const { period = 'all' } = req.query;
+
+    let dateFilter = {};
+    const now = new Date();
+    if (period === 'week') {
+      const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7);
+      dateFilter = { $gte: weekAgo };
+    } else if (period === 'month') {
+      const monthAgo = new Date(now); monthAgo.setMonth(monthAgo.getMonth() - 1);
+      dateFilter = { $gte: monthAgo };
+    }
+
+    const userFilter = { packageType: 'normal', isAdmin: false };
+    if (period !== 'all') userFilter.activatedAt = dateFilter;
+    const activatedCount = await User.countDocuments(userFilter);
+
+    // Revenue = activation fees (profit share only)
+    const grossRevenue = activatedCount * ACTIVATION_FEE;
+    const profitFromActivations = activatedCount * PROFIT_PER_ACTIVATION;
+    const commissionsPaid = activatedCount * (ACTIVATION_FEE - PROFIT_PER_ACTIVATION); // 450 per user
+
+    // Points withdrawal costs (paid from profit pool)
+    const wFilter = { type: 'points', status: 'completed' };
+    if (period !== 'all') wFilter.processedAt = dateFilter;
+    const pointsPayouts = await Withdrawal.aggregate([
+      { $match: wFilter },
+      { $group: { _id: null, total: { $sum: '$amount' }, count: { $sum: 1 } } }
+    ]);
+    const pointsPayoutTotal = pointsPayouts[0]?.total || 0;
+    const pointsPayoutCount = pointsPayouts[0]?.count || 0;
+
+    // KES withdrawals (these come from user wallets, not profit — but track for business health)
+    const kesWFilter = { type: 'kes', status: 'completed' };
+    if (period !== 'all') kesWFilter.processedAt = dateFilter;
+    const kesPayouts = await Withdrawal.aggregate([
+      { $match: kesWFilter },
+      { $group: { _id: null, total: { $sum: '$amount' }, count: { $sum: 1 } } }
+    ]);
+    const kesPayoutTotal = kesPayouts[0]?.total || 0;
+
+    // Net profit = profit from activations - points payout costs
+    const netProfit = profitFromActivations - pointsPayoutTotal;
+
+    // Business health: total KES in user wallets vs total KES withdrawn
+    const walletAgg = await User.aggregate([
+      { $match: { isAdmin: false } },
+      { $group: { _id: null, totalKes: { $sum: '$primaryWallet.balance' }, totalPts: { $sum: '$pointsWallet.points' } } }
+    ]);
+    const totalKesInWallets = walletAgg[0]?.totalKes || 0;
+    const totalPtsInSystem = walletAgg[0]?.totalPts || 0;
+    const totalPtsKesValue = Math.floor(totalPtsInSystem / 100) * 10; // pts outstanding value
+
+    res.json({
+      period,
+      activations: {
+        count: activatedCount,
+        grossRevenue,
+        commissionsPaid,
+        profitContribution: profitFromActivations
+      },
+      profitPool: {
+        total: profitFromActivations,
+        pointsPayoutsCost: pointsPayoutTotal,
+        pointsPayoutsCount: pointsPayoutCount,
+        netProfit,
+        netProfitMargin: profitFromActivations > 0
+          ? ((netProfit / profitFromActivations) * 100).toFixed(1) + '%'
+          : '0%'
+      },
+      businessHealth: {
+        totalKesInUserWallets: totalKesInWallets,
+        totalKesWithdrawnByUsers: kesPayoutTotal,
+        totalPointsInSystem: totalPtsInSystem,
+        totalPointsOutstandingKesValue: totalPtsKesValue,
+        // This is what the business owes users (wallet balances not yet withdrawn)
+        totalLiability: totalKesInWallets + totalPtsKesValue
+      },
+      kesWithdrawals: {
+        completedTotal: kesPayoutTotal,
+        count: kesPayouts[0]?.count || 0,
+        note: 'KES withdrawals come from user wallets (referral commissions), not profit pool'
+      }
     });
-    
-    statusDiv.innerHTML = '<div class="msg mok">✅ Broadcast sent! Check response for recipient count.</div>';
-    document.getElementById('bulkSubject').value = '';
-    document.getElementById('bulkMessage').value = '';
-    setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
-  } catch(err) {
-    document.getElementById('emailStatus').innerHTML = `<div class="msg merr">❌ ${err.message}</div>`;
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-}
+});
 
-// ============ SMART FILE DOWNLOAD ============
-// Tries direct URL first; if Cloudinary returns 401, fetches a signed URL
-async function smartDownload(directUrl, publicId, fileName) {
-  if (!directUrl) { alert('No file available.'); return; }
-
-  // First try a HEAD request to see if direct URL works
+// ==================== TRANSACTION LEDGER ====================
+router.get('/transactions', authMiddleware, requireAdmin, async (req, res) => {
   try {
-    const probe = await fetch(directUrl, { method: 'HEAD' });
-    if (probe.ok) {
-      // Direct URL works — open in new tab
-      const a = document.createElement('a');
-      a.href = directUrl;
-      a.target = '_blank';
-      a.download = fileName || 'download';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      return;
+    const { period = 'all', limit = 50, type } = req.query;
+
+    let dateFilter = {};
+    const now = new Date();
+    if (period === 'week') {
+      const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7);
+      dateFilter = { createdAt: { $gte: weekAgo } };
+    } else if (period === 'month') {
+      const monthAgo = new Date(now); monthAgo.setMonth(monthAgo.getMonth() - 1);
+      dateFilter = { createdAt: { $gte: monthAgo } };
     }
-  } catch(e) { /* CORS on HEAD is fine — fall through to signed URL */ }
 
-  // Direct URL failed (401/403) — fetch a signed URL from backend
-  if (!publicId || publicId === directUrl) {
-    // No publicId stored — just open the URL directly and let browser handle it
-    window.open(directUrl, '_blank');
-    return;
+    // Withdrawals ledger
+    const wQuery = { ...dateFilter };
+    if (type === 'kes') wQuery.type = 'kes';
+    else if (type === 'points') wQuery.type = 'points';
+
+    const withdrawals = await Withdrawal.find(wQuery)
+      .sort({ createdAt: -1 }).limit(parseInt(limit))
+      .populate('userId', 'username email');
+
+    const transactions = withdrawals.map(w => ({
+      id: w._id,
+      date: w.requestedAt,
+      type: w.type === 'kes' ? 'KES Withdrawal' : 'Points Withdrawal',
+      direction: 'out',
+      paidFrom: w.type === 'kes' ? 'User Wallet' : 'Profit Pool',
+      user: w.userId?.username || 'Unknown',
+      email: w.userId?.email || '',
+      amount: w.amount,
+      pointsRedeemed: w.pointsRedeemed || 0,
+      status: w.status,
+      reference: w.transactionReference
+    }));
+
+    res.json({ period, transactions, total: transactions.length });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
+});
 
+// ==================== GET ALL USERS ====================
+router.get('/users/all', authMiddleware, requireAdmin, async (req, res) => {
   try {
-    // Try signed URL endpoint on dataentry (works for all raw files)
-    const data = await aF(`/api/dataentry/file/signed?publicId=${encodeURIComponent(publicId)}&fileName=${encodeURIComponent(fileName||'download')}`);
-    if (data.url) {
-      window.open(data.url, '_blank');
-    } else {
-      window.open(directUrl, '_blank');
-    }
-  } catch(err) {
-    // Last resort — just try the direct URL
-    window.open(directUrl, '_blank');
-  }
-}
+    const { status, packageType, page = 1, limit = 50 } = req.query;
+    const filter = { isAdmin: false };
+    if (status && status !== 'all') filter.status = status;
+    if (packageType && packageType !== 'all') filter.packageType = packageType;
 
-// ============ INIT ============
-loadAdminDashboard();
-</script>
-</body>
-</html>
+    const skip = (page - 1) * limit;
+    const [users, total] = await Promise.all([
+      User.find(filter)
+        .select('_id username email phone status packageType primaryWallet pointsWallet stats createdAt referrerId activeReferrals')
+        .populate('referrerId', 'username email')
+        .sort({ createdAt: -1 })
+        .skip(skip).limit(parseInt(limit)),
+      User.countDocuments(filter)
+    ]);
+
+    res.json({
+      total, pages: Math.ceil(total / limit), currentPage: parseInt(page),
+      users: users.map(u => ({
+        id: u._id, username: u.username, email: u.email, phone: u.phone,
+        status: u.status, packageType: u.packageType,
+        walletBalance: u.primaryWallet.balance,
+        pointsBalance: u.pointsWallet.points,
+        activeReferrals: u.stats.activeDirectReferrals || 0,
+        referredBy: u.referrerId ? { id: u.referrerId._id, username: u.referrerId.username } : null,
+        joinedAt: u.createdAt
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ==================== PENDING ACTIVATION ====================
+router.get('/users/pending-activation', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const users = await User.find({ packageType: 'not_active', isAdmin: false })
+      .select('_id username email phone createdAt primaryWallet referrerId')
+      .populate('referrerId', 'username email phone')
+      .sort({ createdAt: -1 });
+
+    res.json({
+      count: users.length,
+      users: users.map(u => ({
+        id: u._id, username: u.username, email: u.email, phone: u.phone,
+        walletBalance: u.primaryWallet.balance,
+        referredBy: u.referrerId ? {
+          id: u.referrerId._id, username: u.referrerId.username,
+          email: u.referrerId.email, phone: u.referrerId.phone
+        } : null,
+        createdAt: u.createdAt
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ==================== SUSPEND / UNSUSPEND ====================
+router.post('/users/:userId/suspend', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.isAdmin) return res.status(400).json({ error: 'Cannot suspend admin.' });
+    user.status = 'suspended';
+    await user.save();
+    res.json({ message: `${user.username} suspended.` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/users/:userId/unsuspend', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    user.status = user.packageType === 'not_active' ? 'pending' : 'active';
+    user.loginAttempts = 0;
+    user.lockUntil = null;
+    await user.save();
+    res.json({ message: `${user.username} unsuspended.` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ==================== BLOG MANAGEMENT ====================
+router.get('/blogs/all', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blogs = await Blog.find().sort({ createdAt: -1 });
+    res.json({
+      blogs: blogs.map(b => ({
+        id: b._id, title: b.title, description: b.description,
+        category: b.category, reward: b.reward, status: b.status,
+        maxWorkers: b.maxWorkers || 0,
+        totalSubmissions: b.bids.length,
+        pendingReview: b.bids.filter(bid => bid.bidStatus === 'submitted').length,
+        approved: b.bids.filter(bid => bid.bidStatus === 'approved').length,
+        slotsLeft: Math.max(0, (b.maxWorkers || 0) - b.bids.filter(bid => ['submitted','approved'].includes(bid.bidStatus)).length),
+        deadline: b.deadline, createdAt: b.createdAt
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/blogs/:blogId/submissions', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.blogId).populate('bids.userId', 'username email');
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    res.json({
+      blogTitle: blog.title,
+      submissions: blog.bids.map(b => ({
+        userId: b.userId._id, username: b.userId.username, email: b.userId.email,
+        status: b.bidStatus, content: b.submissionContent,
+        submittedAt: b.submittedAt, approvedAt: b.approvedAt, reviewNotes: b.reviewNotes
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ==================== SURVEY MANAGEMENT ====================
+router.get('/surveys/all', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const surveys = await Survey.find().sort({ createdAt: -1 });
+    res.json({
+      surveys: surveys.map(s => ({
+        id: s._id, title: s.title, description: s.description,
+        questionsCount: s.questions.length, reward: s.reward, status: s.status,
+        maxWorkers: s.maxWorkers || 0,
+        totalSubmissions: s.bids.length,
+        pendingReview: s.bids.filter(b => b.bidStatus === 'submitted').length,
+        approved: s.bids.filter(b => b.bidStatus === 'approved').length,
+        slotsLeft: Math.max(0, (s.maxWorkers || 0) - s.bids.filter(b => ['submitted','approved'].includes(b.bidStatus)).length),
+        deadline: s.deadline, createdAt: s.createdAt
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/surveys/:surveyId/submissions', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.surveyId).populate('bids.userId', 'username email');
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    res.json({
+      surveyTitle: survey.title,
+      questions: survey.questions,
+      submissions: survey.bids.map(b => ({
+        userId: b.userId._id, username: b.userId.username, email: b.userId.email,
+        status: b.bidStatus, responses: b.submissionContent,
+        submittedAt: b.submittedAt, approvedAt: b.approvedAt, reviewNotes: b.reviewNotes
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// DELETE /api/admin/users/:userId
+router.delete('/users/:userId', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.isAdmin) return res.status(400).json({ error: 'Cannot delete admin accounts.' });
+    await User.findByIdAndDelete(req.params.userId);
+    res.json({ message: `✅ User deleted.` });
+  } catch(err) { res.status(500).json({ error: err.message }); }
+});
+
+// ─── Blog admin routes (called as /api/admin/blogs/*) ────────────────────────
+
+router.post('/blogs/create', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { title, description, content, category, maxBidders, reward } = req.body;
+    if (!title || !description) return res.status(400).json({ error: 'Title and description required.' });
+    const blog = await Blog.create({
+      title, description, content: content || '', category: category || 'general',
+      maxBidders: maxBidders || 50, reward: reward || 100, isOpen: true, postedAt: new Date()
+    });
+    res.json({ message: 'Blog created.', blog });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.put('/blogs/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    const { title, description, content, category, maxBidders, reward } = req.body;
+    if (title)       blog.title       = title;
+    if (description) blog.description = description;
+    if (content)     blog.content     = content;
+    if (category)    blog.category    = category;
+    if (maxBidders)  blog.maxBidders  = maxBidders;
+    if (reward)      blog.reward      = reward;
+    await blog.save();
+    res.json({ message: 'Blog updated.', blog });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.post('/blogs/:id/close', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    blog.isOpen = false;
+    await blog.save();
+    res.json({ message: 'Blog closed.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.delete('/blogs/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    await Blog.deleteOne({ _id: blog._id });
+    res.json({ message: 'Blog deleted.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.post('/blogs/:blogId/approve/:userId', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.blogId);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    const bid = blog.bids.find(b => b.userId.toString() === req.params.userId);
+    if (!bid) return res.status(404).json({ error: 'Submission not found' });
+    if (bid.bidStatus === 'approved') return res.status(400).json({ error: 'Already approved' });
+    bid.bidStatus = 'approved';
+    bid.approvedAt = new Date();
+    await blog.save();
+    await User.findByIdAndUpdate(req.params.userId, { $inc: { 'pointsWallet.points': blog.reward } });
+    res.json({ message: 'Blog submission approved.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.post('/blogs/:blogId/reject/:userId', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.blogId);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    const bid = blog.bids.find(b => b.userId.toString() === req.params.userId);
+    if (!bid) return res.status(404).json({ error: 'Submission not found' });
+    bid.bidStatus = 'rejected';
+    bid.reviewNotes = req.body.reviewNotes || 'Rejected';
+    bid.reviewedAt = new Date();
+    await blog.save();
+    res.json({ message: 'Blog submission rejected.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+// ─── Survey admin routes (called as /api/admin/surveys/*) ─────────────────────
+
+router.post('/surveys/create', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { title, description, questions, maxResponses, reward } = req.body;
+    if (!title || !questions || !questions.length) return res.status(400).json({ error: 'Title and questions required.' });
+    const survey = await Survey.create({
+      title, description: description || '', questions,
+      maxResponses: maxResponses || 100, reward: reward || 100, isOpen: true, postedAt: new Date()
+    });
+    res.json({ message: 'Survey created.', survey });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.put('/surveys/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.id);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    const { title, description, maxResponses, reward } = req.body;
+    if (title)        survey.title        = title;
+    if (description)  survey.description  = description;
+    if (maxResponses) survey.maxResponses = maxResponses;
+    if (reward)       survey.reward       = reward;
+    await survey.save();
+    res.json({ message: 'Survey updated.', survey });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.post('/surveys/:id/close', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.id);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    survey.isOpen = false;
+    await survey.save();
+    res.json({ message: 'Survey closed.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.delete('/surveys/:id', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.id);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    await Survey.deleteOne({ _id: survey._id });
+    res.json({ message: 'Survey deleted.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.post('/surveys/:surveyId/approve/:userId', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.surveyId);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    const bid = survey.bids.find(b => b.userId.toString() === req.params.userId);
+    if (!bid) return res.status(404).json({ error: 'Submission not found' });
+    if (bid.bidStatus === 'approved') return res.status(400).json({ error: 'Already approved' });
+    bid.bidStatus = 'approved';
+    bid.approvedAt = new Date();
+    await survey.save();
+    await User.findByIdAndUpdate(req.params.userId, { $inc: { 'pointsWallet.points': survey.reward } });
+    res.json({ message: 'Survey submission approved.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+router.post('/surveys/:surveyId/reject/:userId', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const survey = await Survey.findById(req.params.surveyId);
+    if (!survey) return res.status(404).json({ error: 'Survey not found' });
+    const bid = survey.bids.find(b => b.userId.toString() === req.params.userId);
+    if (!bid) return res.status(404).json({ error: 'Submission not found' });
+    bid.bidStatus = 'rejected';
+    bid.reviewNotes = req.body.reviewNotes || 'Rejected';
+    bid.reviewedAt = new Date();
+    await survey.save();
+    res.json({ message: 'Survey submission rejected.' });
+  } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+// ==================== EMAIL MANAGEMENT ====================
+// Send custom email to a single user
+router.post('/send-email', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { userId, subject, message } = req.body;
+    if (!userId || !subject || !message)
+      return res.status(400).json({ error: 'userId, subject, and message required.' });
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+
+    // Send email (non-blocking)
+    sendCustomAdminEmail(user.email, user.username, subject, message).catch(err => {
+      console.error('Admin email failed:', err.message);
+    });
+
+    res.json({
+      message: 'Email queued for delivery.',
+      sent_to: user.email,
+      user: { id: user._id, username: user.username, email: user.email }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Send bulk email to multiple users (filtered)
+// Query params: status=active|pending|suspended, packageType=normal|not_active
+router.post('/send-bulk-email', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { subject, message, status, packageType } = req.body;
+    if (!subject || !message)
+      return res.status(400).json({ error: 'subject and message required.' });
+
+    // Build filter
+    const filter = { isAdmin: false };
+    if (status && ['active', 'pending', 'suspended'].includes(status)) filter.status = status;
+    if (packageType && ['normal', 'not_active'].includes(packageType)) filter.packageType = packageType;
+
+    const users = await User.find(filter);
+    if (users.length === 0) return res.status(400).json({ error: 'No users match the filter.' });
+
+    // Send emails non-blocking (fire and forget)
+    users.forEach(user => {
+      sendCustomAdminEmail(user.email, user.username, subject, message).catch(() => {});
+    });
+
+    res.json({
+      message: `Email queued for delivery to ${users.length} users.`,
+      recipients_count: users.length,
+      filter: { status: status || 'all', packageType: packageType || 'all' }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+module.exports = router;
