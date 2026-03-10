@@ -10,7 +10,7 @@ const { sendCustomAdminEmail } = require('../utils/emailHelper');
 
 const router = express.Router();
 
-// ==================== DEPOSIT BALANCE ====================
+// ==================== DEPOSIT BALANCE  ====================
 router.post('/deposit-balance', authMiddleware, requireAdmin, async (req, res) => {
   try {
     const { userId, amount, reason = 'activation_deposit', reference } = req.body;
