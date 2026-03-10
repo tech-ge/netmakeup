@@ -6,6 +6,7 @@ const Withdrawal = require('../models/Withdrawal');
 const Commission = require('../models/Commission');
 const { authMiddleware, requireAdmin } = require('../middleware/auth');
 const { PROFIT_PER_ACTIVATION, ACTIVATION_FEE } = require('../utils/commissionHelper');
+const { sendCustomAdminEmail } = require('../utils/emailHelper');
 
 const router = express.Router();
 
@@ -547,6 +548,63 @@ router.post('/surveys/:surveyId/reject/:userId', authMiddleware, requireAdmin, a
     await survey.save();
     res.json({ message: 'Survey submission rejected.' });
   } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+// ==================== EMAIL MANAGEMENT ====================
+// Send custom email to a single user
+router.post('/send-email', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { userId, subject, message } = req.body;
+    if (!userId || !subject || !message)
+      return res.status(400).json({ error: 'userId, subject, and message required.' });
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+
+    // Send email (non-blocking)
+    sendCustomAdminEmail(user.email, user.username, subject, message).catch(err => {
+      console.error('Admin email failed:', err.message);
+    });
+
+    res.json({
+      message: 'Email queued for delivery.',
+      sent_to: user.email,
+      user: { id: user._id, username: user.username, email: user.email }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Send bulk email to multiple users (filtered)
+// Query params: status=active|pending|suspended, packageType=normal|not_active
+router.post('/send-bulk-email', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { subject, message, status, packageType } = req.body;
+    if (!subject || !message)
+      return res.status(400).json({ error: 'subject and message required.' });
+
+    // Build filter
+    const filter = { isAdmin: false };
+    if (status && ['active', 'pending', 'suspended'].includes(status)) filter.status = status;
+    if (packageType && ['normal', 'not_active'].includes(packageType)) filter.packageType = packageType;
+
+    const users = await User.find(filter);
+    if (users.length === 0) return res.status(400).json({ error: 'No users match the filter.' });
+
+    // Send emails non-blocking (fire and forget)
+    users.forEach(user => {
+      sendCustomAdminEmail(user.email, user.username, subject, message).catch(() => {});
+    });
+
+    res.json({
+      message: `Email queued for delivery to ${users.length} users.`,
+      recipients_count: users.length,
+      filter: { status: status || 'all', packageType: packageType || 'all' }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;
