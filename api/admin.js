@@ -6,7 +6,10 @@ const Withdrawal = require('../models/Withdrawal');
 const Commission = require('../models/Commission');
 const { authMiddleware, requireAdmin } = require('../middleware/auth');
 const { PROFIT_PER_ACTIVATION, ACTIVATION_FEE } = require('../utils/commissionHelper');
-const { sendCustomAdminEmail } = require('../utils/emailHelper');
+const { sendCustomAdminEmail, wrap } = require('../utils/emailHelper');
+const { Resend } = require('resend');
+const _resend = new Resend(process.env.RESEND_API_KEY);
+const EMAIL_FROM = process.env.EMAIL_FROM || 'TechGeo Network <noreply@techgeo.co.ke>';
 
 const router = express.Router();
 
@@ -576,31 +579,50 @@ router.post('/send-email', authMiddleware, requireAdmin, async (req, res) => {
   }
 });
 
-// Send bulk email to multiple users (filtered)
-// Query params: status=active|pending|suspended, packageType=normal|not_active
+// Send bulk email using Resend batch API (100 per call, chunked)
 router.post('/send-bulk-email', authMiddleware, requireAdmin, async (req, res) => {
   try {
     const { subject, message, status, packageType } = req.body;
     if (!subject || !message)
       return res.status(400).json({ error: 'subject and message required.' });
 
-    // Build filter
     const filter = { isAdmin: false };
     if (status && ['active', 'pending', 'suspended'].includes(status)) filter.status = status;
     if (packageType && ['normal', 'not_active'].includes(packageType)) filter.packageType = packageType;
 
-    const users = await User.find(filter);
+    const users = await User.find(filter).select('email username');
     if (users.length === 0) return res.status(400).json({ error: 'No users match the filter.' });
 
-    // Send emails non-blocking (fire and forget)
-    users.forEach(user => {
-      sendCustomAdminEmail(user.email, user.username, subject, message).catch(() => {});
-    });
+    // Build all email payloads
+    const emails = users.map(user => ({
+      from:    EMAIL_FROM,
+      to:      [user.email],
+      subject,
+      html:    wrap(`
+        <p>Hi <strong>${user.username}</strong>,</p>
+        <div style="margin:1rem 0;line-height:1.7;color:#374151">${message.replace(/\n/g,'<br>')}</div>
+        <p style="margin-top:1.5rem;color:#6b7280;font-size:.85rem">— TechGeo Network Team</p>
+      `)
+    }));
+
+    // Resend batch allows max 100 per call — chunk accordingly
+    const CHUNK = 100;
+    let sent = 0, failed = 0;
+    for (let i = 0; i < emails.length; i += CHUNK) {
+      const chunk = emails.slice(i, i + CHUNK);
+      try {
+        await _resend.batch.send(chunk);
+        sent += chunk.length;
+      } catch (e) {
+        console.error('Batch email chunk error:', e.message);
+        failed += chunk.length;
+      }
+    }
 
     res.json({
-      message: `Email queued for delivery to ${users.length} users.`,
-      recipients_count: users.length,
-      filter: { status: status || 'all', packageType: packageType || 'all' }
+      message: `Emails sent: ${sent}${failed ? `, failed: ${failed}` : ''} (out of ${users.length} users).`,
+      sent, failed,
+      total: users.length
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
