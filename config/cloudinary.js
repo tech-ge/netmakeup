@@ -93,6 +93,81 @@ const uploadDocument = multer({
   }
 });
 
+// ── Image uploads (data entry photos/screenshots) ────────────────────────────
+const imageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: (req, file) => ({
+    folder:        'techgeo/images',
+    resource_type: 'image',
+    access_mode:   'public',
+    public_id: `img_${Date.now()}_${file.originalname
+      .replace(/\s+/g, '_')
+      .replace(/[^a-zA-Z0-9._-]/g, '')
+      .replace(/\.[^.]+$/, '')}`
+  })
+});
+
+const IMAGE_MIMETYPES = [
+  'image/jpeg', 'image/jpg', 'image/png', 'image/gif',
+  'image/webp', 'image/bmp', 'image/tiff'
+];
+
+const uploadImage = multer({
+  storage: imageStorage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  fileFilter: (req, file, cb) => {
+    const ext = file.originalname.split('.').pop().toLowerCase();
+    const allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff'];
+    if (IMAGE_MIMETYPES.includes(file.mimetype) || allowedExts.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Images only (jpg, png, gif, webp). Got: ${file.mimetype}`));
+    }
+  }
+});
+
+// ── Mixed upload: documents + images (for data entry) ─────────────────────────
+const mixedStorage = new CloudinaryStorage({
+  cloudinary,
+  params: (req, file) => {
+    const ext = file.originalname.split('.').pop().toLowerCase();
+    const isImage = ['jpg','jpeg','png','gif','webp','bmp','tiff'].includes(ext);
+    return {
+      folder:        isImage ? 'techgeo/images' : 'techgeo/documents',
+      resource_type: isImage ? 'image' : 'raw',
+      access_mode:   'public',
+      public_id: `${isImage?'img':'doc'}_${Date.now()}_${file.originalname
+        .replace(/\s+/g, '_')
+        .replace(/[^a-zA-Z0-9._-]/g, '')
+        .replace(/\.[^.]+$/, '')}`
+    };
+  }
+});
+
+const MIXED_MIMETYPES = [...IMAGE_MIMETYPES,
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-excel',
+  'text/csv',
+  'application/octet-stream'
+];
+
+const uploadMixed = multer({
+  storage: mixedStorage,
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB
+  fileFilter: (req, file, cb) => {
+    const ext = file.originalname.split('.').pop().toLowerCase();
+    const allowedExts = ['pdf','doc','docx','xlsx','xls','csv','jpg','jpeg','png','gif','webp','bmp','tiff'];
+    if (MIXED_MIMETYPES.includes(file.mimetype) || allowedExts.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Allowed: images (jpg,png,gif,webp) or documents (pdf,doc,docx,xlsx,csv). Got: ${file.mimetype}`));
+    }
+  }
+});
+
 // ── Generate a signed URL for private files (fallback for old uploads) ────────
 const getSignedDownloadUrl = (publicId, resourceType = 'raw', expiresInSeconds = 3600) => {
   return cloudinary.utils.private_download_url(publicId, '', {
@@ -111,4 +186,4 @@ const deleteFile = async (publicId, resourceType = 'raw') => {
   }
 };
 
-module.exports = { uploadAudio, uploadDocument, deleteFile, getSignedDownloadUrl, cloudinary };
+module.exports = { uploadAudio, uploadDocument, uploadImage, uploadMixed, deleteFile, getSignedDownloadUrl, cloudinary };
