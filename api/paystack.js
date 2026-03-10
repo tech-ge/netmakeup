@@ -39,7 +39,7 @@ function paystackRequest(method, path, body) {
 }
 
 // ============================================================
-// INITIALIZE PAYMENT
+// INITIALIZE PAYMENT  
 // POST /api/paystack/initialize
 // Body: { amount }  (amount in KES)
 // ============================================================
