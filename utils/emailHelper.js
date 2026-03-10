@@ -166,10 +166,24 @@ async function sendWithdrawalRejected(email, username, amount, type, reason) {
   `));
 }
 
+// ════════════════════════════════════════════════════════════════
+// 6. CUSTOM ADMIN EMAIL
+// ════════════════════════════════════════════════════════════════
+async function sendCustomAdminEmail(email, username, subject, message) {
+  return sendEmail(email, subject, wrap(`
+    <p>Hi <strong>${username}</strong>,</p>
+    <div style="color:#374151;line-height:1.8">${message}</div>
+    <div style="margin-top:2rem;padding-top:1rem;border-top:1px solid #e5e7eb;font-size:.75rem;color:#9ca3af">
+      <p style="margin:0">Questions? Contact support at support@techgeo.co.ke</p>
+    </div>
+  `));
+}
+
 module.exports = {
   sendOTP,
   sendDepositConfirmed,
   sendWithdrawalSubmitted,
   sendWithdrawalPaid,
   sendWithdrawalRejected,
+  sendCustomAdminEmail,
 };
