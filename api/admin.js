@@ -258,6 +258,30 @@ router.get('/users/all', authMiddleware, requireAdmin, async (req, res) => {
   }
 });
 
+// ==================== USER SEARCH (for email autocomplete) ====================
+router.get('/users/search', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q || q.trim().length < 2) return res.json({ users: [] });
+    const regex = new RegExp(q.trim(), 'i');
+    const users = await User.find({
+      isAdmin: false,
+      $or: [{ username: regex }, { email: regex }, { phone: regex }]
+    })
+    .select('_id username email phone status packageType primaryWallet')
+    .limit(8);
+    res.json({
+      users: users.map(u => ({
+        id: u._id, username: u.username, email: u.email,
+        phone: u.phone, status: u.status, packageType: u.packageType,
+        walletBalance: u.primaryWallet.balance
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // ==================== PENDING ACTIVATION ====================
 router.get('/users/pending-activation', authMiddleware, requireAdmin, async (req, res) => {
   try {
