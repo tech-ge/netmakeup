@@ -78,11 +78,9 @@ const UserSchema = new mongoose.Schema({
 
   // OTP — used for register, change-password, forgot-password, change-contact
   otp: {
-    code:          { type: String, default: null },
-    expiresAt:     { type: Date,   default: null },
-    reason:        { type: String, default: null }, // 'register' | 'change_password' | 'forgot_password' | 'change_contact'
-    requestCount:  { type: Number, default: 0 },    // requests in current window (max 3)
-    snoozedUntil:  { type: Date,   default: null },  // locked out until this time after 3 failed attempts
+    code:      { type: String, default: null },
+    expiresAt: { type: Date,   default: null },
+    reason:    { type: String, default: null }, // 'register' | 'change_password' | 'forgot_password' | 'change_contact'
   },
 
   // Email verified flag (set true after OTP confirmed at registration)
