@@ -592,6 +592,8 @@ function showPage(name){
   else if(name==='referrals')loadReferrals();
   else if(name==='withdraw')loadWithdraw();
   else if(name==='profile')loadProfile();
+  // Switch AI bot context when page changes — logic lives in techgeo-ai.js
+  if(typeof TechGeoAI!=='undefined')TechGeoAI.switchBot(name);
 }
 document.addEventListener('click',e=>{
   const el=e.target.closest('.nav-lnk');
@@ -1226,5 +1228,99 @@ function showDepositMsg(msg,ok){
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <script>window._PAYSTACK_PUBLIC_KEY='pk_live_7def999fbc94b9848100cceecc0cdee15cb93cba';</script>
 <script src="/offline.js"></script>
+
+<!-- ── TechGeo AI Chat Widget ───────────────────────────────────────────── -->
+<!-- Styles only. Logic lives in /js/techgeo-ai.js -->
+<style>
+#tg-fab{position:fixed;bottom:22px;right:18px;z-index:9999;width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;background:#16a34a;color:#fff;font-size:1.35rem;box-shadow:0 4px 18px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s;}
+#tg-fab:hover{transform:scale(1.09);box-shadow:0 6px 24px rgba(0,0,0,.3);}
+#tg-fab .tg-badge{position:absolute;top:1px;right:1px;width:11px;height:11px;background:#ef4444;border-radius:50%;border:2px solid #fff;display:none;}
+#tg-fab .tg-badge.show{display:block;}
+#tg-panel{display:none;position:fixed;bottom:84px;right:18px;z-index:9998;width:318px;max-width:calc(100vw - 28px);height:430px;max-height:calc(100vh - 110px);flex-direction:column;border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.22);opacity:0;transform:translateY(14px) scale(.97);transition:opacity .25s ease,transform .25s ease;}
+#tg-panel.tg-open{opacity:1;transform:translateY(0) scale(1);}
+#tg-panel .tg-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#fff;flex-shrink:0;}
+#tg-panel .tg-hdr-ico{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+#tg-panel .tg-hdr-info{flex:1;line-height:1.3;}
+#tg-panel .tg-hdr-name{font-weight:700;font-size:.9rem;}
+#tg-panel .tg-hdr-sub{font-size:.7rem;opacity:.8;}
+#tg-panel .tg-hdr-close{background:none;border:none;color:#fff;font-size:1.2rem;cursor:pointer;padding:3px 7px;border-radius:4px;line-height:1;}
+#tg-panel .tg-hdr-close:hover{background:rgba(0,0,0,.15);}
+#tg-msgs{flex:1;overflow-y:auto;padding:10px 10px 4px;display:flex;flex-direction:column;gap:4px;background:#ece5dd;}
+#tg-msgs::-webkit-scrollbar{width:4px;}
+#tg-msgs::-webkit-scrollbar-thumb{background:#b5ada6;border-radius:4px;}
+.tg-row{display:flex;max-width:100%;}
+.tg-row-me{justify-content:flex-end;}
+.tg-row-bot{justify-content:flex-start;}
+.tg-bub{max-width:80%;padding:7px 10px 18px;border-radius:10px;font-size:.83rem;line-height:1.5;position:relative;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,.11);}
+.tg-bub-me{background:#dcf8c6;border-bottom-right-radius:3px;color:#111;}
+.tg-bub-bot{background:#fff;border-bottom-left-radius:3px;color:#111;}
+.tg-bub .tg-ts{position:absolute;bottom:3px;right:8px;font-size:.6rem;color:#999;white-space:nowrap;}
+#tg-bar{display:flex;align-items:flex-end;gap:8px;padding:7px 10px;background:#f0f0f0;flex-shrink:0;border-top:1px solid #ddd;}
+#tg-inwrap{flex:1;background:#fff;border-radius:20px;padding:7px 12px;display:flex;flex-direction:column;gap:2px;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+#tg-input{border:none;outline:none;resize:none;font-size:.84rem;font-family:inherit;background:transparent;color:#111;min-height:20px;max-height:74px;line-height:1.4;}
+#tg-input::placeholder{color:#bbb;}
+#tg-wc{font-size:.63rem;color:#bbb;text-align:right;}
+#tg-wc.over{color:#ef4444;font-weight:700;}
+#tg-send{width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;font-size:1rem;background:#16a34a;color:#fff;flex-shrink:0;transition:background .15s,transform .1s;display:flex;align-items:center;justify-content:center;}
+#tg-send:hover:not(:disabled){transform:scale(1.08);}
+#tg-send:disabled{background:#ccc;cursor:not-allowed;}
+@media(max-width:380px){#tg-panel{width:calc(100vw - 24px);right:12px;}}
+</style>
+
+<!-- FAB button -->
+<button id="tg-fab" aria-label="Open TechGeo AI chat" aria-expanded="false" title="TechGeo AI">
+  &#129302;<span class="tg-badge" id="tg-badge"></span>
+</button>
+
+<!-- Chat panel shell — content injected by techgeo-ai.js -->
+<div id="tg-panel" role="dialog" aria-label="TechGeo AI Chat">
+  <div class="tg-hdr" id="tg-hdr">
+    <div class="tg-hdr-ico" id="tg-hdr-ico">&#129302;</div>
+    <div class="tg-hdr-info">
+      <div class="tg-hdr-name" id="tg-hdr-name">TechGeo Bot</div>
+      <div class="tg-hdr-sub"  id="tg-hdr-sub">Ask me anything</div>
+    </div>
+    <button class="tg-hdr-close" id="tg-hdr-close" title="Close">&#10005;</button>
+  </div>
+  <div id="tg-msgs"></div>
+  <div id="tg-bar">
+    <div id="tg-inwrap">
+      <textarea id="tg-input" rows="1" placeholder="Ask a question (max 20 words)..." maxlength="180"></textarea>
+      <div id="tg-wc">0 / 20 words</div>
+    </div>
+    <button id="tg-send" disabled title="Send">&#10148;</button>
+  </div>
+</div>
+
+<!-- Toggle-only: open/close panel. Zero logic here. -->
+<script>
+(function(){
+  var fab=document.getElementById('tg-fab');
+  var panel=document.getElementById('tg-panel');
+  var closeBtn=document.getElementById('tg-hdr-close');
+  var isOpen=false;
+  function openChat(){
+    isOpen=true;
+    panel.style.display='flex';
+    fab.setAttribute('aria-expanded','true');
+    document.getElementById('tg-badge').classList.remove('show');
+    setTimeout(function(){panel.classList.add('tg-open');},10);
+    if(typeof TechGeoAI!=='undefined')TechGeoAI.onOpen();
+  }
+  function closeChat(){
+    isOpen=false;
+    panel.classList.remove('tg-open');
+    fab.setAttribute('aria-expanded','false');
+    setTimeout(function(){if(!isOpen)panel.style.display='none';},260);
+  }
+  fab.addEventListener('click',function(){isOpen?closeChat():openChat();});
+  closeBtn.addEventListener('click',closeChat);
+  window._tgOpen=openChat;
+  window._tgClose=closeChat;
+})();
+</script>
+
+<!-- All AI logic: Groq calls, message rendering, history, word limits, bot switching -->
+<script src="/js/techgeo-ai.js"></script>
 </body>
 </html>
