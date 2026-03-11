@@ -806,7 +806,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Referral Code <span style="color:#ef4444;font-weight:400;font-size:.78rem">&nbsp;Required</span></label>
-          <input type="text" id="referrerCode" class="form-control" placeholder="Enter your invite code" readonly required>
+          <input type="text" id="referrerCode" class="form-control" placeholder="Enter your invite code" required>
           <p style="font-size:.78rem;color:var(--gray-400);margin-top:.3rem">You cannot join without a valid referral code from an existing member</p>
         </div>
         <button type="submit" class="btn-auth" id="signupBtn">Create Account</button>
@@ -821,7 +821,7 @@
   <div class="auth-wrap">
     <div class="auth-box">
       <div class="auth-title">Verify Your Email</div>
-      <div class="auth-sub" id="verifySub">We sent a 6-digit code to your email. Enter it below. It expires in 10 minutes.</div>
+      <div class="auth-sub">We sent a 6-digit code to your email. Enter it below.</div>
       <div id="verifyError" class="alert-err"></div>
       <div id="verifySuccess" class="alert-err" style="background:#f0fdf4;border-color:#86efac;color:#15803d;display:none"></div>
       <div class="form-group" style="margin-top:1.25rem">
@@ -829,11 +829,9 @@
         <input type="text" id="otpInput" class="form-control" maxlength="6" placeholder="e.g. 483921" style="font-size:1.5rem;letter-spacing:.3em;text-align:center;font-weight:700">
       </div>
       <button onclick="submitOTP()" class="btn-auth" id="otpBtn">Verify Email</button>
-      <div style="text-align:center;margin-top:.75rem" id="resendWrap">
-        <span id="resendCountdown" style="font-size:.82rem;color:#9ca3af;display:none"></span>
-        <a href="#" id="resendLink" onclick="resendOTP()" style="font-size:.85rem;color:var(--primary,#16a34a);text-decoration:none;font-weight:600">Resend code</a>
+      <div style="text-align:center;margin-top:.75rem">
+        <a href="#" onclick="resendOTP()" style="font-size:.85rem;color:var(--primary,#16a34a);text-decoration:none;font-weight:600">Resend code</a>
       </div>
-      <div id="otpAttemptsLeft" style="text-align:center;font-size:.75rem;color:#9ca3af;margin-top:.4rem"></div>
     </div>
   </div>
 </section>
@@ -874,11 +872,9 @@
           <input type="password" id="forgotConfirmPw" class="form-control" minlength="6" placeholder="Repeat new password">
         </div>
         <button onclick="confirmForgotReset()" class="btn-auth" id="forgotResetBtn">Reset Password</button>
-        <div style="text-align:center;margin-top:.75rem" id="forgotResendWrap">
-          <span id="forgotResendCountdown" style="font-size:.82rem;color:#9ca3af;display:none"></span>
-          <a href="#" id="forgotResendLink" onclick="requestForgotOTP()" style="font-size:.85rem;color:var(--primary,#16a34a);text-decoration:none;font-weight:600">Resend code</a>
+        <div style="text-align:center;margin-top:.75rem">
+          <a href="#" onclick="requestForgotOTP()" style="font-size:.85rem;color:var(--primary,#16a34a);text-decoration:none;font-weight:600">Resend code</a>
         </div>
-        <div id="forgotAttemptsLeft" style="text-align:center;font-size:.75rem;color:#9ca3af;margin-top:.4rem"></div>
       </div>
     </div>
   </div>
@@ -1107,38 +1103,6 @@ document.getElementById('signupForm').addEventListener('submit', async function(
 });
 
 /* ── VERIFY EMAIL OTP (after register) ── */
-var _resendTimer = null;
-
-function startResendCountdown(seconds, countdownEl, linkEl) {
-  if (_resendTimer) clearInterval(_resendTimer);
-  linkEl.style.display = 'none';
-  countdownEl.style.display = 'inline';
-  var remaining = seconds;
-  countdownEl.textContent = 'Resend available in ' + remaining + 's';
-  _resendTimer = setInterval(function() {
-    remaining--;
-    if (remaining <= 0) {
-      clearInterval(_resendTimer);
-      countdownEl.style.display = 'none';
-      linkEl.style.display = 'inline';
-    } else {
-      countdownEl.textContent = 'Resend available in ' + remaining + 's';
-    }
-  }, 1000);
-}
-
-function showSnoozed(errEl, snoozedUntil, attemptsEl) {
-  var until = snoozedUntil ? new Date(snoozedUntil) : null;
-  if (attemptsEl) attemptsEl.textContent = '';
-  if (until) {
-    var snoozeSecs = Math.max(0, Math.ceil((until.getTime() - Date.now()) / 1000));
-    if (_resendTimer) clearInterval(_resendTimer);
-    var countdownEl = document.getElementById('resendCountdown') || document.getElementById('forgotResendCountdown');
-    var linkEl = document.getElementById('resendLink') || document.getElementById('forgotResendLink');
-    if (countdownEl && linkEl) startResendCountdown(snoozeSecs, countdownEl, linkEl);
-  }
-}
-
 async function submitOTP() {
   var btn    = document.getElementById('otpBtn');
   var errEl  = document.getElementById('verifyError');
@@ -1157,7 +1121,7 @@ async function submitOTP() {
     localStorage.removeItem('pendingUserId');
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
-    okEl.textContent = 'Email verified! Redirecting...';
+    okEl.textContent = '✅ Email verified! Redirecting...';
     okEl.style.display = 'block';
     setTimeout(function() { window.location.href = '/dashboard.html'; }, 1200);
   } catch(err) {
@@ -1166,45 +1130,27 @@ async function submitOTP() {
   }
 }
 
-/* ── RESEND OTP (register) — max 3 times then 1hr snooze ── */
+/* ── RESEND OTP ── */
 async function resendOTP() {
-  var userId   = localStorage.getItem('pendingUserId');
-  var errEl    = document.getElementById('verifyError');
-  var okEl     = document.getElementById('verifySuccess');
-  var attemptsEl = document.getElementById('otpAttemptsLeft');
-  var countdownEl = document.getElementById('resendCountdown');
-  var linkEl   = document.getElementById('resendLink');
-  errEl.style.display = 'none'; okEl.style.display = 'none';
-  if (!userId) { errEl.textContent = 'Session expired. Please register again.'; errEl.style.display = 'block'; showSection('join'); return; }
+  var userId = localStorage.getItem('pendingUserId');
+  if (!userId) { alert('Session expired. Please register again.'); showSection('join'); return; }
   try {
-    var data = await apiFetch('/api/auth/resend-otp', { method: 'POST', body: JSON.stringify({ userId: userId }) });
-    okEl.textContent = 'New code sent to your email. Expires in 10 minutes.';
-    okEl.style.display = 'block';
-    // Start 60s cooldown between resends
-    startResendCountdown(60, countdownEl, linkEl);
-    if (typeof data.attemptsLeft === 'number') {
-      attemptsEl.textContent = data.attemptsLeft > 0
-        ? data.attemptsLeft + ' resend' + (data.attemptsLeft !== 1 ? 's' : '') + ' remaining'
-        : 'No more resends available';
-    }
+    await apiFetch('/api/auth/resend-otp', { method: 'POST', body: JSON.stringify({ userId: userId }) });
+    document.getElementById('verifySuccess').textContent = '📧 New code sent to your email.';
+    document.getElementById('verifySuccess').style.display = 'block';
+    document.getElementById('verifyError').style.display = 'none';
   } catch(err) {
-    errEl.textContent = err.message; errEl.style.display = 'block';
-    if (err.snoozedUntil || (err.message && err.message.toLowerCase().includes('wait'))) {
-      if (linkEl) linkEl.style.display = 'none';
-      if (attemptsEl) attemptsEl.textContent = 'Try again in 1 hour.';
-    }
+    document.getElementById('verifyError').textContent = err.message;
+    document.getElementById('verifyError').style.display = 'block';
   }
 }
 
 /* ── FORGOT PASSWORD — Step 1: request OTP ── */
 var _forgotUserId = null;
 async function requestForgotOTP() {
-  var btn     = document.getElementById('forgotBtn');
-  var errEl   = document.getElementById('forgotError');
-  var email   = document.getElementById('forgotEmail').value.trim();
-  var attemptsEl   = document.getElementById('forgotAttemptsLeft');
-  var countdownEl  = document.getElementById('forgotResendCountdown');
-  var linkEl       = document.getElementById('forgotResendLink');
+  var btn   = document.getElementById('forgotBtn');
+  var errEl = document.getElementById('forgotError');
+  var email = document.getElementById('forgotEmail').value.trim();
   errEl.style.display = 'none';
   if (!email) { errEl.textContent = 'Enter your email address.'; errEl.style.display = 'block'; return; }
   btn.textContent = 'Sending...'; btn.disabled = true;
@@ -1214,21 +1160,11 @@ async function requestForgotOTP() {
       body: JSON.stringify({ email: email })
     });
     _forgotUserId = data.userId;
-    document.getElementById('forgotSub').textContent = 'Code sent to ' + email + '. Enter it below. Expires in 10 minutes.';
+    document.getElementById('forgotSub').textContent = 'Code sent to ' + email + '. Enter it below with your new password.';
     document.getElementById('forgotStep1').style.display = 'none';
     document.getElementById('forgotStep2').style.display = '';
-    // 60s cooldown on resend
-    if (countdownEl && linkEl) startResendCountdown(60, countdownEl, linkEl);
-    if (attemptsEl && typeof data.attemptsLeft === 'number') {
-      attemptsEl.textContent = data.attemptsLeft > 0
-        ? data.attemptsLeft + ' resend' + (data.attemptsLeft !== 1 ? 's' : '') + ' remaining'
-        : 'No more resends available';
-    }
   } catch(err) {
     errEl.textContent = err.message; errEl.style.display = 'block';
-    if (err.message && err.message.toLowerCase().includes('wait')) {
-      if (attemptsEl) attemptsEl.textContent = 'Try again in 1 hour.';
-    }
   } finally {
     btn.textContent = 'Send Reset Code'; btn.disabled = false;
   }
@@ -1252,13 +1188,9 @@ async function confirmForgotReset() {
       method: 'POST',
       body: JSON.stringify({ userId: _forgotUserId, otp: otp, newPassword: newPw })
     });
+    alert('✅ Password reset successful! Please log in with your new password.');
     _forgotUserId = null;
-    errEl.style.display = 'none';
     showSection('login');
-    setTimeout(function(){
-      var loginErr = document.getElementById('loginError');
-      if(loginErr){ loginErr.style.background='#f0fdf4';loginErr.style.color='#15803d';loginErr.style.borderColor='#86efac';loginErr.textContent='Password reset successfully. Please log in.';loginErr.style.display='block'; }
-    }, 200);
   } catch(err) {
     errEl.textContent = err.message; errEl.style.display = 'block';
     btn.textContent = 'Reset Password'; btn.disabled = false;
