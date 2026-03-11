@@ -83,6 +83,9 @@ app.use('/api/users',     require('./api/user'));
 app.use('/api/wallets',   require('./api/wallet'));
 app.use('/api/referrals', require('./api/refferals'));
 
+// ─── AI chat routes (Groq) ────────────────────────────────────────────────────
+app.use('/api/ai', require('./api/ai'));
+
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   const mongoose = require('mongoose');
