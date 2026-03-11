@@ -438,7 +438,7 @@
       </div>
       <div class="fg">
         <label class="fl">User ID</label>
-        <input type="text" id="emailUserId" placeholder="Auto-filled after selection" class="fc" style="width:100%;background:var(--gray-50)" disabled>
+        <input type="text" id="emailUserId" placeholder="Auto-filled after selection" class="fc" style="width:100%;background:var(--gray-50)" readonly>
       </div>
       <div class="fg">
         <label class="fl">Subject *</label>
@@ -1276,18 +1276,42 @@ document.getElementById('emailSearchInput')?.addEventListener('input', async (e)
   const val = e.target.value.trim();
   const resultsDiv = document.getElementById('emailSearchResults');
   if (val.length < 2) { resultsDiv.style.display = 'none'; return; }
-  
+
   emailSearchTimeout = setTimeout(async () => {
     try {
-      const data = await aF(`/api/admin/dashboard/stats`);
-      // For now, show a simple message — ideally you'd have a dedicated /api/users/search endpoint
-      resultsDiv.innerHTML = '<div class="sri" style="padding:1.5rem;text-align:center;color:var(--gray-500);font-size:.75rem">Search feature requires a dedicated search endpoint. Please paste user ID directly or use bulk email.</div>';
+      const data = await aF(`/api/admin/users/search?q=${encodeURIComponent(val)}`);
+      const users = data.users || [];
+      if (!users.length) {
+        resultsDiv.innerHTML = '<div class="sri" style="color:var(--gray-500);pointer-events:none">No users found.</div>';
+        resultsDiv.style.display = 'block';
+        return;
+      }
+      resultsDiv.innerHTML = users.map(u =>
+        `<div class="sri" onclick="selectEmailUser('${u.id}','${u.username}','${u.email}')">
+          <strong>${u.username}</strong> — <span style="color:var(--gray-500);font-size:.78rem">${u.email}</span>
+          <span style="float:right;font-size:.7rem;color:var(--gray-400)">${u.packageType === 'normal' ? '✅ Active' : '⏳ Inactive'}</span>
+        </div>`
+      ).join('');
       resultsDiv.style.display = 'block';
     } catch(err) {
       resultsDiv.innerHTML = '<div class="sri" style="color:var(--r)">Search error</div>';
       resultsDiv.style.display = 'block';
     }
   }, 300);
+});
+
+function selectEmailUser(id, username, email) {
+  document.getElementById('emailUserId').value = id;
+  document.getElementById('emailSearchInput').value = username + ' (' + email + ')';
+  document.getElementById('emailSearchResults').style.display = 'none';
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('#emailSearchInput') && !e.target.closest('#emailSearchResults')) {
+    const r = document.getElementById('emailSearchResults');
+    if (r) r.style.display = 'none';
+  }
 });
 
 // Send email to individual user
