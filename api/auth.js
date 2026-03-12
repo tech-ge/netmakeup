@@ -91,7 +91,10 @@ router.post('/signup', validateSignup, async (req, res) => {
   try {
     const { username, email, phone, password, inviteCode } = req.body;
 
-    const referrer = await User.findOne({ uniqueInviteCode: inviteCode.trim().toUpperCase() });
+    // Case-insensitive lookup — works regardless of how code is stored in DB
+    const referrer = await User.findOne({
+      uniqueInviteCode: { $regex: new RegExp('^' + inviteCode.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'i') }
+    });
     if (!referrer) return res.status(400).json({ error: 'Invalid referral code. Please check and try again.' });
 
     const [existEmail, existPhone, existUsername] = await Promise.all([
@@ -118,7 +121,7 @@ router.post('/signup', validateSignup, async (req, res) => {
       referrerId:  referrer._id,
       uniqueInviteCode: newCode,
       inviteLink,
-      registrationInviteCode: inviteCode.trim().toUpperCase(),
+      registrationInviteCode: referrer.uniqueInviteCode, // store the actual code as it exists in DB
       status:        'pending',
       packageType:   'not_active',
       emailVerified: false,
