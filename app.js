@@ -60,7 +60,11 @@ app.use('/api/auth/reset-password',  sensitiveActionLimiter);
 app.use('/api/auth',                 authLimiter, authRouter);
 
 // ─── Withdrawal routes ────────────────────────────────────────────────────────
-app.use('/api/withdrawals', withdrawalLimiter, require('./api/withdrawal'));
+// withdrawalLimiter skips admin routes — only rate-limits user withdrawal requests
+app.use('/api/withdrawals', (req, res, next) => {
+  if (req.path.startsWith('/admin')) return next(); // admin: no limit
+  return withdrawalLimiter(req, res, next);
+}, require('./api/withdrawal'));
 
 // ─── Task routes ──────────────────────────────────────────────────────────────
 // IMPORTANT: filenames are exact — wrong names cause silent 404s
@@ -82,9 +86,6 @@ app.use('/api/admin',    adminLimiter, require('./api/admin'));
 app.use('/api/users',     require('./api/user'));
 app.use('/api/wallets',   require('./api/wallet'));
 app.use('/api/referrals', require('./api/refferals'));
-
-// ─── AI chat routes (Groq) ────────────────────────────────────────────────────
-app.use('/api/ai', require('./api/ai'));
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
