@@ -122,31 +122,36 @@ router.post('/verify', authMiddleware, async (req, res) => {
     const userId    = response.data.metadata?.userId || req.userId;
     const txnRef    = response.data.reference;
 
+    // FIX: Create the Commission record FIRST before crediting the wallet.
+    // Previously wallet was credited first — if Commission.create then failed,
+    // no duplicate-guard record existed and a second verify call would double-credit.
+    // By saving Commission first, the duplicate check always has a record to find.
+    const commissionRecord = await Commission.create({
+      fromUserId:  userId,
+      toUserId:    userId,
+      level:       0,
+      amount:      amountKES,
+      type:        'deposit',
+      status:      'completed',
+      description: `Paystack deposit: KES ${amountKES} | ref: ${txnRef}`,
+      metadata: {
+        paystackReference: txnRef,
+        channel:           response.data.channel,
+        paymentMethod:     'paystack',
+        recordType:        'deposit'
+      }
+    });
+
+    // Now credit the wallet — Commission record already exists as guard
     const user = await User.findByIdAndUpdate(
       userId,
       { $inc: { 'primaryWallet.balance': amountKES } },
       { new: true }
     );
-    if (!user) return res.status(404).json({ error: 'User not found.' });
-
-    try {
-      await Commission.create({
-        fromUserId:  user._id,
-        toUserId:    user._id,
-        level:       0,
-        amount:      amountKES,
-        type:        'deposit',
-        status:      'completed',
-        description: `Paystack deposit: KES ${amountKES} | ref: ${txnRef}`,
-        metadata: {
-          paystackReference: txnRef,
-          channel:           response.data.channel,
-          paymentMethod:     'paystack',
-          recordType:        'deposit'
-        }
-      });
-    } catch (logErr) {
-      console.error('Deposit log skipped:', logErr.message);
+    if (!user) {
+      // Wallet credit failed — delete the Commission record so user can retry
+      await Commission.deleteOne({ _id: commissionRecord._id });
+      return res.status(404).json({ error: 'User not found.' });
     }
 
     try {
@@ -222,23 +227,12 @@ router.post('/webhook', async (req, res) => {
         return;
       }
 
-      // Fetch user and credit wallet
-      const user = await User.findByIdAndUpdate(
-        userId,
-        { $inc: { 'primaryWallet.balance': amountKES } },
-        { new: true }
-      );
-
-      if (!user) {
-        console.error(`WEBHOOK DEPOSIT FAILED: User not found | userId: ${userId} | ref: ${reference}`);
-        return;
-      }
-
-      // Log deposit
+      // FIX: Create Commission record FIRST as duplicate guard, then credit wallet
+      let webhookCommission;
       try {
-        await Commission.create({
-          fromUserId:  user._id,
-          toUserId:    user._id,
+        webhookCommission = await Commission.create({
+          fromUserId:  userId,
+          toUserId:    userId,
           level:       0,
           amount:      amountKES,
           type:        'deposit',
@@ -253,7 +247,22 @@ router.post('/webhook', async (req, res) => {
           }
         });
       } catch (logErr) {
-        console.error('Webhook deposit log skipped:', logErr.message);
+        console.error('Webhook deposit log failed — skipping credit:', logErr.message);
+        return;
+      }
+
+      // Now credit the wallet
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $inc: { 'primaryWallet.balance': amountKES } },
+        { new: true }
+      );
+
+      if (!user) {
+        console.error(`WEBHOOK DEPOSIT FAILED: User not found | userId: ${userId} | ref: ${reference}`);
+        // Remove Commission record so webhook can retry
+        await Commission.deleteOne({ _id: webhookCommission._id }).catch(() => {});
+        return;
       }
 
       // Create notification
