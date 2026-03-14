@@ -135,10 +135,18 @@ UserSchema.methods.canConvertPoints = function () {
   return this.canWithdrawPoints();
 };
 
-// Points withdrawal: need 2000+ pts AND 4 new referrals since last withdrawal
+// Points withdrawal rules:
+// - Min 1,500 pts, Max cap 2,500 pts (tasks blocked at cap)
+// - Need 3 new referrals since last withdrawal
+// - Tuesdays only, conversion: 100 pts = KES 13
 UserSchema.methods.canWithdrawPoints = function () {
   const newReferrals = this.pointsWallet.referralsSinceLastWithdrawal || 0;
-  return this.pointsWallet.points >= 2000 && newReferrals >= 4;
+  return this.pointsWallet.points >= 1500 && newReferrals >= 3;
+};
+
+// Returns true if user has hit the 2500 points cap and must withdraw before doing more tasks
+UserSchema.methods.isAtPointsCap = function () {
+  return this.pointsWallet.points >= 2500;
 };
 
 // Check if it's a new day for daily tasks
