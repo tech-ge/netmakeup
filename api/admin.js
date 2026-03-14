@@ -40,8 +40,14 @@ router.post('/deposit-balance', authMiddleware, requireAdmin, async (req, res) =
 // ==================== DASHBOARD STATS ====================
 router.get('/dashboard/stats', authMiddleware, requireAdmin, async (req, res) => {
   try {
+    const WritingJob    = require('../models/WritingJob');
+    const Transcription = require('../models/Transcription');
+    const DataEntry     = require('../models/DataEntry');
+
     const [totalUsers, activeUsers, pendingUsers, suspendedUsers, notActivated, normalUsers,
-      totalWithdrawalsPending, blogSubmissions, surveySubmissions] = await Promise.all([
+      totalWithdrawalsPending, blogSubmissions, surveySubmissions,
+      writingSubmissions, transcriptionSubmissions, dataentrySubmissions,
+      recentUsers] = await Promise.all([
       User.countDocuments({ isAdmin: false }),
       User.countDocuments({ status: 'active', isAdmin: false }),
       User.countDocuments({ status: 'pending', isAdmin: false }),
@@ -50,7 +56,12 @@ router.get('/dashboard/stats', authMiddleware, requireAdmin, async (req, res) =>
       User.countDocuments({ packageType: 'normal', isAdmin: false }),
       Withdrawal.countDocuments({ status: 'pending' }),
       Blog.countDocuments({ 'bids.bidStatus': 'submitted' }),
-      Survey.countDocuments({ 'bids.bidStatus': 'submitted' })
+      Survey.countDocuments({ 'bids.bidStatus': 'submitted' }),
+      WritingJob.countDocuments({ 'submissions.status': 'submitted' }),
+      Transcription.countDocuments({ 'submissions.status': 'submitted' }),
+      DataEntry.countDocuments({ 'submissions.status': 'submitted' }),
+      User.find({ isAdmin: false }).sort({ createdAt: -1 }).limit(6)
+        .select('username email packageType createdAt')
     ]);
 
     const walletAgg = await User.aggregate([
@@ -70,7 +81,17 @@ router.get('/dashboard/stats', authMiddleware, requireAdmin, async (req, res) =>
       users: { total: totalUsers, active: activeUsers, pending: pendingUsers, suspended: suspendedUsers },
       packages: { notActivated, normal: normalUsers },
       pendingWithdrawals: totalWithdrawalsPending,
-      pendingReviews: { blogs: blogSubmissions, surveys: surveySubmissions },
+      pendingReviews: {
+        blogs: blogSubmissions,
+        surveys: surveySubmissions,
+        writing: writingSubmissions,
+        transcription: transcriptionSubmissions,
+        dataEntry: dataentrySubmissions
+      },
+      recentUsers: recentUsers.map(u => ({
+        username: u.username, email: u.email,
+        packageType: u.packageType, createdAt: u.createdAt
+      })),
       totalKesInWallets: walletAgg[0]?.kesTotal || 0,
       totalPointsInSystem: walletAgg[0]?.ptsTotal || 0,
       profit: {
