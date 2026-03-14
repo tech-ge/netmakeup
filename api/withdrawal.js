@@ -42,16 +42,24 @@ router.post('/points', authMiddleware, async (req, res) => {
     if (!isTuesday())
       return res.status(400).json({ error: 'Points withdrawals are only processed on Tuesdays (EAT).', today: DAYS[getEATDay()], nextWithdrawalDay: 'Tuesday' });
 
-    if (user.pointsWallet.points < 2000)
-      return res.status(400).json({ error: `You need at least 2,000 points to withdraw. You have: ${user.pointsWallet.points}`, required: 2000, current: user.pointsWallet.points });
+    if (user.pointsWallet.points < 1500)
+      return res.status(400).json({ error: `You need at least 1,500 points to withdraw. You have: ${user.pointsWallet.points}`, required: 1500, current: user.pointsWallet.points });
+
+    if (user.pointsWallet.points > 2500)
+      return res.status(400).json({ error: `Your points (${user.pointsWallet.points}) exceed the 2,500 cap. You must withdraw before you can continue earning.`, required: 'withdraw now', current: user.pointsWallet.points });
 
     const newReferrals = user.pointsWallet.referralsSinceLastWithdrawal || 0;
-    if (newReferrals < 4)
-      return res.status(400).json({ error: `You need 4 new referrals since your last points withdrawal. You have: ${newReferrals}`, required: 4, current: newReferrals });
+    if (newReferrals < 3)
+      return res.status(400).json({ error: `You need 3 new referrals since your last points withdrawal. You have: ${newReferrals}`, required: 3, current: newReferrals });
 
-    const { startUTC, endUTC } = eatDayBounds();
-    const existing = await Withdrawal.findOne({ userId: user._id, type: 'points', requestedAt: { $gte: startUTC, $lte: endUTC } });
-    if (existing) return res.status(400).json({ error: 'You have already submitted a points withdrawal request today.', existing: { amount: existing.amount, pointsRedeemed: existing.pointsRedeemed, status: existing.status } });
+    // FIX: Block if ANY pending points withdrawal exists — not just same-day.
+    // Without this, user could submit again next Tuesday while last week's is still pending,
+    // causing admin to see two requests for the same points balance.
+    const existing = await Withdrawal.findOne({ userId: user._id, type: 'points', status: 'pending' });
+    if (existing) return res.status(400).json({
+      error: 'You already have a pending points withdrawal request. Wait for admin to process it before submitting a new one.',
+      existing: { amount: existing.amount, pointsRedeemed: existing.pointsRedeemed, status: existing.status, requestedAt: existing.requestedAt }
+    });
 
     if (!paymentMethod || !['mpesa','bank'].includes(paymentMethod))
       return res.status(400).json({ error: 'Valid payment method required (mpesa or bank).' });
@@ -62,10 +70,12 @@ router.post('/points', authMiddleware, async (req, res) => {
 
     const totalPoints  = user.pointsWallet.points;
     const redeemable   = Math.floor(totalPoints / 100) * 100;
-    const kesValue     = (redeemable / 100) * 10;
+    const kesValue     = (redeemable / 100) * 13;  // 100 pts = KES 13
     if (redeemable === 0) return res.status(400).json({ error: 'Not enough points for a full 100-point redemption unit.' });
 
-    // ── Points stay in wallet — only create a PENDING request ──
+    // Points stay in wallet until admin approves — but we record the exact
+    // snapshot amount now so admin approves exactly what user requested,
+    // not whatever the balance happens to be at approval time.
     const withdrawal = await Withdrawal.create({
       userId: user._id, type: 'points',
       amount: kesValue, pointsRedeemed: redeemable,
@@ -129,7 +139,7 @@ router.post('/kes', authMiddleware, async (req, res) => {
       status: 'pending', requestedAt: new Date()
     });
 
-    await safeNotify({ userId: user._id, type: 'withdrawal_requested', title: '⏳ KES Withdrawal Requested',
+    await safeNotify({ userId: user._id, type: 'system', title: '⏳ KES Withdrawal Requested',
       message: `Your KES ${withdrawAmount} withdrawal request is pending admin approval.`,
       metadata: { withdrawalId: withdrawal._id } });
 
