@@ -73,7 +73,8 @@ router.post('/points', authMiddleware, async (req, res) => {
       status: 'pending', requestedAt: new Date()
     });
 
-    await safeNotify({ userId: user._id, type: 'withdrawal_requested', title: '⏳ Points Withdrawal Requested',
+    // FIX: 'withdrawal_requested' is not in Notification schema enum — changed to 'system'
+    await safeNotify({ userId: user._id, type: 'system', title: '⏳ Points Withdrawal Requested',
       message: `Your request to redeem ${redeemable} pts → KES ${kesValue} is pending admin approval.`,
       metadata: { withdrawalId: withdrawal._id } });
 
