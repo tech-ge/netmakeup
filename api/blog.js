@@ -97,6 +97,10 @@ router.post('/:id/submit', authMiddleware, async (req, res) => {
       return res.status(403).json({ error: 'Activate your package to submit blogs.' });
     }
 
+    if (user.isAtPointsCap && user.isAtPointsCap()) {
+      return res.status(400).json({ error: 'You have reached the 2,500 points cap. Please withdraw your points on Tuesday before submitting more tasks.' });
+    }
+
     // Check daily limit: max 2 blogs per day
     user.resetDailyTasksIfNeeded();
     if (user.dailyTasks.blogsCompleted >= 2) {
