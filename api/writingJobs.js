@@ -7,7 +7,7 @@ const { uploadDocument, deleteFile } = require('../config/cloudinary');
 const { authMiddleware, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
-// ── Safe side-effect helpers ──────────────────────────────────────────────────
+// ── Safe side-effect helpers ────────────────────────────────────────────────
 async function safeNotify(payload) {
   try { await Notification.create(payload); }
   catch (e) { console.error('⚠️  Notification skipped:', e.message); }
