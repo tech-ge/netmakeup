@@ -11,9 +11,11 @@ router.get('/primary', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
 
-    // Commission earnings (referrals)
-    const commissions = await Commission.find({ toUserId: req.userId, type: 'referral_commission' })
-      .sort({ createdAt: -1 }).limit(30);
+    // Commission earnings (referrals) + deposits
+    const commissions = await Commission.find({
+      toUserId: req.userId,
+      type: { $in: ['referral_commission', 'deposit'] }
+    }).sort({ createdAt: -1 }).limit(50);
 
     // KES withdrawal history
     const kesWithdrawals = await Withdrawal.find({ userId: req.userId, type: 'kes' })
@@ -22,12 +24,13 @@ router.get('/primary', authMiddleware, async (req, res) => {
     res.json({
       wallet: { balance: user.primaryWallet.balance, currency: 'KES' },
       stats: { totalEarnings: user.stats.totalEarnings, totalReferrals: user.stats.totalReferrals },
-      // Commission earnings (credits)
+      // Credits: referral commissions + deposits
       recentCommissions: commissions.map(t => ({
         amount: t.amount,
         type: t.type,
         level: t.level,
         description: t.description,
+        reference: t.metadata?.paystackReference || null,
         direction: 'credit',
         date: t.createdAt
       })),
