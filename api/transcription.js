@@ -19,7 +19,7 @@ async function safeCommission(payload) {
 
 
 
-// ───────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
 // USER ROUTES
 // ─────────────────────────────────────────────────────────────
 
@@ -127,6 +127,10 @@ router.post('/:id/submit', authMiddleware, async (req, res) => {
     const user = await User.findById(req.userId);
     if (user.packageType === 'not_active') {
       return res.status(400).json({ error: 'Activate your account to submit tasks.' });
+    }
+
+    if (user.isAtPointsCap && user.isAtPointsCap()) {
+      return res.status(400).json({ error: 'You have reached the 2,500 points cap. Please withdraw your points on Tuesday before submitting more tasks.' });
     }
 
     if (job.hasUserSubmitted(req.userId.toString())) {
@@ -278,7 +282,7 @@ router.post('/admin/:id/approve/:userId', authMiddleware, requireAdmin, async (r
     const user = await User.findById(req.params.userId);
     await safeCommission({
       fromUserId: req.params.userId, toUserId: req.params.userId,
-      level: 1, amount: job.reward, type: 'transcription_earning', status: 'completed',
+      level: 1, amount: job.reward, type: 'task_earning', status: 'completed',
       description: `Transcription approved: ${job.title}`
     });
 
@@ -345,20 +349,6 @@ router.put('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
     await job.save();
 
     res.json({ message: '✅ Job updated.', job: { id: job._id, title: job.title, status: job.status } });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// POST /api/transcriptions/admin/:id/close — close job
-// FIX: route was missing — admin.html calls this but got 404
-router.post('/admin/:id/close', authMiddleware, requireAdmin, async (req, res) => {
-  try {
-    const job = await Transcription.findById(req.params.id);
-    if (!job) return res.status(404).json({ error: 'Job not found' });
-    job.status = 'completed';
-    await job.save();
-    res.json({ message: '✅ Transcription job closed.' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
