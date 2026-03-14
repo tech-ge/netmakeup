@@ -251,7 +251,7 @@ table.ref-table tr:hover td{background:var(--gray-50)}
         <a href="#transcription" class="tbox nav-lnk" data-pg="transcription"><div class="tbn">Transcription</div><div class="tbp">50 pts</div><div class="tbl">Type audio</div></a>
         <a href="#dataentry" class="tbox nav-lnk" data-pg="dataentry"><div class="tbn">Data Entry</div><div class="tbp">75 pts</div><div class="tbl">Upload file</div></a>
       </div>
-      <p style="font-size:.75rem;color:var(--gray-400);margin-top:.85rem">100 pts = KES 10 &middot; Redeem on Tuesdays (min 2,000 pts + 4 referrals)</p>
+      <p style="font-size:.75rem;color:var(--gray-400);margin-top:.85rem">100 pts = KES 13 &middot; Redeem on Tuesdays (min 1,500 pts + 3 referrals · cap 2,500 pts)</p>
     </div>
   </div>
 
@@ -367,7 +367,7 @@ table.ref-table tr:hover td{background:var(--gray-50)}
       <div class="ch" style="background:var(--ym);border-bottom-color:#fde68a">Points to KES <span style="font-size:.7rem;font-weight:700;color:var(--y);margin-left:.4rem">TUESDAYS</span></div>
       <div style="padding:1.25rem">
         <div class="mb" id="ptsWdMsg"></div>
-        <p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.85rem;line-height:1.5">100 pts = KES 10 &middot; Min 2,000 pts<br>+ 4 new referrals since last withdrawal</p>
+        <p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.85rem;line-height:1.5">100 pts = KES 13 &middot; Min 1,500 pts · Max cap 2,500 pts<br>+ 3 new referrals since last withdrawal · Tuesdays only</p>
         <div class="fg"><label class="fl">Payment Method</label><select id="ptsPaymentMethod" class="fc"><option value="">Select…</option><option value="mpesa">M-Pesa</option><option value="bank">Bank Transfer</option></select></div>
         <div id="ptsMpesaSection" style="display:none"><div class="fg"><label class="fl">M-Pesa Phone</label><input type="tel" id="ptsMpesaPhone" class="fc" placeholder="254712345678"></div></div>
         <div id="ptsBankSection" style="display:none"><div class="fg"><label class="fl">Bank Name</label><input type="text" id="ptsBankName" class="fc"></div><div class="fg"><label class="fl">Account Number</label><input type="text" id="ptsAccountNumber" class="fc"></div><div class="fg"><label class="fl">Account Holder Name</label><input type="text" id="ptsAccountName" class="fc"></div></div>
@@ -940,18 +940,20 @@ async function loadWithdraw(){
     const p=await apiFetch('/api/users/profile');const u=p.user;
     const pts=u.pointsWallet?.points||0;
     const redeemablePts=Math.floor(pts/100)*100; // backend rounds down to nearest 100
-    const pKES=(redeemablePts/100)*10;
+    const pKES=(redeemablePts/100)*13;  // 100 pts = KES 13
     const bal=u.primaryWallet?.balance||0;
     const refs=u.pointsWallet?.referralsSinceLastWithdrawal||0;
+    const atCap = pts >= 2500;
     document.getElementById('withdrawBalance').textContent='KES '+bal;
-    document.getElementById('withdrawPoints').textContent=pts+' pts';
+    document.getElementById('withdrawPoints').textContent=pts+' pts'+(atCap?' ⚠️ CAP REACHED':'');
     document.getElementById('withdrawPointsKES').textContent=`= KES ${pKES} redeemable · Tuesdays`;
-    const canPts=pts>=2000&&refs>=4;
-    const ptsCheck=pts>=2000?'✓':'✗';
-    const refsCheck=refs>=4?'✓':'✗';
+    const canPts=pts>=1500&&pts<=2500&&refs>=3;
+    const ptsCheck=pts>=1500?'✓':'✗';
+    const refsCheck=refs>=3?'✓':'✗';
+    const capMsg = atCap ? '⚠️ You have hit the 2,500 pts cap — tasks are blocked until you withdraw. ' : '';
     document.getElementById('pointsEligibilityHint').textContent=canPts
-      ?`Ready: ${redeemablePts} pts → KES ${pKES}. Referrals: ${refs}/4. Submit on Tuesday.`
-      :`Points: ${pts}/2,000 ${ptsCheck}   New referrals since last withdrawal: ${refs}/4 ${refsCheck}`;
+      ?`${capMsg}Ready: ${redeemablePts} pts → KES ${pKES}. Referrals: ${refs}/3. Submit on Tuesday.`
+      :`${capMsg}Points: ${pts}/1,500 min ${ptsCheck}   New referrals since last withdrawal: ${refs}/3 ${refsCheck}`;
     document.getElementById('pointsEligibilityHint').style.background=canPts?'var(--gl)':'var(--ym)';
     document.getElementById('pointsEligibilityHint').style.borderColor=canPts?'var(--g)':'var(--y)';
     document.getElementById('pointsEligibilityHint').style.color=canPts?'#14532d':'#78350f';
@@ -960,7 +962,7 @@ async function loadWithdraw(){
     else if(day===4){msg.textContent='Today is Thursday — KES wallet withdrawals are open.';msg.style.cssText='border-left:4px solid var(--g);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:700;font-size:.9rem;background:var(--gl);color:var(--g)';}
     else{msg.textContent=`Today is ${DAYS[day]}. Points withdrawals: Tuesdays · KES withdrawals: Thursdays.`;msg.style.cssText='border-left:4px solid var(--b);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:600;font-size:.9rem;background:var(--bl);color:#1e40af';}
     const pb=document.getElementById('ptsWithdrawBtn'),kb=document.getElementById('kesWithdrawBtn');
-    if(day!==2){pb.disabled=true;pb.textContent='Opens on Tuesday';}else if(!canPts){pb.disabled=true;pb.textContent='Not eligible yet';}else{pb.disabled=false;pb.textContent=`Redeem ${redeemablePts} pts → KES ${pKES}`;}
+    if(day!==2){pb.disabled=true;pb.textContent='Opens on Tuesday';}else if(!canPts){pb.disabled=true;pb.textContent=pts>2500?'Over cap — withdraw now':pts<1500?`Need ${1500-pts} more pts`:`Need ${3-refs} more referral${3-refs===1?'':'s'}`;}else{pb.disabled=false;pb.textContent=`Redeem ${redeemablePts} pts → KES ${pKES}`;}
     if(day!==4){kb.disabled=true;kb.textContent='Opens on Thursday';}else{kb.disabled=false;kb.textContent='Request KES Withdrawal';}
     const hist=await apiFetch('/api/withdrawals/my').catch(()=>null);
     const hel=document.getElementById('withdrawHistory');
