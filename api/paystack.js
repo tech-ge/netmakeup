@@ -59,7 +59,8 @@ router.post('/initialize', authMiddleware, async (req, res) => {
       amount:       amountKobo,
       currency:     'KES',
       reference:    `TG-${user._id}-${Date.now()}`,
-      callback_url: `${process.env.FRONTEND_URL || 'https://techgeo.co.ke'}/dashboard.html?deposit=1`,
+      // FIX: was ?deposit=1 — dashboard checks for 'deposit-success' in search params
+      callback_url: `${process.env.FRONTEND_URL || 'https://techgeo.co.ke'}/dashboard.html?deposit-success=1`,
       metadata: {
         userId:   user._id.toString(),
         username: user.username,
