@@ -264,7 +264,7 @@ router.post('/admin/:id/approve/:userId', authMiddleware, requireAdmin, async (r
 
     await safeCommission({
       fromUserId: req.params.userId, toUserId: req.params.userId,
-      level: 1, amount: job.reward, type: 'task_earning', status: 'completed',
+      level: 1, amount: job.reward, type: 'dataentry_earning', status: 'completed',
       description: `Data entry approved: ${job.title}`
     });
 
@@ -329,6 +329,38 @@ router.put('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
     await job.save();
 
     res.json({ message: '✅ Job updated.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/dataentry/admin/:id/close — close a data entry job
+// FIX: route was missing — admin.html calls this but got 404
+router.post('/admin/:id/close', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const job = await DataEntry.findById(req.params.id);
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    job.status = 'completed';
+    await job.save();
+    res.json({ message: '✅ Data entry job closed.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/dataentry/file/signed — generate a signed Cloudinary download URL
+// FIX: route was missing — admin.html calls this to download submissions; was returning 404
+router.get('/file/signed', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { publicId, fileName } = req.query;
+    if (!publicId) return res.status(400).json({ error: 'publicId required.' });
+    const { getSignedDownloadUrl } = require('../config/cloudinary');
+    // Determine resource type: images vs raw documents
+    const imageExts = ['jpg','jpeg','png','gif','webp','bmp','tiff'];
+    const ext = (fileName || '').split('.').pop().toLowerCase();
+    const resourceType = imageExts.includes(ext) ? 'image' : 'raw';
+    const url = getSignedDownloadUrl(publicId, resourceType, 3600);
+    res.json({ url });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
