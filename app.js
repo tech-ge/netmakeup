@@ -51,7 +51,7 @@ app.use('/api', async (req, res, next) => {
   }
 });
 
-// ─── Auth routes ──────────────────────────────────────────────────────────────
+// ── Auth routes ──────────────────────────────────────────────────────────────
 const authRouter = require('./api/auth');
 app.use('/api/auth/signup',          registerLimiter);
 app.use('/api/auth/change-password', sensitiveActionLimiter);
