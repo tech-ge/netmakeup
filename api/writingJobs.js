@@ -7,7 +7,7 @@ const { uploadDocument, deleteFile } = require('../config/cloudinary');
 const { authMiddleware, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
-// ── Safe side-effect helpers ────────────────────────────────────────────────
+// ── Safe side-effect helpers ──────────────────────────────────────────────────
 async function safeNotify(payload) {
   try { await Notification.create(payload); }
   catch (e) { console.error('⚠️  Notification skipped:', e.message); }
@@ -84,6 +84,10 @@ router.post('/:id/submit', authMiddleware,
       const user = await User.findById(req.userId);
       if (user.packageType === 'not_active') {
         return res.status(400).json({ error: 'Activate your account to submit tasks.' });
+      }
+
+      if (user.isAtPointsCap && user.isAtPointsCap()) {
+        return res.status(400).json({ error: 'You have reached the 2,500 points cap. Please withdraw your points on Tuesday before submitting more tasks.' });
       }
 
       if (job.hasUserSubmitted(req.userId.toString())) {
@@ -229,7 +233,7 @@ router.post('/admin/:id/approve/:userId', authMiddleware, requireAdmin, async (r
 
     await safeCommission({
       fromUserId: req.params.userId, toUserId: req.params.userId,
-      level: 1, amount: job.reward, type: 'writing_earning', status: 'completed',
+      level: 1, amount: job.reward, type: 'task_earning', status: 'completed',
       description: `Writing job approved: ${job.title}`
     });
     await safeNotify({
@@ -291,20 +295,6 @@ router.put('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
     await job.save();
 
     res.json({ message: '✅ Job updated.' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// POST /api/writing/admin/:id/close — close a writing job (stop accepting submissions)
-// FIX: route was missing — admin.html calls this but got 404
-router.post('/admin/:id/close', authMiddleware, requireAdmin, async (req, res) => {
-  try {
-    const job = await WritingJob.findById(req.params.id);
-    if (!job) return res.status(404).json({ error: 'Job not found' });
-    job.status = 'completed';
-    await job.save();
-    res.json({ message: '✅ Writing job closed.' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
