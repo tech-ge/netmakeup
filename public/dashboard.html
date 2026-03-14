@@ -1210,9 +1210,12 @@ function showDepositMsg(msg,ok){
 }
 
 // Check if returning from Paystack redirect
+// FIX: was checking window.location.hash — Paystack redirects append ?deposit-success=1&reference=xxx
+// to the URL query string, not the hash. Changed to check window.location.search instead.
 (async function checkDepositReturn(){
-  if(window.location.hash.includes('deposit-success')){
-    const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(window.location.search);
+  const isDepositReturn = urlParams.has('deposit-success') || urlParams.has('deposit');
+  if(isDepositReturn){
     const ref = urlParams.get('reference') || urlParams.get('trxref');
     if(ref){
       try{
@@ -1220,8 +1223,12 @@ function showDepositMsg(msg,ok){
         toast(v.message||'Deposit confirmed!');
         loadDashboard();
       }catch(e){ toast('Could not verify payment: '+e.message, false); }
-      history.replaceState(null,'',window.location.pathname);
+    } else {
+      // Paystack redirect arrived but no reference yet — show info
+      toast('Payment received. Your wallet will update shortly.', true);
     }
+    // Clean URL regardless
+    history.replaceState(null,'',window.location.pathname+window.location.hash);
   }
 })();
 </script>
