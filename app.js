@@ -41,7 +41,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(globalLimiter);
 
 // ─── DB connection middleware (handles Vercel cold starts) ────────────────────
-// Runs before every /api/* request — connectDB() is idempotent (skips if already connected)
 app.use('/api', async (req, res, next) => {
   try {
     await connectDB();
@@ -60,24 +59,26 @@ app.use('/api/auth/reset-password',  sensitiveActionLimiter);
 app.use('/api/auth',                 authLimiter, authRouter);
 
 // ─── Withdrawal routes ────────────────────────────────────────────────────────
-// withdrawalLimiter skips admin routes — only rate-limits user withdrawal requests
 app.use('/api/withdrawals', (req, res, next) => {
-  if (req.path.startsWith('/admin')) return next(); // admin: no limit
+  if (req.path.startsWith('/admin')) return next();
   return withdrawalLimiter(req, res, next);
 }, require('./api/withdrawal'));
 
 // ─── Task routes ──────────────────────────────────────────────────────────────
-// IMPORTANT: filenames are exact — wrong names cause silent 404s
 app.use('/api/blogs',          taskSubmitLimiter, require('./api/blog'));
 app.use('/api/surveys',        taskSubmitLimiter, require('./api/surveys'));
-app.use('/api/writing',        taskSubmitLimiter, require('./api/writingJobs'));   // writingJobs.js
-app.use('/api/transcriptions', taskSubmitLimiter, require('./api/transcription')); // transcription.js (singular)
-app.use('/api/dataentry',      taskSubmitLimiter, require('./api/dataEntry'));      // dataEntry.js (capital E)
+app.use('/api/writing',        taskSubmitLimiter, require('./api/writingJobs'));
+app.use('/api/transcriptions', taskSubmitLimiter, require('./api/transcription'));
+app.use('/api/dataentry',      taskSubmitLimiter, require('./api/dataEntry'));
 
 app.use('/api/paystack', require('./api/paystack'));
 
 // ─── Notification routes ──────────────────────────────────────────────────────
 app.use('/api/notifications', require('./api/notifications'));
+
+// ─── AI chat routes ───────────────────────────────────────────────────────────
+// FIX: was missing — caused all /api/ai/* to return 404
+app.use('/api/ai', require('./api/ai'));
 
 // ─── Admin routes ─────────────────────────────────────────────────────────────
 app.use('/api/admin',    adminLimiter, require('./api/admin'));
