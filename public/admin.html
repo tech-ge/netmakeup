@@ -431,14 +431,15 @@
   <div style="display:flex;gap:1rem;margin-bottom:1.5rem">
     <div style="flex:1;background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--rad);padding:1rem">
       <h4 style="font-size:.85rem;font-weight:800;margin-bottom:.5rem">📧 Send Email to Individual User</h4>
-      <div class="fg">
-        <label class="fl">Username or Email</label>
-        <input type="text" id="emailSearchInput" placeholder="Search user..." class="fc" autocomplete="off" style="width:100%">
-        <div id="emailSearchResults" class="sr" style="display:none;width:100%;top:100%;left:0;right:0;margin-top:.25rem"></div>
+      <div class="fg pos-rel">
+        <label class="fl">Search by Username, Email or Phone</label>
+        <input type="text" id="emailSearchInput" placeholder="Type to search user..." class="fc" autocomplete="off" style="width:100%">
+        <div id="emailSearchResults" class="sr" style="display:none"></div>
       </div>
       <div class="fg">
-        <label class="fl">User ID</label>
-        <input type="text" id="emailUserId" placeholder="Auto-filled after selection" class="fc" style="width:100%;background:var(--gray-50)" readonly>
+        <label class="fl">Selected User</label>
+        <input type="text" id="emailUserDisplay" placeholder="Auto-filled after selecting above" class="fc" style="width:100%;background:var(--gray-50);color:var(--g);font-weight:700" readonly>
+        <input type="hidden" id="emailUserId">
       </div>
       <div class="fg">
         <label class="fl">Subject *</label>
@@ -521,6 +522,18 @@ async function aF(url, opts={}) {
     if (err.name === 'AbortError') throw new Error('Request timed out. Check your connection.');
     throw err;
   }
+}
+function toast(msg, ok=true) {
+  let t = document.getElementById('_adminToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_adminToast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.cssText = `position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;padding:.65rem 1.4rem;border-radius:.5rem;font-size:.85rem;font-weight:700;box-shadow:0 4px 20px rgba(0,0,0,.2);max-width:90vw;text-align:center;background:${ok?'#16a34a':'#ef4444'};color:#fff;opacity:1;pointer-events:none;transition:opacity .3s`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity='0'; }, 3000);
 }
 function msg(id, txt, ok=true) {
   const el = document.getElementById(id);
@@ -636,7 +649,7 @@ async function loadAdminDashboard() {
 
     // Points P&L — task rewards paid from profit pool
     const totalPtsHeld = ps.businessHealth?.totalPointsInSystem || 0;
-    const ptsHeldKES   = ps.businessHealth?.totalPointsOutstandingKesValue || Math.round(totalPtsHeld / 10);
+    const ptsHeldKES   = ps.businessHealth?.totalPointsOutstandingKesValue || Math.round(totalPtsHeld * 13 / 100);
     // Use real withdrawal sums — not cached aggregates
     const ptsPaidKES    = ptsWithdrawnCompleted;   // already paid out on Tuesdays
     const ptsPendingKES = ptsWithdrawnPending;      // redeemed but awaiting Tuesday payout
@@ -654,7 +667,7 @@ async function loadAdminDashboard() {
     initCharts(
       { commissions: commissionsPaid, profit: walletProfit },
       { inWallets: refInWallets, withdrawn: refWithdrawn },
-      { balance: Math.max(0,ptsBalance), paid: ptsPaidKES, pending: ptsPendingReal }
+      { balance: Math.max(0,ptsBalance), paid: ptsPaidKES, pending: ptsPendingKES }
     );
     // Recent users
     const rec = document.getElementById('ovRecentUsers');
@@ -678,11 +691,8 @@ document.getElementById('depositSearch').addEventListener('input', function() {
   if (q.length < 2) { res.style.display='none'; return; }
   depositTimer = setTimeout(async () => {
     try {
-      const data = await aF(`/api/admin/users/all?status=all&limit=20`);
-      const filtered = (data.users||[]).filter(u =>
-        u.username.toLowerCase().includes(q.toLowerCase()) ||
-        (u.email||'').toLowerCase().includes(q.toLowerCase())
-      ).slice(0, 7);
+      const data = await aF(`/api/admin/users/search?q=${encodeURIComponent(q)}`);
+      const filtered = data.users || [];
       if (!filtered.length) { res.style.display='none'; return; }
       res.style.display='block';
       res.innerHTML = filtered.map(u =>
@@ -832,7 +842,7 @@ function openEditModal(type, id, title, reward, maxWorkers) {
   document.getElementById('editModalBody').innerHTML = `
     <div class="fg"><label class="fl">Points Reward</label><input type="number" id="emReward" class="fc" value="${reward||100}" min="1"></div>
     <div class="fg"><label class="fl">Max Workers / Slots</label><input type="number" id="emMax" class="fc" value="${maxWorkers||50}" min="1"></div>
-    <div class="fg"><label class="fl">Status</label><select id="emStatus" class="fc"><option value="open">Open</option><option value="closed">Closed</option></select></div>`;
+    <div class="fg"><label class="fl">Status</label><select id="emStatus" class="fc"><option value="open">Open</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div>`;
   document.getElementById('editModal').style.display='block';
 }
 function closeEditModal() { document.getElementById('editModal').style.display='none'; }
@@ -1299,11 +1309,12 @@ document.getElementById('emailSearchInput')?.addEventListener('input', async (e)
 });
 function selectEmailUser(id, username, email) {
   document.getElementById('emailUserId').value = id;
-  document.getElementById('emailSearchInput').value = username + ' (' + email + ')';
+  document.getElementById('emailUserDisplay').value = username + ' — ' + email;
+  document.getElementById('emailSearchInput').value = '';
   document.getElementById('emailSearchResults').style.display = 'none';
 }
 document.addEventListener('click', function(e) {
-  if (!e.target.closest('#emailSearchInput') && !e.target.closest('#emailSearchResults')) {
+  if (!e.target.closest('.pos-rel')) {
     const r = document.getElementById('emailSearchResults');
     if (r) r.style.display = 'none';
   }
@@ -1315,7 +1326,7 @@ async function sendSingleEmail() {
   const subject = document.getElementById('emailSubject').value.trim();
   const message = document.getElementById('emailMessage').value.trim();
   
-  if (!userId) { alert('⚠️ Please enter or select a User ID'); return; }
+  if (!userId) { alert('⚠️ Please search and select a user first using the search box above.'); return; }
   if (!subject) { alert('⚠️ Subject is required'); return; }
   if (!message) { alert('⚠️ Message is required'); return; }
   
@@ -1333,6 +1344,8 @@ async function sendSingleEmail() {
     
     statusDiv.innerHTML = '<div class="msg mok">✅ Email sent successfully to user!</div>';
     document.getElementById('emailUserId').value = '';
+    document.getElementById('emailUserDisplay').value = '';
+    document.getElementById('emailSearchInput').value = '';
     document.getElementById('emailSubject').value = '';
     document.getElementById('emailMessage').value = '';
     setTimeout(() => { statusDiv.style.display = 'none'; }, 4000);
