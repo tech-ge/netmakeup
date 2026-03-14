@@ -1150,56 +1150,27 @@ function openDepositModal(){
 
 async function initiateDeposit(){
   const amtEl = document.getElementById('depositAmount');
-  const msgEl = document.getElementById('depositMsg');
   const btn   = document.getElementById('depositBtn');
   const amount = parseFloat(amtEl.value);
   if (!amount || amount < 10){ showDepositMsg('Enter a valid amount (min KES 10).',false); return; }
   btn.disabled=true; btn.textContent='Initializing…';
-  msgEl.style.display='none';
+
   try {
     const d = await apiFetch('/api/paystack/initialize',{method:'POST',body:JSON.stringify({amount})});
-    // Open Paystack popup using their inline JS
-    if(typeof PaystackPop !== 'undefined'){
-      const handler = PaystackPop.setup({
-        key:      window._PAYSTACK_PUBLIC_KEY,
-        email:    (()=>{ try { const u=JSON.parse(localStorage.getItem('user')||'{}'); return u.email || currentUser?.profile?.email || ''; } catch(e){ return currentUser?.profile?.email || ''; } })(),
-        amount:   Math.round(amount * 100),
-        ref:      d.reference,
-        currency: 'KES',
-        onClose: function(){
-          btn.disabled=false;
-          btn.textContent='Pay via Card / M-Pesa';
-        },
-        onSuccess: function(response){
-          btn.textContent='Verifying…';
-          apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:response.reference||response.trxref})})
-            .then(function(v){
-              closeModal('depositModal');
-              toast(v.message||'Deposit successful!');
-              loadDashboard();
-              if(typeof loadWithdraw==='function') setTimeout(loadWithdraw,600);
-            })
-            .catch(function(e){
-              showDepositMsg(e.message,false);
-              btn.disabled=false;
-              btn.textContent='Pay via Card / M-Pesa';
-            });
-        },
-        onCancel: function(){
-          btn.disabled=false;
-          btn.textContent='Pay via Card / M-Pesa';
-        }
-      });
-      handler.openIframe();
-    } else {
-      // Fallback: redirect to Paystack hosted page
-      window.open(d.authorizationUrl,'_blank');
-      showDepositMsg('Complete payment in the new tab, then refresh your dashboard.',true);
-      btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
-    }
+
+    // Save reference so we can verify it after Paystack redirects back
+    localStorage.setItem('pendingDepositRef', d.reference);
+    localStorage.setItem('pendingDepositAmt', amount);
+
+    // Always use full redirect — the popup/iframe breaks on mobile M-Pesa
+    // because Paystack navigates the page away, onSuccess never fires,
+    // and the button stays stuck on "Initializing..." forever.
+    window.location.href = d.authorizationUrl;
+
   } catch(e){
-    showDepositMsg(e.message,false);
-    btn.disabled=false; btn.textContent='Pay via Card / M-Pesa';
+    showDepositMsg(e.message, false);
+    btn.disabled=false;
+    btn.textContent='Pay via Card / M-Pesa';
   }
 }
 
@@ -1209,26 +1180,64 @@ function showDepositMsg(msg,ok){
   el.style.color=ok?'var(--g)':'#dc2626';
 }
 
-// Check if returning from Paystack redirect
-// FIX: was checking window.location.hash — Paystack redirects append ?deposit-success=1&reference=xxx
-// to the URL query string, not the hash. Changed to check window.location.search instead.
+// ── Check if returning from Paystack redirect ────────────────────────────────
+// Paystack appends ?trxref=xxx&reference=xxx to the callback_url query string.
+// We also check localStorage for a pendingDepositRef saved before redirect,
+// as a fallback in case the URL params are stripped by some browsers/redirects.
 (async function checkDepositReturn(){
   const urlParams = new URLSearchParams(window.location.search);
-  const isDepositReturn = urlParams.has('deposit-success') || urlParams.has('deposit');
-  if(isDepositReturn){
-    const ref = urlParams.get('reference') || urlParams.get('trxref');
-    if(ref){
-      try{
-        const v = await apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:ref})});
-        toast(v.message||'Deposit confirmed!');
+
+  // Paystack return signals: our own flag OR Paystack's own trxref/reference params
+  const isDepositReturn = urlParams.has('deposit-success')
+    || urlParams.has('deposit')
+    || urlParams.has('trxref')
+    || urlParams.has('reference');
+
+  const ref = urlParams.get('reference')
+    || urlParams.get('trxref')
+    || localStorage.getItem('pendingDepositRef');
+
+  if(isDepositReturn && ref){
+    // Show a verifying banner immediately so user knows something is happening
+    toast('Verifying your payment…', true);
+    try{
+      const v = await apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:ref})});
+      localStorage.removeItem('pendingDepositRef');
+      localStorage.removeItem('pendingDepositAmt');
+      toast(v.message || 'Deposit confirmed! Your wallet has been credited.', true);
+      loadDashboard();
+    }catch(e){
+      // Payment may already have been credited by webhook — reload anyway
+      localStorage.removeItem('pendingDepositRef');
+      localStorage.removeItem('pendingDepositAmt');
+      if(e.message && e.message.includes('already been credited')){
+        toast('Deposit already credited to your wallet.', true);
         loadDashboard();
-      }catch(e){ toast('Could not verify payment: '+e.message, false); }
-    } else {
-      // Paystack redirect arrived but no reference yet — show info
-      toast('Payment received. Your wallet will update shortly.', true);
+      } else {
+        toast('Payment received. If your balance has not updated, please refresh.', true);
+        loadDashboard();
+      }
     }
-    // Clean URL regardless
+    // Always clean the URL
     history.replaceState(null,'',window.location.pathname+window.location.hash);
+
+  } else if(localStorage.getItem('pendingDepositRef')){
+    // Page loaded fresh with a pending ref but no URL params — try verify anyway
+    const pendingRef = localStorage.getItem('pendingDepositRef');
+    try{
+      const v = await apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:pendingRef})});
+      localStorage.removeItem('pendingDepositRef');
+      localStorage.removeItem('pendingDepositAmt');
+      toast(v.message || 'Deposit confirmed!', true);
+      loadDashboard();
+    }catch(e){
+      // If already credited or failed — clear silently
+      localStorage.removeItem('pendingDepositRef');
+      localStorage.removeItem('pendingDepositAmt');
+      if(e.message && e.message.includes('already been credited')){
+        loadDashboard();
+      }
+    }
   }
 })();
 </script>
