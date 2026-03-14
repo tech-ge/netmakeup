@@ -229,7 +229,7 @@ router.post('/admin/:id/approve/:userId', authMiddleware, requireAdmin, async (r
 
     await safeCommission({
       fromUserId: req.params.userId, toUserId: req.params.userId,
-      level: 1, amount: job.reward, type: 'task_earning', status: 'completed',
+      level: 1, amount: job.reward, type: 'writing_earning', status: 'completed',
       description: `Writing job approved: ${job.title}`
     });
     await safeNotify({
@@ -291,6 +291,20 @@ router.put('/admin/:id', authMiddleware, requireAdmin, async (req, res) => {
     await job.save();
 
     res.json({ message: '✅ Job updated.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/writing/admin/:id/close — close a writing job (stop accepting submissions)
+// FIX: route was missing — admin.html calls this but got 404
+router.post('/admin/:id/close', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const job = await WritingJob.findById(req.params.id);
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    job.status = 'completed';
+    await job.save();
+    res.json({ message: '✅ Writing job closed.' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
