@@ -105,6 +105,10 @@ router.post('/:id/submit', authMiddleware, async (req, res) => {
       return res.status(403).json({ error: 'Activate your package to submit surveys.' });
     }
 
+    if (user.isAtPointsCap && user.isAtPointsCap()) {
+      return res.status(400).json({ error: 'You have reached the 2,500 points cap. Please withdraw your points on Tuesday before submitting more tasks.' });
+    }
+
     // Daily limit: max 2 surveys per day
     user.resetDailyTasksIfNeeded();
     if (user.dailyTasks.surveysCompleted >= 2) {
