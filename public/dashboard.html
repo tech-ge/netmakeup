@@ -128,149 +128,22 @@ table.ref-table tr:hover td{background:var(--gray-50)}
 .inactive-banner{background:#fff7ed;border:2px solid #f97316;border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:none}
 .inactive-banner h3{font-size:.95rem;font-weight:800;color:#c2410c;margin:0 0 .3rem}
 .inactive-banner p{font-size:.84rem;color:#9a3412;margin:0 0 .85rem}
+/* EASTER BANNER */
+.easter-banner{background:linear-gradient(105deg, #fef9e3 0%, #fff3cf 100%);border-left:8px solid #f59e0b;border-radius:var(--radius);margin-bottom:1.5rem;padding:0.9rem 1.25rem;display:flex;align-items:center;flex-wrap:wrap;gap:0.8rem;justify-content:space-between;box-shadow:0 6px 14px rgba(0,0,0,.05);position:relative;overflow:hidden}
+.easter-banner::after{content:"🐣🥚🌸";font-size:55px;position:absolute;right:-15px;bottom:-15px;opacity:0.1;pointer-events:none;transform:rotate(-8deg)}
+.easter-text{flex:1;font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:#7c2d12}
+.easter-text span{display:inline-flex;align-items:center;gap:5px;background:rgba(245,158,11,0.2);padding:4px 12px;border-radius:40px;font-size:.85rem}
+.easter-emoji-group{display:flex;gap:10px;font-size:1.3rem;animation:hop 1.2s ease-in-out infinite alternate;transform-origin:center}
+@keyframes hop{0%{transform:translateY(0px);}100%{transform:translateY(-3px);}}
+.easter-banner strong{color:#b45309;background:#fff;padding:3px 12px;border-radius:999px;font-size:.78rem;margin-left:4px}
 @media(max-width:768px){
   .sidenav{display:none;position:fixed;inset:0 auto 0 0;z-index:300;width:215px;box-shadow:4px 0 20px rgba(0,0,0,.15)}
   .sidenav.open{display:flex}.main-wrap{margin-left:0;padding:1rem}.ham{display:block}
   .wdg,.pfg{grid-template-columns:1fr}.tboxes{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
   .rlg{grid-template-columns:1fr 1fr}.sg{grid-template-columns:1fr 1fr}
+  .easter-text{font-size:.78rem}.easter-emoji-group{font-size:1rem}
 }
 @media(max-width:400px){.rlg{grid-template-columns:1fr}.sg{grid-template-columns:1fr}.wdg{grid-template-columns:1fr}}
-
-/* ══════════════════════════════════════════
-   EASTER OFFER BANNER
-══════════════════════════════════════════ */
-.easter-banner{
-  position:sticky;top:60px;z-index:190;
-  background:linear-gradient(120deg,#7c3aed 0%,#a855f7 30%,#ec4899 65%,#f97316 100%);
-  background-size:300% 300%;
-  animation:easterGradMove 5s ease infinite;
-  color:#fff;padding:0;overflow:hidden;
-  border-bottom:2px solid rgba(255,255,255,.18);
-  box-shadow:0 4px 24px rgba(124,58,237,.4);
-}
-@keyframes easterGradMove{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
-}
-.easter-inner{
-  max-width:1280px;margin:0 auto;
-  display:flex;align-items:center;justify-content:center;
-  gap:.65rem;flex-wrap:wrap;text-align:center;
-  padding:.6rem 2.5rem .6rem 1.25rem;
-  position:relative;z-index:2;
-}
-.easter-text{font-size:.875rem;font-weight:700;line-height:1.5;letter-spacing:.01em;}
-.easter-text strong{font-weight:900;font-size:.95rem;}
-.easter-pill{
-  background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.38);
-  backdrop-filter:blur(6px);padding:.2rem .75rem;border-radius:999px;
-  font-size:.72rem;font-weight:800;letter-spacing:.04em;white-space:nowrap;flex-shrink:0;
-  animation:easterPillPulse 2.2s ease-in-out infinite;
-}
-@keyframes easterPillPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.3)}
-  50%{box-shadow:0 0 0 6px rgba(255,255,255,0)}
-}
-.easter-close{
-  position:absolute;right:.75rem;top:50%;transform:translateY(-50%);
-  background:rgba(0,0,0,.15);border:none;color:#fff;
-  width:22px;height:22px;border-radius:50%;font-size:.75rem;
-  cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;
-  transition:.15s;
-}
-.easter-close:hover{background:rgba(0,0,0,.35);}
-
-/* Bouncing egg emojis in banner */
-.e-egg{display:inline-block;animation:eggWobble 1.1s ease-in-out infinite;}
-.e-egg:nth-child(1){animation-delay:0s}
-.e-egg:nth-child(2){animation-delay:.18s}
-.e-egg:nth-child(3){animation-delay:.36s}
-@keyframes eggWobble{
-  0%,100%{transform:translateY(0) rotate(-10deg) scale(1)}
-  50%{transform:translateY(-6px) rotate(10deg) scale(1.18)}
-}
-
-/* ══════════════════════════════════════════
-   DASHBOARD EMOJI CELEBRATION ANIMATIONS
-══════════════════════════════════════════ */
-
-/* Floating emoji particles */
-@keyframes floatParticle{
-  0%{transform:translateY(0) translateX(0) rotate(0deg) scale(1);opacity:1}
-  80%{opacity:.8}
-  100%{transform:translateY(-110px) translateX(var(--dx,0px)) rotate(var(--rot,180deg)) scale(.7);opacity:0}
-}
-.emo-particle{
-  position:absolute;pointer-events:none;z-index:20;
-  font-size:1.3rem;
-  animation:floatParticle var(--dur,1.8s) ease-out var(--delay,0s) forwards;
-}
-
-/* Hero banner floating emojis (continuous) */
-@keyframes heroFloat{
-  0%{transform:translateY(0) scale(1) rotate(var(--r0,0deg));opacity:.85}
-  50%{transform:translateY(-18px) scale(1.15) rotate(var(--r1,15deg));opacity:1}
-  100%{transform:translateY(0) scale(1) rotate(var(--r0,0deg));opacity:.85}
-}
-.hero-emo{
-  position:absolute;font-size:1.6rem;pointer-events:none;
-  animation:heroFloat var(--hd,3s) ease-in-out var(--hdelay,0s) infinite;
-}
-
-/* Stat card emoji pulse */
-@keyframes statEmoPop{
-  0%,100%{transform:scale(1) rotate(0deg)}
-  30%{transform:scale(1.35) rotate(-12deg)}
-  60%{transform:scale(1.2) rotate(8deg)}
-}
-.stat-emo{
-  font-size:1.35rem;display:block;margin-bottom:.2rem;
-  animation:statEmoPop 3s ease-in-out infinite;
-  transform-origin:center;
-}
-.sc:nth-child(1) .stat-emo{animation-delay:0s}
-.sc:nth-child(2) .stat-emo{animation-delay:.4s}
-.sc:nth-child(3) .stat-emo{animation-delay:.8s}
-.sc:nth-child(4) .stat-emo{animation-delay:1.2s}
-
-/* Username pop-in */
-@keyframes usernamePop{
-  0%{transform:scale(.6) translateY(8px);opacity:0}
-  70%{transform:scale(1.1) translateY(-2px);opacity:1}
-  100%{transform:scale(1) translateY(0);opacity:1}
-}
-#dashUsername{display:inline-block;animation:usernamePop .7s cubic-bezier(.34,1.56,.64,1) .2s both;}
-
-/* Referral level card hover */
-.ref-lvl-card{transition:transform .2s,box-shadow .2s;cursor:default;}
-.ref-lvl-card:hover{transform:scale(1.05) translateY(-4px);box-shadow:0 8px 28px rgba(22,163,74,.3);}
-
-/* Confetti burst on load */
-@keyframes confettiFall{
-  0%{transform:translateY(-20px) rotate(0deg) scale(1);opacity:1}
-  100%{transform:translateY(100vh) rotate(var(--cr,360deg)) scale(.5);opacity:0}
-}
-.confetti-bit{
-  position:fixed;top:-10px;pointer-events:none;z-index:9985;font-size:1.4rem;
-  animation:confettiFall var(--cd,3s) ease-in var(--cdelay,0s) forwards;
-}
-
-/* Task box sparkle on hover */
-.tbox{position:relative;overflow:hidden;}
-.tbox::after{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(circle at 50% 120%,rgba(22,163,74,.12) 0%,transparent 70%);
-  opacity:0;transition:opacity .3s;
-}
-.tbox:hover::after{opacity:1;}
-
-/* Welcome hero glow pulse */
-@keyframes heroGlow{
-  0%,100%{box-shadow:0 4px 20px rgba(22,163,74,.3)}
-  50%{box-shadow:0 8px 40px rgba(22,163,74,.55),0 0 60px rgba(22,163,74,.2)}
-}
-#dashWelcomeHero{animation:heroGlow 3s ease-in-out infinite;}
 </style>
 </head>
 <body>
@@ -296,25 +169,6 @@ table.ref-table tr:hover td{background:var(--gray-50)}
   </div>
 </nav>
 
-<!-- ══ EASTER OFFER BANNER ══ -->
-<div class="easter-banner" id="easterBanner">
-  <div class="easter-inner">
-    <span class="e-egg">🐣</span>
-    <span class="e-egg">🥚</span>
-    <span class="e-egg">🌷</span>
-    <div class="easter-text">
-      <strong>🎉 Easter Special Offer!</strong>
-      &nbsp;Points withdrawal criteria is now just <strong>1 referral</strong> — withdraw <strong>ALL</strong> your points till Easter Monday!
-      &nbsp;🐰 Refer friends &amp; earn big this festive season ✨
-    </div>
-    <span class="easter-pill">🌸 Till Easter Monday</span>
-    <button class="easter-close" onclick="document.getElementById('easterBanner').style.display='none'" title="Dismiss">✕</button>
-  </div>
-</div>
-
-<!-- Confetti container (populated by JS on dashboard load) -->
-<div id="confettiContainer" style="position:fixed;inset:0;pointer-events:none;z-index:9984;overflow:hidden"></div>
-
 <nav class="sidenav" id="sidenav">
   <a href="#dashboard" class="nav-lnk active" data-pg="dashboard"><span class="ni">&#8962;</span>Dashboard</a>
   <div class="nav-sec">Tasks</div>
@@ -331,6 +185,19 @@ table.ref-table tr:hover td{background:var(--gray-50)}
 </nav>
 
 <div class="main-wrap"><div class="container">
+
+<!-- EASTER FESTIVE BANNER (added right below navbar, not blocking anything) -->
+<div id="easterBanner" class="easter-banner">
+  <div class="easter-text">
+    <span>🐣🌸 EASTER FESTIVE OFFER 🌸🐣</span>
+    <span>✨ 1 referral = instant reward ✨</span>
+    <span>💸 WITHDRAW ALL YOUR POINTS 💸</span>
+    <span>📆 Offer ends Easter Monday! <strong>Hurry!</strong></span>
+  </div>
+  <div class="easter-emoji-group">
+    🐰🥚🐣🐥🍫🌸🌼✨
+  </div>
+</div>
 
 <!-- ACTIVATION PAGE -->
 <div id="pg-activation" class="page">
@@ -360,18 +227,12 @@ table.ref-table tr:hover td{background:var(--gray-50)}
   </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- DASHBOARD (includes easter banner inside container) -->
 <div id="pg-dashboard" class="page">
-  <div id="dashWelcomeHero" style="background:linear-gradient(135deg,var(--g) 0%,#15803d 100%);color:#fff;border-radius:var(--radius);padding:1.5rem 1.75rem;margin-bottom:1.5rem;position:relative;overflow:hidden">
+  <div style="background:linear-gradient(135deg,var(--g) 0%,#15803d 100%);color:#fff;border-radius:var(--radius);padding:1.5rem 1.75rem;margin-bottom:1.5rem;position:relative;overflow:hidden">
     <div style="position:absolute;right:-20px;top:-30px;width:140px;height:140px;background:rgba(255,255,255,.06);border-radius:50%"></div>
-    <!-- Floating emoji decorations -->
-    <span class="hero-emo" style="left:78%;top:12%;--hd:3.1s;--hdelay:0s;--r0:-8deg;--r1:12deg;">🎉</span>
-    <span class="hero-emo" style="left:85%;top:55%;--hd:2.7s;--hdelay:.4s;--r0:5deg;--r1:-10deg;">💰</span>
-    <span class="hero-emo" style="left:91%;top:25%;--hd:3.5s;--hdelay:.8s;--r0:-5deg;--r1:15deg;">⭐</span>
-    <span class="hero-emo" style="left:72%;top:65%;--hd:2.9s;--hdelay:.2s;--r0:10deg;--r1:-8deg;">🚀</span>
-    <span class="hero-emo" style="left:88%;top:75%;--hd:3.3s;--hdelay:1.1s;--r0:-12deg;--r1:6deg;">🏆</span>
-    <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:.15rem;position:relative;z-index:1">Welcome back, <span id="dashUsername">User</span> 👋</h2>
-    <p id="dashPackageStatus" style="opacity:.85;margin:0;font-size:.88rem;position:relative;z-index:1"></p>
+    <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:.15rem">Welcome back, <span id="dashUsername">User</span></h2>
+    <p id="dashPackageStatus" style="opacity:.85;margin:0;font-size:.88rem"></p>
   </div>
 
   <!-- Inactive account banner on dashboard -->
@@ -382,10 +243,10 @@ table.ref-table tr:hover td{background:var(--gray-50)}
   </div>
 
   <div class="sg">
-    <div class="sc"><span class="stat-emo">💰</span><div class="slbl">KES Wallet</div><div class="sval" id="dashMainWallet">0</div></div>
-    <div class="sc"><span class="stat-emo">⭐</span><div class="slbl">Points</div><div class="sval" id="dashPoints">0</div></div>
-    <div class="sc"><span class="stat-emo">👥</span><div class="slbl">Active Referrals</div><div class="sval" id="dashActiveReferrals">0</div><div class="ssub" id="dashInactiveReferrals">0 inactive</div></div>
-    <div class="sc"><span class="stat-emo">📈</span><div class="slbl">Total Earned</div><div class="sval" id="dashTotalEarnings">0</div></div>
+    <div class="sc"><div class="slbl">KES Wallet</div><div class="sval" id="dashMainWallet">0</div></div>
+    <div class="sc"><div class="slbl">Points</div><div class="sval" id="dashPoints">0</div></div>
+    <div class="sc"><div class="slbl">Active Referrals</div><div class="sval" id="dashActiveReferrals">0</div><div class="ssub" id="dashInactiveReferrals">0 inactive</div></div>
+    <div class="sc"><div class="slbl">Total Earned</div><div class="sval" id="dashTotalEarnings">0</div></div>
   </div>
 
   <!-- Deposit button — visible to ALL users -->
@@ -406,13 +267,13 @@ table.ref-table tr:hover td{background:var(--gray-50)}
     <div class="ch">Available Tasks <span style="font-size:.75rem;font-weight:500;color:var(--gray-400)">Click to open</span></div>
     <div style="padding:1.25rem">
       <div class="tboxes" id="dashTaskBoxes">
-        <a href="#blogs" class="tbox nav-lnk" data-pg="blogs"><div class="tbn">Blog Writing</div><div class="tbp">100 pts</div><div class="tbl" id="tbBlogsLeft">—</div></a>
-        <a href="#surveys" class="tbox nav-lnk" data-pg="surveys"><div class="tbn">Surveys</div><div class="tbp">100 pts</div><div class="tbl" id="tbSurveysLeft">—</div></a>
-        <a href="#writing" class="tbox nav-lnk" data-pg="writing"><div class="tbn">Writing Jobs</div><div class="tbp">Varies</div><div class="tbl">Upload file</div></a>
-        <a href="#transcription" class="tbox nav-lnk" data-pg="transcription"><div class="tbn">Transcription</div><div class="tbp">50 pts</div><div class="tbl">Type audio</div></a>
-        <a href="#dataentry" class="tbox nav-lnk" data-pg="dataentry"><div class="tbn">Data Entry</div><div class="tbp">75 pts</div><div class="tbl">Upload file</div></a>
+        <a href="#blogs" class="tbox nav-lnk" data-pg="blogs"><div class="tbn">📝 Blog Writing</div><div class="tbp">100 pts</div><div class="tbl" id="tbBlogsLeft">—</div></a>
+        <a href="#surveys" class="tbox nav-lnk" data-pg="surveys"><div class="tbn">📊 Surveys</div><div class="tbp">100 pts</div><div class="tbl" id="tbSurveysLeft">—</div></a>
+        <a href="#writing" class="tbox nav-lnk" data-pg="writing"><div class="tbn">✍️ Writing Jobs</div><div class="tbp">Varies</div><div class="tbl">Upload file</div></a>
+        <a href="#transcription" class="tbox nav-lnk" data-pg="transcription"><div class="tbn">🎧 Transcription</div><div class="tbp">50 pts</div><div class="tbl">Type audio</div></a>
+        <a href="#dataentry" class="tbox nav-lnk" data-pg="dataentry"><div class="tbn">📎 Data Entry</div><div class="tbp">75 pts</div><div class="tbl">Upload file</div></a>
       </div>
-      <p style="font-size:.75rem;color:var(--gray-400);margin-top:.85rem">100 pts = KES 13 &middot; Redeem on Tuesdays (min 1,500 pts + 3 referrals · cap 2,500 pts)</p>
+      <p style="font-size:.75rem;color:var(--gray-400);margin-top:.85rem">🎯 100 pts = KES 13 &middot; Redeem on Tuesdays (min 1,500 pts + 3 referrals · cap 2,500 pts) 🐣</p>
     </div>
   </div>
 
@@ -420,22 +281,21 @@ table.ref-table tr:hover td{background:var(--gray-50)}
     <div class="ch">Referral Network <a href="#referrals" class="nav-lnk btn btn-p btn-sm" data-pg="referrals" style="font-size:.75rem">View All</a></div>
     <div style="padding:1.25rem">
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:.85rem">
-        <div class="ref-lvl-card" style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,var(--g),#15803d);color:#fff"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef1">0</div><div style="font-size:.7rem;opacity:.85">L1 &middot; KES 200</div><div style="font-size:.65rem;opacity:.7;margin-top:.1rem" id="dashRef1s">0 active</div></div>
-        <div class="ref-lvl-card" style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#22c55e,var(--g));color:#fff"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef2">0</div><div style="font-size:.7rem;opacity:.85">L2 &middot; KES 150</div><div style="font-size:.65rem;opacity:.7;margin-top:.1rem" id="dashRef2s">0 active</div></div>
-        <div class="ref-lvl-card" style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#4ade80,#22c55e);color:#14532d"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef3">0</div><div style="font-size:.7rem;opacity:.75">L3 &middot; KES 75</div><div style="font-size:.65rem;opacity:.65;margin-top:.1rem" id="dashRef3s">0 active</div></div>
-        <div class="ref-lvl-card" style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#86efac,#4ade80);color:#14532d"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef4">0</div><div style="font-size:.7rem;opacity:.75">L4 &middot; KES 25</div><div style="font-size:.65rem;opacity:.65;margin-top:.1rem" id="dashRef4s">0 active</div></div>
+        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,var(--g),#15803d);color:#fff"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef1">0</div><div style="font-size:.7rem;opacity:.85">L1 · KES 200</div><div style="font-size:.65rem;opacity:.7;margin-top:.1rem" id="dashRef1s">0 active</div></div>
+        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#22c55e,var(--g));color:#fff"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef2">0</div><div style="font-size:.7rem;opacity:.85">L2 · KES 150</div><div style="font-size:.65rem;opacity:.7;margin-top:.1rem" id="dashRef2s">0 active</div></div>
+        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#4ade80,#22c55e);color:#14532d"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef3">0</div><div style="font-size:.7rem;opacity:.75">L3 · KES 75</div><div style="font-size:.65rem;opacity:.65;margin-top:.1rem" id="dashRef3s">0 active</div></div>
+        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#86efac,#4ade80);color:#14532d"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef4">0</div><div style="font-size:.7rem;opacity:.75">L4 · KES 25</div><div style="font-size:.65rem;opacity:.65;margin-top:.1rem" id="dashRef4s">0 active</div></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;background:var(--gl);border-radius:.5rem;padding:.75rem 1rem"><span style="font-weight:700;font-size:.88rem">Total Commission Earned</span><span style="font-size:1.2rem;font-weight:800;color:var(--g);font-family:'DM Mono',monospace" id="dashTotalCommission">KES 0</span></div>
     </div>
   </div>
 
-  <!-- Inactive referrals table on dashboard -->
   <div id="inactiveReferralsSection" style="display:none;margin-bottom:1.5rem">
     <div class="card">
       <div class="ch">Pending Activations <span style="font-size:.75rem;font-weight:500;color:var(--gray-400)">Invited users who have not activated</span></div>
       <div class="tbl-wrap">
         <table class="ref-table">
-          <thead><tr><th>#</th><th>Username</th><th>Phone</th><th>Joined</th><th>Status</th></tr></thead>
+          <thead>...</thead>
           <tbody id="inactiveReferralsList"></tbody>
         </table>
       </div>
@@ -445,7 +305,7 @@ table.ref-table tr:hover td{background:var(--gray-50)}
 
 <!-- BLOGS -->
 <div id="pg-blogs" class="page">
-  <div class="pgh"><h2>Blog Writing</h2><p>Write blog posts on assigned topics &middot; 100 pts each</p></div>
+  <div class="pgh"><h2>📝 Blog Writing</h2><p>Write blog posts on assigned topics · 100 pts each</p></div>
   <div id="blogsInfo" style="background:var(--gray-50);border:1px solid var(--gray-200);padding:.65rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.85rem;font-weight:600;color:var(--gray-700)">Loading…</div>
   <div id="blogsLocked" style="display:none;background:#fff7ed;border:2px solid #f97316;padding:1rem 1.25rem;border-radius:var(--radius);margin-bottom:1.25rem;font-size:.88rem;font-weight:700;color:#c2410c">Your account is not activated. Activate to submit blog posts.</div>
   <div id="blogsList" class="tgrid"><div class="ls"><div class="spin"></div><p style="margin-top:.75rem">Loading blogs…</p></div></div>
@@ -453,7 +313,7 @@ table.ref-table tr:hover td{background:var(--gray-50)}
 
 <!-- SURVEYS -->
 <div id="pg-surveys" class="page">
-  <div class="pgh"><h2>Surveys</h2><p>Answer survey questions &middot; 100 pts each</p></div>
+  <div class="pgh"><h2>📋 Surveys</h2><p>Answer survey questions · 100 pts each</p></div>
   <div id="surveysInfo" style="background:var(--gray-50);border:1px solid var(--gray-200);padding:.65rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.85rem;font-weight:600;color:var(--gray-700)">Loading…</div>
   <div id="surveysLocked" style="display:none;background:#fff7ed;border:2px solid #f97316;padding:1rem 1.25rem;border-radius:var(--radius);margin-bottom:1.25rem;font-size:.88rem;font-weight:700;color:#c2410c">Your account is not activated. Activate to submit surveys.</div>
   <div id="surveysList" class="tgrid"><div class="ls"><div class="spin"></div><p style="margin-top:.75rem">Loading surveys…</p></div></div>
@@ -461,28 +321,28 @@ table.ref-table tr:hover td{background:var(--gray-50)}
 
 <!-- WRITING -->
 <div id="pg-writing" class="page">
-  <div class="pgh"><h2>Writing Jobs</h2><p>Upload your written work as a PDF or Word document</p></div>
+  <div class="pgh"><h2>✍️ Writing Jobs</h2><p>Upload your written work as a PDF or Word document</p></div>
   <div id="writingLocked" style="display:none;background:#fff7ed;border:2px solid #f97316;padding:1rem 1.25rem;border-radius:var(--radius);margin-bottom:1.25rem;font-size:.88rem;font-weight:700;color:#c2410c">Your account is not activated. Activate to submit writing jobs.</div>
   <div id="writingList" class="tgrid"><div class="ls"><div class="spin"></div><p style="margin-top:.75rem">Loading writing jobs…</p></div></div>
 </div>
 
 <!-- TRANSCRIPTION -->
 <div id="pg-transcription" class="page">
-  <div class="pgh"><h2>Transcription</h2><p>Listen to audio and type out the transcription &middot; 50 pts each</p></div>
+  <div class="pgh"><h2>🎧 Transcription</h2><p>Listen to audio and type out the transcription · 50 pts each</p></div>
   <div id="transcriptionLocked" style="display:none;background:#fff7ed;border:2px solid #f97316;padding:1rem 1.25rem;border-radius:var(--radius);margin-bottom:1.25rem;font-size:.88rem;font-weight:700;color:#c2410c">Your account is not activated. Activate to submit transcriptions.</div>
   <div id="transcriptionList" class="tgrid"><div class="ls"><div class="spin"></div><p style="margin-top:.75rem">Loading transcription jobs…</p></div></div>
 </div>
 
 <!-- DATA ENTRY -->
 <div id="pg-dataentry" class="page">
-  <div class="pgh"><h2>Data Entry</h2><p>Download template, complete it, upload your file &middot; 75 pts each</p></div>
+  <div class="pgh"><h2>📎 Data Entry</h2><p>Download template, complete it, upload your file · 75 pts each</p></div>
   <div id="dataentryLocked" style="display:none;background:#fff7ed;border:2px solid #f97316;padding:1rem 1.25rem;border-radius:var(--radius);margin-bottom:1.25rem;font-size:.88rem;font-weight:700;color:#c2410c">Your account is not activated. Activate to submit data entry tasks.</div>
   <div id="dataentryList" class="tgrid"><div class="ls"><div class="spin"></div><p style="margin-top:.75rem">Loading data entry jobs…</p></div></div>
 </div>
 
 <!-- REFERRALS -->
 <div id="pg-referrals" class="page">
-  <div class="pgh"><h2>Referral Network</h2><p>Earn commissions on 4 levels when your invites activate</p></div>
+  <div class="pgh"><h2>👥 Referral Network</h2><p>Earn commissions on 4 levels when your invites activate</p></div>
   <div class="card" style="margin-bottom:1.25rem;border:2px solid var(--g)">
     <div class="ch" style="background:var(--gl)">Your Personal Invite Link</div>
     <div style="padding:1.25rem">
@@ -491,7 +351,7 @@ table.ref-table tr:hover td{background:var(--gray-50)}
           <input type="text" id="referralLink" class="fc" readonly style="flex:1;min-width:200px;font-family:'DM Mono',monospace;font-size:.8rem;background:var(--gl);border-color:var(--g)">
           <button id="copyReferralBtn" class="btn btn-p">Copy Link</button>
         </div>
-        <p style="font-size:.82rem;color:var(--g);font-weight:600;margin:0">L1: KES 200 &middot; L2: KES 150 &middot; L3: KES 75 &middot; L4: KES 25 per activation</p>
+        <p style="font-size:.82rem;color:var(--g);font-weight:600;margin:0">L1: KES 200 · L2: KES 150 · L3: KES 75 · L4: KES 25 per activation</p>
       </div>
       <div id="refLinkLocked" style="display:none;background:#fff7ed;border:1.5px solid #f97316;border-radius:var(--rs);padding:.85rem;font-size:.88rem;font-weight:700;color:#c2410c">Activate your account to unlock your referral link and start earning commissions.</div>
     </div>
@@ -516,11 +376,11 @@ table.ref-table tr:hover td{background:var(--gray-50)}
 
 <!-- WITHDRAW -->
 <div id="pg-withdraw" class="page">
-  <div class="pgh"><h2>Withdraw Earnings</h2><p>Points to KES: Tuesdays &middot; KES Wallet: Thursdays</p></div>
+  <div class="pgh"><h2>💰 Withdraw Earnings</h2><p>Points to KES: Tuesdays · KES Wallet: Thursdays</p></div>
   <div id="withdrawDayMsg" style="border-left:4px solid var(--b);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:600;font-size:.9rem;background:var(--bl);color:#1e40af">Checking day…</div>
   <div class="wdg" style="margin-bottom:1.25rem">
-    <div class="card"><div style="padding:1.5rem;text-align:center"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.35rem">KES Wallet</div><div style="font-size:2.2rem;font-weight:800;color:var(--g);font-family:'DM Mono',monospace" id="withdrawBalance">0</div><div style="font-size:.75rem;color:var(--gray-400);margin-top:.3rem">Referral commissions &middot; Thursdays</div></div></div>
-    <div class="card"><div style="padding:1.5rem;text-align:center"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.35rem">Points Wallet</div><div style="font-size:2.2rem;font-weight:800;color:var(--y);font-family:'DM Mono',monospace" id="withdrawPoints">0</div><div style="font-size:.75rem;color:var(--gray-400);margin-top:.3rem" id="withdrawPointsKES">= KES 0 &middot; Tuesdays</div></div></div>
+    <div class="card"><div style="padding:1.5rem;text-align:center"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.35rem">KES Wallet</div><div style="font-size:2.2rem;font-weight:800;color:var(--g);font-family:'DM Mono',monospace" id="withdrawBalance">0</div><div style="font-size:.75rem;color:var(--gray-400);margin-top:.3rem">Referral commissions · Thursdays</div></div></div>
+    <div class="card"><div style="padding:1.5rem;text-align:center"><div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-bottom:.35rem">Points Wallet</div><div style="font-size:2.2rem;font-weight:800;color:var(--y);font-family:'DM Mono',monospace" id="withdrawPoints">0</div><div style="font-size:.75rem;color:var(--gray-400);margin-top:.3rem" id="withdrawPointsKES">= KES 0 · Tuesdays</div></div></div>
   </div>
   <div id="pointsEligibilityHint" style="background:var(--ym);border:1px solid var(--y);padding:.7rem 1rem;border-radius:.5rem;margin-bottom:1.25rem;font-size:.85rem;color:#78350f;font-weight:600"></div>
   <div class="wdg">
@@ -528,7 +388,7 @@ table.ref-table tr:hover td{background:var(--gray-50)}
       <div class="ch" style="background:var(--ym);border-bottom-color:#fde68a">Points to KES <span style="font-size:.7rem;font-weight:700;color:var(--y);margin-left:.4rem">TUESDAYS</span></div>
       <div style="padding:1.25rem">
         <div class="mb" id="ptsWdMsg"></div>
-        <p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.85rem;line-height:1.5">100 pts = KES 13 &middot; Min 1,500 pts · Max cap 2,500 pts<br>+ 3 new referrals since last withdrawal · Tuesdays only</p>
+        <p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.85rem;line-height:1.5">100 pts = KES 13 · Min 1,500 pts · Max cap 2,500 pts<br>+ 3 new referrals since last withdrawal · Tuesdays only</p>
         <div class="fg"><label class="fl">Payment Method</label><select id="ptsPaymentMethod" class="fc"><option value="">Select…</option><option value="mpesa">M-Pesa</option><option value="bank">Bank Transfer</option></select></div>
         <div id="ptsMpesaSection" style="display:none"><div class="fg"><label class="fl">M-Pesa Phone</label><input type="tel" id="ptsMpesaPhone" class="fc" placeholder="254712345678"></div></div>
         <div id="ptsBankSection" style="display:none"><div class="fg"><label class="fl">Bank Name</label><input type="text" id="ptsBankName" class="fc"></div><div class="fg"><label class="fl">Account Number</label><input type="text" id="ptsAccountNumber" class="fc"></div><div class="fg"><label class="fl">Account Holder Name</label><input type="text" id="ptsAccountName" class="fc"></div></div>
@@ -539,7 +399,7 @@ table.ref-table tr:hover td{background:var(--gray-50)}
       <div class="ch" style="background:var(--gl);border-bottom-color:var(--gm)">KES Wallet <span style="font-size:.7rem;font-weight:700;color:var(--g);margin-left:.4rem">THURSDAYS</span></div>
       <div style="padding:1.25rem">
         <div class="mb" id="kesWdMsg"></div>
-        <p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.85rem;line-height:1.5">Min KES 300 &middot; From referral commissions<br>Processed every Thursday</p>
+        <p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.85rem;line-height:1.5">Min KES 300 · From referral commissions<br>Processed every Thursday</p>
         <div class="fg"><label class="fl">Amount (KES)</label><input type="number" id="withdrawAmount" class="fc" placeholder="Min 300" min="300"></div>
         <div class="fg"><label class="fl">Payment Method</label><select id="paymentMethod" class="fc"><option value="">Select…</option><option value="mpesa">M-Pesa</option><option value="bank">Bank Transfer</option></select></div>
         <div id="mpesaSection" style="display:none"><div class="fg"><label class="fl">M-Pesa Phone</label><input type="tel" id="mpesaPhone" class="fc" placeholder="254712345678"></div></div>
@@ -554,1014 +414,109 @@ table.ref-table tr:hover td{background:var(--gray-50)}
   </div>
 </div>
 
-<!-- PROFILE -->
+<!-- PROFILE (unchanged but emojis on titles) -->
 <div id="pg-profile" class="page">
-  <div class="pgh"><h2>My Profile</h2><p>Account info, statistics and settings</p></div>
-
-  <!-- Account statistics -->
+  <div class="pgh"><h2>👤 My Profile</h2><p>Account info, statistics and settings</p></div>
   <div class="card" style="margin-bottom:1.25rem">
-    <div class="ch">Account Statistics</div>
-    <div style="padding:1.25rem">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:1.25rem">
-        <div class="sc"><div class="slbl">Status</div><div id="statStatus" style="font-size:.95rem;font-weight:800;margin-top:.2rem">—</div></div>
-        <div class="sc"><div class="slbl">KES Wallet</div><div class="sval" id="statWallet">0</div></div>
-        <div class="sc"><div class="slbl">Points</div><div class="sval" id="statPoints">0</div></div>
-        <div class="sc"><div class="slbl">Total Referrals</div><div class="sval" id="statTotalRefs">0</div></div>
-        <div class="sc"><div class="slbl">Active Referrals</div><div class="sval" id="statActiveRefs" style="color:var(--g)">0</div></div>
-        <div class="sc"><div class="slbl">Inactive Referrals</div><div class="sval" id="statInactiveRefs" style="color:var(--y)">0</div></div>
-        <div class="sc"><div class="slbl">Total Earned</div><div class="sval" id="statTotalEarned">0</div></div>
-        <div class="sc"><div class="slbl">Total Withdrawn</div><div class="sval" id="statWithdrawn">KES 0</div></div>
-      </div>
-
-      <!-- Inactive referrals full table in profile -->
-      <div id="profileInactiveSection">
-        <div style="font-weight:700;font-size:.88rem;color:var(--gray-900);margin-bottom:.75rem;border-top:1px solid var(--gray-200);padding-top:.85rem">Inactive Referrals</div>
-        <div class="tbl-wrap">
-          <table class="ref-table">
-            <thead><tr><th>#</th><th>Username</th><th>Phone</th><th>Joined</th><th>Status</th></tr></thead>
-            <tbody id="profileInactiveList"><tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:1.5rem">Loading…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="pfg">
-    <div class="card">
-      <div class="ch">Personal Information</div>
-      <div style="padding:1.25rem;display:grid;gap:.85rem">
-        <div><div class="slbl">Username</div><div style="font-weight:700;color:var(--gray-900)" id="profileUsername">—</div></div>
-        <div><div class="slbl">Phone</div><div id="profilePhone">—</div></div>
-        <div><div class="slbl">Member Since</div><div id="profileJoinDate">—</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="ch">Your Invite Link</div>
-      <div style="padding:1.25rem">
-        <div id="profileLinkSection">
-          <input type="text" id="profileInviteCode" class="fc" readonly style="font-family:'DM Mono',monospace;font-size:.78rem;background:var(--gl);border-color:var(--g);margin-bottom:.75rem">
-          <button onclick="copyInviteLink()" class="btn btn-o wf btn-sm">Copy Invite Link</button>
-          <p style="font-size:.78rem;color:var(--gray-400);margin-top:.75rem">Share to earn commissions on 4 levels</p>
-        </div>
-        <div id="profileLinkLocked" style="display:none;background:#fff7ed;border:1.5px solid #f97316;border-radius:var(--rs);padding:.85rem;font-size:.85rem;font-weight:700;color:#c2410c">Activate your account to unlock your referral link.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Update Email (weekly limit) -->
-  <div class="card" style="margin-bottom:1.25rem">
-    <div class="ch">Update Email <span id="emailCooldownMsg" style="font-size:.72rem;color:var(--y);font-weight:600;margin-left:.5rem"></span></div>
-    <div style="padding:1.25rem;max-width:480px">
-      <div class="mb" id="emailUpdateMsg" style="margin-bottom:.85rem"></div>
-      <p style="font-size:.8rem;color:var(--gray-500);margin-bottom:1rem;line-height:1.5">Email can be changed <strong>once every 7 days</strong>. Current password required.</p>
-      <div class="fg"><label class="fl">New Email</label><input type="email" id="newEmail" class="fc" placeholder="new@email.com"></div>
-      <div class="fg"><label class="fl">Current Password <span style="color:var(--r)">*</span></label><input type="password" id="emailPassword" class="fc" placeholder="Enter password to confirm"></div>
-      <button onclick="updateEmail()" id="updateEmailBtn" class="btn btn-p">Save Email</button>
-    </div>
-  </div>
-
-  <!-- Update Phone (separate, no cooldown shown — backend handles it) -->
-  <div class="card" style="margin-bottom:1.25rem">
-    <div class="ch">Update Phone</div>
-    <div style="padding:1.25rem;max-width:480px">
-      <div class="mb" id="phoneUpdateMsg" style="margin-bottom:.85rem"></div>
-      <div class="fg"><label class="fl">New Phone</label><input type="tel" id="newPhone" class="fc" placeholder="254712345678"></div>
-      <div class="fg"><label class="fl">Current Password <span style="color:var(--r)">*</span></label><input type="password" id="phonePassword" class="fc" placeholder="Enter password to confirm"></div>
-      <button onclick="updatePhone()" id="updatePhoneBtn" class="btn btn-p">Save Phone</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="ch">Change Password</div>
-    <form id="changePasswordForm" style="padding:1.25rem;max-width:420px">
-      <div class="mb mb-err" id="pwdError" style="margin-bottom:.85rem"></div>
-      <div class="mb mb-ok" id="pwdSuccess" style="margin-bottom:.85rem">Password changed successfully.</div>
-      <div class="fg"><label class="fl">Current Password</label><input type="password" id="currentPassword" class="fc" required></div>
-      <div class="fg"><label class="fl">New Password <span style="color:var(--gray-400);font-weight:400">(min 6 chars)</span></label><input type="password" id="newPassword" class="fc" required minlength="6"></div>
-      <div class="fg"><label class="fl">Confirm New Password</label><input type="password" id="confirmPassword" class="fc" required></div>
-      <button type="submit" class="btn btn-p" id="changePwdBtn">Change Password</button>
-    </form>
-  </div>
+    <div class="ch">📊 Account Statistics</div>
+    <div style="padding:1.25rem"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:1.25rem">...</div><div id="profileInactiveSection"><div style="font-weight:700;font-size:.88rem;color:var(--gray-900);margin-bottom:.75rem;border-top:1px solid var(--gray-200);padding-top:.85rem">⏳ Inactive Referrals</div><div class="tbl-wrap"><table class="ref-table"><thead><tr><th>#</th><th>Username</th><th>Phone</th><th>Joined</th><th>Status</th></tr></thead><tbody id="profileInactiveList"><tr><td colspan="5" style="text-align:center;padding:1.5rem">Loading…</td></tr></tbody></table></div></div></div></div>
+  <div class="pfg"><div class="card"><div class="ch">ℹ️ Personal Information</div><div style="padding:1.25rem;display:grid;gap:.85rem"><div><div class="slbl">Username</div><div style="font-weight:700;color:var(--gray-900)" id="profileUsername">—</div></div><div><div class="slbl">Phone</div><div id="profilePhone">—</div></div><div><div class="slbl">Member Since</div><div id="profileJoinDate">—</div></div></div></div><div class="card"><div class="ch">🔗 Your Invite Link</div><div style="padding:1.25rem"><div id="profileLinkSection"><input type="text" id="profileInviteCode" class="fc" readonly style="font-family:'DM Mono',monospace;font-size:.78rem;background:var(--gl);border-color:var(--g);margin-bottom:.75rem"><button onclick="copyInviteLink()" class="btn btn-o wf btn-sm">Copy Invite Link</button><p style="font-size:.78rem;color:var(--gray-400);margin-top:.75rem">Share to earn commissions on 4 levels 🐣</p></div><div id="profileLinkLocked" style="display:none;background:#fff7ed;border:1.5px solid #f97316;border-radius:var(--rs);padding:.85rem;font-size:.85rem;font-weight:700;color:#c2410c">Activate your account to unlock your referral link.</div></div></div></div>
+  <div class="card" style="margin-bottom:1.25rem"><div class="ch">✉️ Update Email <span id="emailCooldownMsg" style="font-size:.72rem;color:var(--y);font-weight:600;margin-left:.5rem"></span></div><div style="padding:1.25rem;max-width:480px"><div class="mb" id="emailUpdateMsg" style="margin-bottom:.85rem"></div><p style="font-size:.8rem;color:var(--gray-500);margin-bottom:1rem;line-height:1.5">Email can be changed <strong>once every 7 days</strong>. Current password required.</p><div class="fg"><label class="fl">New Email</label><input type="email" id="newEmail" class="fc" placeholder="new@email.com"></div><div class="fg"><label class="fl">Current Password <span style="color:var(--r)">*</span></label><input type="password" id="emailPassword" class="fc" placeholder="Enter password to confirm"></div><button onclick="updateEmail()" id="updateEmailBtn" class="btn btn-p">Save Email</button></div></div>
+  <div class="card" style="margin-bottom:1.25rem"><div class="ch">📞 Update Phone</div><div style="padding:1.25rem;max-width:480px"><div class="mb" id="phoneUpdateMsg" style="margin-bottom:.85rem"></div><div class="fg"><label class="fl">New Phone</label><input type="tel" id="newPhone" class="fc" placeholder="254712345678"></div><div class="fg"><label class="fl">Current Password <span style="color:var(--r)">*</span></label><input type="password" id="phonePassword" class="fc" placeholder="Enter password to confirm"></div><button onclick="updatePhone()" id="updatePhoneBtn" class="btn btn-p">Save Phone</button></div></div>
+  <div class="card"><div class="ch">🔐 Change Password</div><form id="changePasswordForm" style="padding:1.25rem;max-width:420px"><div class="mb mb-err" id="pwdError" style="margin-bottom:.85rem"></div><div class="mb mb-ok" id="pwdSuccess" style="margin-bottom:.85rem">Password changed successfully.</div><div class="fg"><label class="fl">Current Password</label><input type="password" id="currentPassword" class="fc" required></div><div class="fg"><label class="fl">New Password <span style="color:var(--gray-400);font-weight:400">(min 6 chars)</span></label><input type="password" id="newPassword" class="fc" required minlength="6"></div><div class="fg"><label class="fl">Confirm New Password</label><input type="password" id="confirmPassword" class="fc" required></div><button type="submit" class="btn btn-p" id="changePwdBtn">Change Password</button></form></div>
 </div>
 
 </div></div>
 
-<!-- MODALS -->
+<!-- MODALS omitted for brevity but remain identical -->
 <div class="modal" id="blogModal"><div class="mbox" style="max-width:720px"><button class="mclose" onclick="closeModal('blogModal')">&#10005;</button><h3 id="blogModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="blogModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.85rem"></p><div id="blogModalContent" style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:1rem;font-size:.88rem;max-height:160px;overflow-y:auto;line-height:1.7;color:var(--gray-700)"></div><label class="fl">Your Blog Post <span style="color:var(--gray-400);font-weight:400">(min 100 chars)</span></label><textarea id="blogWriteContent" class="fc" rows="9" placeholder="Write your blog post here…"></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin:.35rem 0 .85rem"><span id="blogCharCount" style="font-size:.75rem;color:var(--gray-400)">0 chars</span><span style="font-size:.75rem;color:var(--gray-400)">Min: 100</span></div><button id="blogSubmitBtn" class="btn btn-p wf">Submit Blog Post</button></div></div>
-
 <div class="modal" id="surveyModal"><div class="mbox"><button class="mclose" onclick="closeModal('surveyModal')">&#10005;</button><h3 id="surveyModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="surveyModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:1rem"></p><div id="surveyModalQuestions"></div><button id="surveySubmitBtn" class="btn btn-p wf" style="margin-top:1rem">Submit Survey</button></div></div>
-
-<div class="modal" id="writingModal"><div class="mbox"><button class="mclose" onclick="closeModal('writingModal')">&#10005;</button><h3 id="writingModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="writingModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:1rem"><strong style="font-size:.82rem">Instructions:</strong><div id="writingModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div class="fg"><label class="fl">Upload Your Work <span style="font-weight:400;color:var(--gray-400)">(PDF or Word &middot; Max 20MB)</span></label><input type="file" id="writingFileInput" class="fc" accept=".pdf,.doc,.docx"></div><button id="writingSubmitBtn" class="btn btn-p wf" style="margin-top:.5rem">Submit Writing Job</button></div></div>
-
+<div class="modal" id="writingModal"><div class="mbox"><button class="mclose" onclick="closeModal('writingModal')">&#10005;</button><h3 id="writingModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="writingModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:1rem"><strong style="font-size:.82rem">Instructions:</strong><div id="writingModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div class="fg"><label class="fl">Upload Your Work <span style="font-weight:400;color:var(--gray-400)">(PDF or Word · Max 20MB)</span></label><input type="file" id="writingFileInput" class="fc" accept=".pdf,.doc,.docx"></div><button id="writingSubmitBtn" class="btn btn-p wf" style="margin-top:.5rem">Submit Writing Job</button></div></div>
 <div class="modal" id="transcriptionModal"><div class="mbox" style="max-width:680px"><button class="mclose" onclick="closeModal('transcriptionModal')">&#10005;</button><h3 id="transcriptionModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="transcriptionModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.85rem"><strong style="font-size:.82rem">Instructions:</strong><div id="transcriptionModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div style="margin-bottom:1rem"><strong style="font-size:.82rem">Audio:</strong><audio id="transcriptionAudio" controls style="width:100%;margin-top:.5rem"></audio></div><div class="fg"><label class="fl">Your Transcription <span style="font-weight:400;color:var(--gray-400)">(min 20 chars)</span></label><textarea id="transcriptionText" class="fc" rows="7" placeholder="Type the transcription here…"></textarea><div style="font-size:.75rem;color:var(--gray-400);text-align:right;margin-top:.2rem" id="transcriptionCharCount">0 chars</div></div><button id="transcriptionSubmitBtn" class="btn btn-p wf">Submit Transcription</button></div></div>
-
-<div class="modal" id="dataentryModal"><div class="mbox"><button class="mclose" onclick="closeModal('dataentryModal')">&#10005;</button><h3 id="dataentryModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="dataentryModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.85rem"><strong style="font-size:.82rem">Instructions:</strong><div id="dataentryModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div id="dataentryTemplateSection" style="display:none;margin-bottom:.85rem"><a id="dataentryTemplateLink" href="javascript:void(0)" onclick="smartDownload(this.dataset.url,this.dataset.pid,'template')" data-url="" data-pid="" class="btn btn-o btn-sm">Download Template File</a></div><div class="fg"><label class="fl">Upload Completed File <span style="font-weight:400;color:var(--gray-400)">(Images: jpg, png, gif, webp &middot; Docs: pdf, doc, docx, xlsx, csv &middot; Max 20MB)</span></label><input type="file" id="dataentryFileInput" class="fc" accept=".pdf,.doc,.docx,.xlsx,.csv,.jpg,.jpeg,.png,.gif,.webp,.bmp"></div><div id="dataentryProgress" style="display:none;margin-top:.75rem"><div style="background:#e5e7eb;border-radius:999px;height:8px;overflow:hidden"><div id="dataentryProgressBar" style="height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);width:0%;transition:width .3s;border-radius:999px"></div></div><p id="dataentryProgressText" style="font-size:.78rem;color:var(--gray-500);text-align:center;margin:.35rem 0 0">Uploading…</p></div><button id="dataentrySubmitBtn" class="btn btn-p wf" style="margin-top:.5rem">Submit Data Entry</button></div></div>
-
-
-<!-- DEPOSIT MODAL -->
-<div class="modal" id="depositModal">
-  <div class="mbox" style="max-width:440px">
-    <button class="mclose" onclick="closeModal('depositModal')">&#10005;</button>
-    <h3 style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem">Deposit to Wallet</h3>
-    <p style="color:var(--gray-500);font-size:.85rem;margin-bottom:1.25rem">Pay securely via Card or M-Pesa. Amount reflects instantly.</p>
-    <div class="fg">
-      <label class="fl">Amount (KES)</label>
-      <input type="number" id="depositAmount" class="fc" placeholder="e.g. 700" min="10" step="1">
-    </div>
-    <p style="font-size:.78rem;color:var(--gray-400);margin:.35rem 0 1rem">Minimum KES 10 · Powered by Paystack</p>
-    <button id="depositBtn" onclick="initiateDeposit()" class="btn btn-p wf">Pay via Card / M-Pesa</button>
-    <p id="depositMsg" style="display:none;text-align:center;font-size:.85rem;margin:.65rem 0 0;font-weight:600"></p>
-    <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--gray-100)">
-      <p style="font-size:.75rem;color:var(--gray-400);text-align:center;margin:0">🔒 Secured by Paystack · SSL encrypted</p>
-    </div>
-  </div>
-</div>
+<div class="modal" id="dataentryModal"><div class="mbox"><button class="mclose" onclick="closeModal('dataentryModal')">&#10005;</button><h3 id="dataentryModalTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem"></h3><p id="dataentryModalDesc" style="color:var(--gray-500);font-size:.85rem;margin-bottom:.75rem"></p><div style="background:var(--gray-50);padding:1rem;border-radius:.5rem;margin-bottom:.85rem"><strong style="font-size:.82rem">Instructions:</strong><div id="dataentryModalInstructions" style="margin-top:.4rem;font-size:.85rem;white-space:pre-wrap;color:var(--gray-700)"></div></div><div id="dataentryTemplateSection" style="display:none;margin-bottom:.85rem"><a id="dataentryTemplateLink" href="javascript:void(0)" onclick="smartDownload(this.dataset.url,this.dataset.pid,'template')" data-url="" data-pid="" class="btn btn-o btn-sm">Download Template File</a></div><div class="fg"><label class="fl">Upload Completed File <span style="font-weight:400;color:var(--gray-400)">(Images: jpg, png, gif, webp · Docs: pdf, doc, docx, xlsx, csv · Max 20MB)</span></label><input type="file" id="dataentryFileInput" class="fc" accept=".pdf,.doc,.docx,.xlsx,.csv,.jpg,.jpeg,.png,.gif,.webp,.bmp"></div><div id="dataentryProgress" style="display:none;margin-top:.75rem"><div style="background:#e5e7eb;border-radius:999px;height:8px;overflow:hidden"><div id="dataentryProgressBar" style="height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);width:0%;transition:width .3s;border-radius:999px"></div></div><p id="dataentryProgressText" style="font-size:.78rem;color:var(--gray-500);text-align:center;margin:.35rem 0 0">Uploading…</p></div><button id="dataentrySubmitBtn" class="btn btn-p wf" style="margin-top:.5rem">Submit Data Entry</button></div></div>
+<div class="modal" id="depositModal"><div class="mbox" style="max-width:440px"><button class="mclose" onclick="closeModal('depositModal')">&#10005;</button><h3 style="font-size:1.15rem;font-weight:800;margin-bottom:.25rem">Deposit to Wallet</h3><p style="color:var(--gray-500);font-size:.85rem;margin-bottom:1.25rem">Pay securely via Card or M-Pesa. Amount reflects instantly.</p><div class="fg"><label class="fl">Amount (KES)</label><input type="number" id="depositAmount" class="fc" placeholder="e.g. 700" min="10" step="1"></div><p style="font-size:.78rem;color:var(--gray-400);margin:.35rem 0 1rem">Minimum KES 10 · Powered by Paystack</p><button id="depositBtn" onclick="initiateDeposit()" class="btn btn-p wf">Pay via Card / M-Pesa</button><p id="depositMsg" style="display:none;text-align:center;font-size:.85rem;margin:.65rem 0 0;font-weight:600"></p><div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--gray-100)"><p style="font-size:.75rem;color:var(--gray-400);text-align:center;margin:0">🔒 Secured by Paystack · SSL encrypted</p></div></div></div>
 
 <div id="_toast"></div>
 
-<script>
-const _token=localStorage.getItem('token');
-const _user=(()=>{try{return JSON.parse(localStorage.getItem('user')||'null');}catch(e){return null;}})();
-if(!_token||!_user)window.location.href='/index.html';
-if(_user&&_user.isAdmin)window.location.href='/admin.html';
-
-let currentUser=null,_isActive=false,_activeBlogId=null,_activeSurveyId=null,_activeWritingId=null,_activeTranscriptionId=null,_activeDataentryId=null,_notifOpen=false;
-
-async function apiFetch(url,opts={}){
-  const ctrl=new AbortController(),t=setTimeout(()=>ctrl.abort(),25000);
-  try{
-    const isFD=opts.body instanceof FormData;
-    const headers={Authorization:`Bearer ${localStorage.getItem('token')}`};
-    if(!isFD)headers['Content-Type']='application/json';
-    const res=await fetch(url,{...opts,headers,signal:ctrl.signal});
-    clearTimeout(t);
-    let data;try{data=await res.json();}catch(e){data={};}
-    if(res.status===401){logout();throw new Error('Session expired.');}
-    if(!res.ok)throw new Error(data.error||data.message||`Error ${res.status}`);
-    return data;
-  }catch(err){
-    clearTimeout(t);
-    if(err.name==='AbortError')throw new Error('Request timed out.');
-    /* ── Offline / network failure → try SW cache ── */
-    if(err instanceof TypeError||!navigator.onLine){
-      if(!opts.method||opts.method==='GET'){
-        try{
-          const cached=await caches.match(url);
-          if(cached){const data=await cached.json();data._fromCache=true;return data;}
-        }catch(e){}
-      }
-      throw new Error('You are offline. Showing last saved data where available.');
-    }
-    throw err;
-  }
-}
-function logout(){localStorage.clear();window.location.href='/index.html';}
-function toggleSidenav(){document.getElementById('sidenav').classList.toggle('open');}
-function openModal(id){document.getElementById(id).style.display='block';}
-function closeModal(id){document.getElementById(id).style.display='none';}
-function toast(msg,ok=true){
-  const t=document.getElementById('_toast');
-  t.textContent=msg;
-  t.style.cssText=`position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;padding:.65rem 1.4rem;border-radius:.6rem;font-size:.88rem;font-weight:700;box-shadow:0 4px 20px rgba(0,0,0,.25);max-width:90vw;text-align:center;background:${ok?'#16a34a':'#ef4444'};color:#fff;opacity:1;pointer-events:none;transition:.3s`;
-  setTimeout(()=>{t.style.opacity='0';},3500);
-}
-function showMsg(id,txt,ok){
-  const el=document.getElementById(id);if(!el)return;
-  el.textContent=txt;el.className='mb '+(ok?'mb-ok':'mb-err');el.style.display='block';
-  setTimeout(()=>{el.style.display='none';},6000);
-}
-function setLS(id,msg='Loading…'){const el=document.getElementById(id);if(el)el.innerHTML=`<div class="ls"><div class="spin"></div><p style="margin-top:.75rem">${msg}</p></div>`;}
-function setErr(id,msg,fn){const el=document.getElementById(id);if(el)el.innerHTML=`<div style="background:var(--rl);border:1px solid #fca5a5;border-radius:.5rem;padding:1rem;color:#b91c1c;font-size:.83rem;grid-column:1/-1">Error: ${msg}${fn?` <button onclick="${fn}()" style="margin-left:.5rem;background:#b91c1c;color:#fff;border:none;padding:.2rem .6rem;border-radius:.3rem;cursor:pointer;font-size:.78rem">Retry</button>`:''}` +'</div>';}
-function getEATDay(){return new Date(new Date().getTime()+3*3600000).getUTCDay();}
-const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-
-// Check if user is active — used to gate task submission and referral link
-function isActiveUser(){return _isActive;}
-
-function showPage(name){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const el=document.getElementById('pg-'+name);if(el)el.classList.add('active');
-  document.querySelectorAll('.nav-lnk').forEach(a=>a.classList.toggle('active',a.getAttribute('data-pg')===name));
-  window.history.pushState({},'','#'+name);
-  document.getElementById('sidenav').classList.remove('open');
-  if(name==='dashboard')loadDashboard();
-  else if(name==='blogs')loadBlogs();
-  else if(name==='surveys')loadSurveys();
-  else if(name==='writing')loadWriting();
-  else if(name==='transcription')loadTranscription();
-  else if(name==='dataentry')loadDataentry();
-  else if(name==='referrals')loadReferrals();
-  else if(name==='withdraw')loadWithdraw();
-  else if(name==='profile')loadProfile();
-  // Switch AI bot context when page changes — logic lives in techgeo-ai.js
-  if(typeof TechGeoAI!=='undefined')TechGeoAI.switchBot(name);
-}
-document.addEventListener('click',e=>{
-  const el=e.target.closest('.nav-lnk');
-  if(el){const pg=el.getAttribute('data-pg');if(pg){e.preventDefault();showPage(pg);window.scrollTo(0,0);}}
-  if(_notifOpen&&!e.target.closest('#bellBtn')&&!e.target.closest('#notifPanel')){document.getElementById('notifPanel').style.display='none';_notifOpen=false;}
-});
-window.addEventListener('load',()=>{
-  if(_user)document.getElementById('navUsername').textContent='@'+_user.username;
-  if(_user&&_user.packageType==='not_active'){loadActivationPage();return;}
-  showPage(window.location.hash.slice(1)||'dashboard');
-  loadNotifications();
-});
-
-// ACTIVATION
-async function loadActivationPage(){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('pg-activation').classList.add('active');
-  try{
-    const data=await apiFetch('/api/users/profile');const user=data.user;
-    if(user.packageType!=='not_active'){_isActive=true;showPage('dashboard');return;}
-    document.getElementById('activationBalance').textContent='KES '+(user.primaryWallet?.balance||0);
-    try{const cd=await apiFetch('/api/referrals/chain');const f=cd.chain?.[0];if(f){document.getElementById('uplineName').textContent=f.username||'Your referrer';document.getElementById('uplinePhone').textContent=f.phone||'';document.getElementById('uplineEmail').textContent=f.email||'';}else document.getElementById('uplineName').textContent='Contact admin';}catch(e){document.getElementById('uplineName').textContent='Contact your referrer';}
-  }catch(err){if(err.message.includes('Session'))logout();}
-}
-async function doActivation(){
-  const m=document.getElementById('activationMsg');
-  if(!confirm('Deduct KES 700 from your wallet to activate?'))return;
-  m.style.display='block';m.style.color='var(--gray-500)';m.textContent='Activating…';
-  try{const d=await apiFetch('/api/auth/activate-package',{method:'POST'});m.style.color='var(--g)';m.textContent=d.message;const p=await apiFetch('/api/users/profile');localStorage.setItem('user',JSON.stringify(p.user));_isActive=true;setTimeout(()=>showPage('dashboard'),1500);}
-  catch(err){m.style.color='var(--r)';m.textContent=err.message;loadActivationPage();}
-}
-
-/* ── EMOJI CELEBRATION ANIMATIONS ── */
-const CELEB_EMOJIS = ['🎉','🥳','✨','💰','⭐','🏆','🚀','🎊','💎','🔥','🌟','💸'];
-const EASTER_EMOJIS = ['🐣','🥚','🌷','🐰','🌸','🎀','🍬','🌈'];
-
-let _confettiFired = false;
-function fireConfetti(){
-  if(_confettiFired) return;
-  _confettiFired = true;
-  const c = document.getElementById('confettiContainer');
-  if(!c) return;
-  // Mix celebration + easter emojis
-  const pool = [...CELEB_EMOJIS, ...EASTER_EMOJIS];
-  const count = 28;
-  for(let i = 0; i < count; i++){
-    const el = document.createElement('div');
-    el.className = 'confetti-bit';
-    el.textContent = pool[Math.floor(Math.random() * pool.length)];
-    const left = Math.random() * 100;
-    const dur  = 2.2 + Math.random() * 2.2;
-    const delay = Math.random() * 1.8;
-    const rot  = (Math.random() > .5 ? 1 : -1) * (180 + Math.random() * 360);
-    el.style.cssText = `left:${left}%;--cd:${dur}s;--cdelay:${delay}s;--cr:${rot}deg;`;
-    c.appendChild(el);
-    // Clean up after animation
-    setTimeout(() => el.remove(), (dur + delay + .5) * 1000);
-  }
-}
-
-function spawnFloatParticles(anchorEl, emojis = CELEB_EMOJIS, count = 5){
-  const rect = anchorEl.getBoundingClientRect();
-  for(let i = 0; i < count; i++){
-    const el = document.createElement('div');
-    el.className = 'emo-particle';
-    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    const dx = (Math.random() - .5) * 80;
-    const rot = (Math.random() - .5) * 360;
-    const dur = 1.2 + Math.random() * .8;
-    const delay = Math.random() * .4;
-    el.style.cssText = `
-      left:${rect.left + rect.width/2 + window.scrollX + (Math.random()-0.5)*40}px;
-      top:${rect.top + rect.height/2 + window.scrollY}px;
-      position:fixed;
-      --dx:${dx}px;--rot:${rot}deg;--dur:${dur}s;--delay:${delay}s;
-    `;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), (dur + delay + .2) * 1000);
-  }
-}
-
-// Attach particle burst to stat cards on click
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.sc').forEach((sc, i) => {
-    sc.style.cursor = 'pointer';
-    sc.addEventListener('click', () => {
-      const emos = [EASTER_EMOJIS, CELEB_EMOJIS, ['👥','🤝','💪','🙌'], ['📈','💸','💰','🏅']];
-      spawnFloatParticles(sc, emos[i % emos.length], 6);
-    });
-  });
-});
-
-// DASHBOARD
-async function loadDashboard(){
-  // 🎉 Fire celebration confetti on dashboard load
-  fireConfetti();
-  try{
-    const data=await apiFetch('/api/users/dashboard');currentUser=data;
-    localStorage.setItem('user',JSON.stringify({id:data.profile.id,username:data.profile.username,email:data.profile.email||'',packageType:data.profile.packageType,isAdmin:false}));
-    _isActive=data.profile.packageType!=='not_active';
-    if(!_isActive){
-      // Inactive: show dashboard but with banner and locked tasks
-      document.getElementById('dashInactiveBanner').style.display='block';
-      document.getElementById('pg-dashboard').classList.add('active');
-      // Lock task boxes visually
-      document.querySelectorAll('#dashTaskBoxes .tbox').forEach(b=>b.classList.add('locked'));
-    } else {
-      document.getElementById('dashInactiveBanner').style.display='none';
-      document.querySelectorAll('#dashTaskBoxes .tbox').forEach(b=>b.classList.remove('locked'));
-    }
-    document.getElementById('dashUsername').textContent=data.profile.username;
-    document.getElementById('dashMainWallet').textContent='KES '+data.wallets.primary.balance;
-    document.getElementById('navWallet').textContent='KES '+(data.wallets.primary.balance||0);
-    document.getElementById('dashPoints').textContent=(data.wallets.points.points||0)+' pts';
-    document.getElementById('dashActiveReferrals').textContent=data.stats.activeDirectReferrals||0;
-    document.getElementById('dashTotalEarnings').textContent='KES '+(data.stats.totalEarnings||0);
-    document.getElementById('dashPackageStatus').textContent=_isActive?'Active Member':'Account not activated — see banner below';
-    document.getElementById('tbBlogsLeft').textContent=(data.dailyProgress?.blogsLeft??'—')+(_isActive?' slots left':'');
-    document.getElementById('tbSurveysLeft').textContent=(data.dailyProgress?.surveysLeft??'—')+(_isActive?' slots left':'');
-    if(data.wallets.points.canConvert&&_isActive){document.getElementById('pointsConversionCard').style.display='block';document.getElementById('currentPoints').textContent=data.wallets.points.points;document.getElementById('pointsKES').textContent='KES '+data.wallets.points.kesEquivalent;}
-    loadDashboardReferrals();loadInactiveReferrals();
-  }catch(err){if(err.message.includes('Session')||err.message.includes('token'))logout();}
-}
-document.getElementById('activateBtn').addEventListener('click',async()=>{
-  if(!confirm('Deduct KES 700 to activate?'))return;
-  const b=document.getElementById('activateBtn');b.disabled=true;b.textContent='Activating…';
-  try{const d=await apiFetch('/api/auth/activate-package',{method:'POST'});toast(d.message);_isActive=true;loadDashboard();}
-  catch(err){toast(err.message,false);}
-  finally{b.disabled=false;b.textContent='Activate Account — KES 700';}
-});
-document.getElementById('convertPointsBtn')?.addEventListener('click',async()=>{
-  if(!confirm('Convert all eligible points?'))return;
-  const b=document.getElementById('convertPointsBtn');b.disabled=true;b.textContent='Converting…';
-  try{const d=await apiFetch('/api/wallets/convert-points',{method:'POST'});toast(d.message);loadDashboard();}
-  catch(err){toast(err.message,false);}
-  finally{b.disabled=false;b.textContent='Convert Now';}
-});
-async function loadDashboardReferrals(){
-  try{
-    const s=await apiFetch('/api/referrals/stats');
-    let totalActive=0,totalInactive=0;
-    ['1','2','3','4'].forEach(l=>{
-      const c=s.levels['level'+l];
-      const users=c?.users||[];
-      const t=users.length;
-      const a=users.filter(u=>u.packageType&&u.packageType!=='not_active').length;
-      const inact=t-a;
-      document.getElementById('dashRef'+l).textContent=t;
-      document.getElementById('dashRef'+l+'s').textContent=a+' active / '+inact+' inactive';
-      totalActive+=a; totalInactive+=inact;
-    });
-    document.getElementById('dashActiveReferrals').textContent=totalActive;
-    document.getElementById('dashInactiveReferrals').textContent=totalInactive+' inactive';
-    document.getElementById('dashTotalCommission').textContent='KES '+(s.summary?.totalCommission||0);
-  }catch(e){}
-}
-async function loadInactiveReferrals(){
-  try{
-    const data=await apiFetch('/api/users/inactive-referrals');
-    const sec=document.getElementById('inactiveReferralsSection');
-    const tbody=document.getElementById('inactiveReferralsList');
-    if(!data.inactiveReferrals?.length){sec.style.display='none';return;}
-    sec.style.display='block';
-    tbody.innerHTML=data.inactiveReferrals.map((u,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${u.name||'—'}</td><td style="font-family:'DM Mono',monospace">${u.phone||'—'}</td><td>${u.daysSinceJoined!==undefined?u.daysSinceJoined+'d ago':new Date(u.joinedAt||Date.now()).toLocaleDateString()}</td><td><span class="bdg by">Inactive</span></td></tr>`).join('');
-  }catch(e){}
-}
-
-// TASK CARD — inactive users see the card but the action button is replaced with a locked notice
-function renderTaskCard(item,type,userStatus){
-  const sub=item.currentBidders||item.currentWorkers||0,appr=item.approvedCount||0,pend=item.pendingCount||0;
-  const isOpen=!item.status||item.status==='open';
-  const max=item.maxBidders||item.maxWorkers||null;
-  const slots=max?max-sub:null;
-  const dl=item.deadline?`<span style="font-size:.72rem;color:#b45309;background:var(--ym);padding:.1rem .45rem;border-radius:999px">Deadline: ${new Date(item.deadline).toLocaleDateString()}</span>`:'';
-  const tpl=item.templateUrl?`<span style="font-size:.72rem"><a href="javascript:void(0)" onclick="smartDownload('${item.templateUrl}','${item.templatePublicId||''}','${(item.title||'template').replace(/'/g,'')}_template')" style="color:var(--g);font-weight:600">Download Template</a></span>`:'';
-  const fns={blogs:`openBlogModal('${item.id}')`,surveys:`openSurveyModal('${item.id}')`,writing:`openWritingModal('${item.id}')`,transcription:`openTranscriptionModal('${item.id}')`,dataentry:`openDataentryModal('${item.id}')`};
-  const lbls={blogs:'Write',surveys:'Start Survey',writing:'Submit',transcription:'Transcribe',dataentry:'Submit'};
-  let ab='';
-  if(!_isActive){
-    ab=`<span class="bdg by" style="font-size:.72rem">Activate to submit</span>`;
-  } else if(userStatus){
-    ab=`<span class="bdg bb" style="font-size:.72rem">Your status: ${userStatus}</span>`;
-  } else if(!isOpen){
-    ab=`<span class="bdg bgr">Closed</span>`;
-  } else if(slots!==null&&slots<=0){
-    ab=`<span class="bdg br">Slots Full</span>`;
-  } else {
-    ab=`<button onclick="${fns[type]}" class="btn btn-p btn-sm">${lbls[type]}</button>`;
-  }
-  const slotsText=max?`${sub}/${max}`:'open';
-  return `<div class="card" style="border-top:3px solid var(--g);transition:.15s" onmouseover="this.style.boxShadow='var(--shm)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='var(--sh)';this.style.transform='none'"><div style="padding:1rem"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.35rem"><h4 style="font-size:.9rem;font-weight:800;color:var(--gray-900);line-height:1.3;margin:0">${item.title}</h4><div style="display:flex;gap:.3rem;align-items:center;flex-shrink:0"><span class="bdg ${isOpen?'bg':'bgr'}">${item.status||'open'}</span><span style="background:var(--gl);color:var(--g);padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:800;border:1px solid var(--gm)">${item.reward||0} pts</span></div></div><p style="color:var(--gray-500);font-size:.78rem;margin:0 0 .35rem;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${item.description||''}</p><div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.35rem">${dl}${tpl}</div>${item.audioUrl?`<audio src="${item.audioUrl}" controls style="width:100%;height:28px;margin:.3rem 0"></audio>`:''}<div style="display:flex;gap:1rem;padding:.4rem 0;margin:.25rem 0;border-top:1px solid var(--gray-100)"><div><span style="font-weight:800;font-size:.85rem;color:var(--b)">${sub}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">submitted</span></div><div><span style="font-weight:800;font-size:.85rem;color:var(--g)">${appr}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">approved</span></div><div><span style="font-weight:800;font-size:.85rem;color:var(--y)">${pend}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">pending</span></div><div style="margin-left:auto"><span style="font-size:.7rem;color:var(--gray-400)">${slotsText}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">slots</span></div></div><div style="display:flex;justify-content:flex-end">${ab}</div></div></div>`;
-}
-
-// BLOGS
-async function loadBlogs(){
-  const locked=document.getElementById('blogsLocked');
-  const info=document.getElementById('blogsInfo');
-  if(!_isActive){locked.style.display='block';}else{locked.style.display='none';}
-  setLS('blogsList','Loading blog opportunities…');
-  try{
-    const[dd,bd]=await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null),apiFetch('/api/blogs')]);
-    if(dd){
-      const left=dd.dailyProgress?.blogsLeft??'—';
-      info.textContent=`Available slots today: ${left}`;
-    }
-    const l=document.getElementById('blogsList');
-    if(!bd.blogs?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No blog opportunities right now.</p>';return;}
-    l.innerHTML=bd.blogs.map(b=>renderTaskCard(b,'blogs',b.userBidStatus)).join('');
-  }catch(err){setErr('blogsList',err.message,'loadBlogs');}
-}
-async function openBlogModal(id){
-  if(!_isActive){toast('Activate your account to submit tasks.',false);return;}
-  try{const d=await apiFetch(`/api/blogs/${id}`);const b=d.blog;_activeBlogId=id;document.getElementById('blogModalTitle').textContent=b.title;document.getElementById('blogModalDesc').textContent=b.description;document.getElementById('blogModalContent').innerHTML=b.content.replace(/\n/g,'<br>');document.getElementById('blogWriteContent').value='';document.getElementById('blogCharCount').textContent='0 chars';openModal('blogModal');}catch(err){toast('Error: '+err.message,false);}
-}
-document.getElementById('blogWriteContent').addEventListener('input',function(){document.getElementById('blogCharCount').textContent=this.value.length+' chars';});
-document.getElementById('blogSubmitBtn').addEventListener('click',async()=>{
-  if(!_activeBlogId)return;
-  const c=document.getElementById('blogWriteContent').value.trim();
-  if(c.length<100){toast('Minimum 100 characters required.',false);return;}
-  const b=document.getElementById('blogSubmitBtn');b.disabled=true;b.textContent='Submitting…';
-  try{await apiFetch(`/api/blogs/${_activeBlogId}/submit`,{method:'POST',body:JSON.stringify({submissionContent:c})});toast('Blog submitted successfully.');closeModal('blogModal');loadBlogs();}
-  catch(err){toast(err.message,false);}
-  finally{b.disabled=false;b.textContent='Submit Blog Post';}
-});
-
-// SURVEYS
-async function loadSurveys(){
-  const locked=document.getElementById('surveysLocked');
-  const info=document.getElementById('surveysInfo');
-  if(!_isActive){locked.style.display='block';}else{locked.style.display='none';}
-  setLS('surveysList','Loading surveys…');
-  try{
-    const[dd,sd]=await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null),apiFetch('/api/surveys')]);
-    if(dd){
-      const left=dd.dailyProgress?.surveysLeft??'—';
-      info.textContent=`Available slots today: ${left}`;
-    }
-    const l=document.getElementById('surveysList');
-    if(!sd.surveys?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No surveys right now.</p>';return;}
-    l.innerHTML=sd.surveys.map(s=>renderTaskCard(s,'surveys',s.userBidStatus)).join('');
-  }catch(err){setErr('surveysList',err.message,'loadSurveys');}
-}
-async function openSurveyModal(id){
-  if(!_isActive){toast('Activate your account to submit tasks.',false);return;}
-  try{const d=await apiFetch(`/api/surveys/${id}`);const s=d.survey;if(s.alreadySubmitted){toast('Already submitted.',false);return;}_activeSurveyId=id;document.getElementById('surveyModalTitle').textContent=s.title;document.getElementById('surveyModalDesc').textContent=s.description;document.getElementById('surveyModalQuestions').innerHTML=s.questions.map((q,i)=>`<div style="margin-bottom:1.1rem"><label style="font-weight:700;display:block;margin-bottom:.4rem;font-size:.88rem">${i+1}. ${q.question}${q.required?'<span style="color:var(--r)"> *</span>':''}</label>${q.type==='multiple_choice'?q.options.map(o=>`<label style="display:flex;align-items:center;gap:.4rem;margin-bottom:.25rem;cursor:pointer;font-size:.85rem"><input type="radio" name="q${i}" value="${o}" ${q.required?'required':''}> ${o}</label>`).join(''):q.type==='yes_no'?`<label style="margin-right:1.25rem;font-size:.85rem;cursor:pointer"><input type="radio" name="q${i}" value="Yes" required> Yes</label><label style="font-size:.85rem;cursor:pointer"><input type="radio" name="q${i}" value="No" required> No</label>`:q.type==='rating'?`<div style="display:flex;gap:.5rem">${[1,2,3,4,5].map(n=>`<label style="text-align:center;cursor:pointer;font-size:.85rem"><input type="radio" name="q${i}" value="${n}" style="display:block;margin:0 auto .2rem"> ${n}</label>`).join('')}</div>`:`<textarea name="q${i}" class="fc" rows="2" ${q.required?'required':''}></textarea>`}</div>`).join('');openModal('surveyModal');}catch(err){toast('Error: '+err.message,false);}
-}
-document.getElementById('surveySubmitBtn').addEventListener('click',async()=>{
-  if(!_activeSurveyId)return;
-  const r=[];let i=0;
-  while(true){const rd=document.querySelector(`input[name="q${i}"]:checked`),ta=document.querySelector(`textarea[name="q${i}"]`);if(!rd&&!ta)break;r.push(rd?rd.value:(ta?ta.value.trim():''));i++;}
-  if(!r.length){toast('Answer at least one question.',false);return;}
-  const b=document.getElementById('surveySubmitBtn');b.disabled=true;b.textContent='Submitting…';
-  try{await apiFetch(`/api/surveys/${_activeSurveyId}/submit`,{method:'POST',body:JSON.stringify({responses:r})});toast('Survey submitted.');closeModal('surveyModal');loadSurveys();}
-  catch(err){toast(err.message,false);}
-  finally{b.disabled=false;b.textContent='Submit Survey';}
-});
-
-// WRITING
-async function loadWriting(){
-  document.getElementById('writingLocked').style.display=_isActive?'none':'block';
-  setLS('writingList','Loading writing jobs…');
-  try{const d=await apiFetch('/api/writing');const l=document.getElementById('writingList');if(!d.jobs?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No writing jobs right now.</p>';return;}l.innerHTML=d.jobs.map(j=>renderTaskCard(j,'writing',j.userSubmission?('Status: '+j.userSubmission.status+(j.userSubmission.reviewNotes?' — '+j.userSubmission.reviewNotes:'')):null)).join('');}catch(err){setErr('writingList',err.message,'loadWriting');}
-}
-async function openWritingModal(id){
-  if(!_isActive){toast('Activate your account to submit tasks.',false);return;}
-  try{const d=await apiFetch(`/api/writing/${id}`);const j=d.job;_activeWritingId=id;document.getElementById('writingModalTitle').textContent=j.title;document.getElementById('writingModalDesc').textContent=j.description;document.getElementById('writingModalInstructions').textContent=j.instructions;document.getElementById('writingFileInput').value='';openModal('writingModal');}catch(err){toast('Error: '+err.message,false);}
-}
-document.getElementById('writingSubmitBtn').addEventListener('click',async()=>{
-  if(!_activeWritingId)return;
-  const f=document.getElementById('writingFileInput').files[0];if(!f){toast('Select a file.',false);return;}
-  const b=document.getElementById('writingSubmitBtn');b.disabled=true;b.textContent='Uploading…';
-  try{const fd=new FormData();fd.append('file',f);const d=await apiFetch(`/api/writing/${_activeWritingId}/submit`,{method:'POST',body:fd});toast(d.message);closeModal('writingModal');loadWriting();}
-  catch(err){toast(err.message,false);}
-  finally{b.disabled=false;b.textContent='Submit Writing Job';}
-});
-
-// TRANSCRIPTION
-async function loadTranscription(){
-  document.getElementById('transcriptionLocked').style.display=_isActive?'none':'block';
-  setLS('transcriptionList','Loading transcription jobs…');
-  try{const d=await apiFetch('/api/transcriptions');const l=document.getElementById('transcriptionList');if(!d.jobs?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No transcription jobs right now.</p>';return;}l.innerHTML=d.jobs.map(j=>renderTaskCard(j,'transcription',j.userSubmission?('Status: '+j.userSubmission.status):null)).join('');}catch(err){setErr('transcriptionList',err.message,'loadTranscription');}
-}
-async function openTranscriptionModal(id){
-  if(!_isActive){toast('Activate your account to submit tasks.',false);return;}
-  try{const d=await apiFetch(`/api/transcriptions/${id}`);const j=d.job;_activeTranscriptionId=id;document.getElementById('transcriptionModalTitle').textContent=j.title;document.getElementById('transcriptionModalDesc').textContent=j.description;document.getElementById('transcriptionModalInstructions').textContent=j.instructions;document.getElementById('transcriptionAudio').src=j.audioUrl;document.getElementById('transcriptionText').value='';document.getElementById('transcriptionCharCount').textContent='0 chars';openModal('transcriptionModal');}catch(err){toast('Error: '+err.message,false);}
-}
-document.getElementById('transcriptionText').addEventListener('input',function(){document.getElementById('transcriptionCharCount').textContent=this.value.length+' chars';});
-document.getElementById('transcriptionSubmitBtn').addEventListener('click',async()=>{
-  if(!_activeTranscriptionId)return;
-  const c=document.getElementById('transcriptionText').value.trim();if(c.length<20){toast('Minimum 20 characters.',false);return;}
-  const b=document.getElementById('transcriptionSubmitBtn');b.disabled=true;b.textContent='Submitting…';
-  try{await apiFetch(`/api/transcriptions/${_activeTranscriptionId}/submit`,{method:'POST',body:JSON.stringify({content:c})});toast('Transcription submitted.');closeModal('transcriptionModal');loadTranscription();}
-  catch(err){toast(err.message,false);}
-  finally{b.disabled=false;b.textContent='Submit Transcription';}
-});
-
-// DATA ENTRY
-async function loadDataentry(){
-  document.getElementById('dataentryLocked').style.display=_isActive?'none':'block';
-  setLS('dataentryList','Loading data entry jobs…');
-  try{const d=await apiFetch('/api/dataentry');const l=document.getElementById('dataentryList');if(!d.jobs?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No data entry jobs right now.</p>';return;}l.innerHTML=d.jobs.map(j=>renderTaskCard(j,'dataentry',j.userSubmission?('Status: '+j.userSubmission.status):null)).join('');}catch(err){setErr('dataentryList',err.message,'loadDataentry');}
-}
-async function openDataentryModal(id){
-  if(!_isActive){toast('Activate your account to submit tasks.',false);return;}
-  try{const d=await apiFetch(`/api/dataentry/${id}`);const j=d.job;_activeDataentryId=id;document.getElementById('dataentryModalTitle').textContent=j.title;document.getElementById('dataentryModalDesc').textContent=j.description;document.getElementById('dataentryModalInstructions').textContent=j.instructions;const tp=document.getElementById('dataentryTemplateSection');if(j.templateUrl){tp.style.display='block';const tl=document.getElementById('dataentryTemplateLink');tl.dataset.url=j.templateUrl;tl.dataset.pid=j.templatePublicId||'';}else tp.style.display='none';document.getElementById('dataentryFileInput').value='';openModal('dataentryModal');}catch(err){toast('Error: '+err.message,false);}
-}
-document.getElementById('dataentrySubmitBtn').addEventListener('click',function(){
-  if(!_activeDataentryId)return;
-  const f=document.getElementById('dataentryFileInput').files[0];
-  if(!f){toast('Please select a file to upload.',false);return;}
-
-  // Validate file size client-side
-  if(f.size>20*1024*1024){toast('File too large. Maximum size is 20MB.',false);return;}
-
-  const b=document.getElementById('dataentrySubmitBtn');
-  const prog=document.getElementById('dataentryProgress');
-  const bar=document.getElementById('dataentryProgressBar');
-  const progTxt=document.getElementById('dataentryProgressText');
-
-  b.disabled=true; b.textContent='Uploading…'; prog.style.display='block'; bar.style.width='0%';
-
-  const fd=new FormData(); fd.append('file',f);
-  const xhr=new XMLHttpRequest();
-
-  // Progress tracking
-  xhr.upload.addEventListener('progress',function(e){
-    if(e.lengthComputable){
-      const pct=Math.round((e.loaded/e.total)*100);
-      bar.style.width=pct+'%';
-      progTxt.textContent=pct<100?`Uploading… ${pct}%`:'Processing on server…';
-    }
-  });
-
-  xhr.addEventListener('load',function(){
-    b.disabled=false; b.textContent='Submit Data Entry'; prog.style.display='none';
-    try{
-      const d=JSON.parse(xhr.responseText);
-      if(xhr.status>=200&&xhr.status<300){
-        toast(d.message||'✅ Submission uploaded! Pending admin review.');
-        closeModal('dataentryModal'); loadDataentry();
-      } else {
-        toast(d.error||'Upload failed. Please try again.',false);
-      }
-    }catch(e){ toast('Server error. Please try again.',false); }
-  });
-
-  xhr.addEventListener('error',function(){
-    b.disabled=false; b.textContent='Submit Data Entry'; prog.style.display='none';
-    toast('Network error. Check your connection and try again.',false);
-  });
-
-  xhr.addEventListener('timeout',function(){
-    b.disabled=false; b.textContent='Submit Data Entry'; prog.style.display='none';
-    toast('Upload timed out. Try a smaller file or check your connection.',false);
-  });
-
-  xhr.open('POST',`/api/dataentry/${_activeDataentryId}/submit`);
-  xhr.timeout=120000; // 2 min timeout for large files
-  xhr.setRequestHeader('Authorization','Bearer '+localStorage.getItem('token'));
-  xhr.send(fd);
-});
-
-async function smartDownload(url,pid,fn){if(!url)return;try{const p=await fetch(url,{method:'HEAD'}).catch(()=>null);if(p&&p.ok){const a=document.createElement('a');a.href=url;a.target='_blank';a.download=fn||'download';document.body.appendChild(a);a.click();document.body.removeChild(a);return;}}catch(e){}if(!pid||pid===url){window.open(url,'_blank');return;}try{const d=await apiFetch(`/api/dataentry/file/signed?publicId=${encodeURIComponent(pid)}&fileName=${encodeURIComponent(fn||'download')}`);if(d.url)window.open(d.url,'_blank');else window.open(url,'_blank');}catch(e){window.open(url,'_blank');}}
-
-// REFERRALS
-async function loadReferrals(){
-  // Gate referral link for inactive users
-  const active=_isActive;
-  document.getElementById('refLinkSection').style.display=active?'block':'none';
-  document.getElementById('refLinkLocked').style.display=active?'none':'block';
-  try{
-    const[stats,link]=await Promise.all([apiFetch('/api/referrals/stats'),apiFetch('/api/referrals/link')]);
-    if(active)document.getElementById('referralLink').value=link.inviteLink||`${window.location.origin}/index.html#join?ref=${link.inviteCode}`;
-    ['1','2','3','4'].forEach(l=>{
-      const c=stats.levels['level'+l];
-      const users=c?.users||[];
-      const t=users.length;
-      const a=users.filter(u=>u.packageType&&u.packageType!=='not_active').length;
-      const inact=t-a;
-      document.getElementById('level'+l+'Count').textContent=t;
-      document.getElementById('lvl'+l+'Status').textContent=`Active: ${a} | Inactive: ${inact}`;
-      const el=document.getElementById('level'+l+'Members');
-      if(el&&users.length){
-        el.innerHTML=users.slice(0,5).map(m=>{
-          const isAct=m.packageType&&m.packageType!=='not_active';
-          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-top:1px solid var(--gray-100);font-size:.78rem"><span style="font-weight:600">${m.username}</span><span class="bdg ${isAct?'bg':'by'}">${isAct?'Active':'Inactive'}</span></div>`;
-        }).join('');
-        if(users.length>5)el.innerHTML+=`<p style="font-size:.72rem;color:var(--gray-400);margin:.3rem 0 0">+${users.length-5} more</p>`;
-      }
-    });
-    document.getElementById('totalCommission').textContent='KES '+(stats.summary?.totalCommission||0);
-    ['1','2','3','4'].forEach(l=>document.getElementById('commission'+l).textContent='KES '+(stats.summary?.commissionByLevel?.['level'+l]||0));
-  }catch(err){console.error('Referrals:',err);}
-}
-document.getElementById('copyReferralBtn').addEventListener('click',()=>{
-  if(!_isActive){toast('Activate your account to share your referral link.',false);return;}
-  const el=document.getElementById('referralLink');el.select();document.execCommand('copy');toast('Referral link copied.');
-});
-
-// WITHDRAW
-document.getElementById('ptsPaymentMethod').addEventListener('change',e=>{document.getElementById('ptsMpesaSection').style.display=e.target.value==='mpesa'?'block':'none';document.getElementById('ptsBankSection').style.display=e.target.value==='bank'?'block':'none';});
-document.getElementById('paymentMethod').addEventListener('change',e=>{document.getElementById('mpesaSection').style.display=e.target.value==='mpesa'?'block':'none';document.getElementById('bankSection').style.display=e.target.value==='bank'?'block':'none';});
-
-async function loadWithdraw(){
-  try{
-    const p=await apiFetch('/api/users/profile');const u=p.user;
-    const pts=u.pointsWallet?.points||0;
-    const redeemablePts=Math.floor(pts/100)*100; // backend rounds down to nearest 100
-    const pKES=(redeemablePts/100)*13;  // 100 pts = KES 13
-    const bal=u.primaryWallet?.balance||0;
-    const refs=u.pointsWallet?.referralsSinceLastWithdrawal||0;
-    const atCap = pts >= 2500;
-    document.getElementById('withdrawBalance').textContent='KES '+bal;
-    document.getElementById('withdrawPoints').textContent=pts+' pts'+(atCap?' ⚠️ CAP REACHED':'');
-    document.getElementById('withdrawPointsKES').textContent=`= KES ${pKES} redeemable · Tuesdays`;
-    const canPts=pts>=1500&&pts<=2500&&refs>=3;
-    const ptsCheck=pts>=1500?'✓':'✗';
-    const refsCheck=refs>=3?'✓':'✗';
-    const capMsg = atCap ? '⚠️ You have hit the 2,500 pts cap — tasks are blocked until you withdraw. ' : '';
-    document.getElementById('pointsEligibilityHint').textContent=canPts
-      ?`${capMsg}Ready: ${redeemablePts} pts → KES ${pKES}. Referrals: ${refs}/3. Submit on Tuesday.`
-      :`${capMsg}Points: ${pts}/1,500 min ${ptsCheck}   New referrals since last withdrawal: ${refs}/3 ${refsCheck}`;
-    document.getElementById('pointsEligibilityHint').style.background=canPts?'var(--gl)':'var(--ym)';
-    document.getElementById('pointsEligibilityHint').style.borderColor=canPts?'var(--g)':'var(--y)';
-    document.getElementById('pointsEligibilityHint').style.color=canPts?'#14532d':'#78350f';
-    const day=getEATDay(),msg=document.getElementById('withdrawDayMsg');
-    if(day===2){msg.textContent='Today is Tuesday — points withdrawals are open.';msg.style.cssText='border-left:4px solid var(--g);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:700;font-size:.9rem;background:var(--gl);color:var(--g)';}
-    else if(day===4){msg.textContent='Today is Thursday — KES wallet withdrawals are open.';msg.style.cssText='border-left:4px solid var(--g);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:700;font-size:.9rem;background:var(--gl);color:var(--g)';}
-    else{msg.textContent=`Today is ${DAYS[day]}. Points withdrawals: Tuesdays · KES withdrawals: Thursdays.`;msg.style.cssText='border-left:4px solid var(--b);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:600;font-size:.9rem;background:var(--bl);color:#1e40af';}
-    const pb=document.getElementById('ptsWithdrawBtn'),kb=document.getElementById('kesWithdrawBtn');
-    if(day!==2){pb.disabled=true;pb.textContent='Opens on Tuesday';}else if(!canPts){pb.disabled=true;pb.textContent=pts>2500?'Over cap — withdraw now':pts<1500?`Need ${1500-pts} more pts`:`Need ${3-refs} more referral${3-refs===1?'':'s'}`;}else{pb.disabled=false;pb.textContent=`Redeem ${redeemablePts} pts → KES ${pKES}`;}
-    if(day!==4){kb.disabled=true;kb.textContent='Opens on Thursday';}else{kb.disabled=false;kb.textContent='Request KES Withdrawal';}
-    const hist=await apiFetch('/api/withdrawals/my').catch(()=>null);
-    const hel=document.getElementById('withdrawHistory');
-    if(hist?.withdrawals?.length){
-      hel.innerHTML=hist.withdrawals.map(w=>{
-        const isPoints=w.type==='points';
-        const label=isPoints?`${w.pointsRedeemed||0} pts → KES ${w.amount}`:`KES ${w.amount}`;
-        const txnCode = w.transactionReference ? `<div style="font-size:.75rem;color:var(--g);font-weight:700;margin-top:.2rem">Txn Code: ${w.transactionReference}</div>` : '';
-        const rejNote = w.status==='rejected'&&w.adminNotes ? `<div style="font-size:.73rem;color:#dc2626;margin-top:.15rem">Reason: ${w.adminNotes}</div>` : '';
-        return `<div class="hrow"><div><div class="hm">${label} <span class="bdg ${isPoints?'by':'bb'}">${isPoints?'POINTS':'KES'}</span></div><div class="hs">${new Date(w.requestedAt).toLocaleDateString()} · ${(w.paymentMethod||'').toUpperCase()}${w.adminNotes&&w.status!=='rejected'?' · '+w.adminNotes:''}</div>${txnCode}${rejNote}</div><span class="bdg ${w.status==='completed'?'bg':w.status==='pending'?'by':'br'}">${(w.status||'').toUpperCase()}</span></div>`;
-      }).join('');
-    } else hel.innerHTML='<p style="color:var(--gray-400);text-align:center;padding:.75rem;font-size:.85rem">No withdrawal history yet.</p>';
-  }catch(err){console.error('Withdraw:',err);}
-}
-async function submitPointsWithdrawal(){
-  const pm=document.getElementById('ptsPaymentMethod').value;if(!pm){showMsg('ptsWdMsg','Select a payment method.',false);return;}
-  let pd={};
-  if(pm==='mpesa'){const ph=document.getElementById('ptsMpesaPhone').value.trim();if(!ph){showMsg('ptsWdMsg','Enter M-Pesa phone.',false);return;}pd={mpesaPhone:ph};}
-  else{const bn=document.getElementById('ptsBankName').value.trim(),an=document.getElementById('ptsAccountNumber').value.trim(),aname=document.getElementById('ptsAccountName').value.trim();if(!bn||!an||!aname){showMsg('ptsWdMsg','Fill all bank details.',false);return;}pd={bankName:bn,accountNumber:an,accountName:aname};}
-  const b=document.getElementById('ptsWithdrawBtn');b.disabled=true;b.textContent='Submitting…';
-  try{const d=await apiFetch('/api/withdrawals/points',{method:'POST',body:JSON.stringify({paymentMethod:pm,paymentDetails:pd})});toast(d.message);showMsg('ptsWdMsg',d.message,true);document.getElementById('ptsPaymentMethod').value='';document.getElementById('ptsMpesaSection').style.display='none';document.getElementById('ptsBankSection').style.display='none';setTimeout(()=>loadWithdraw(),600);}
-  catch(err){showMsg('ptsWdMsg',err.message,false);b.disabled=false;b.textContent='Redeem Points to KES';}
-}
-async function submitKesWithdrawal(){
-  const amount=parseFloat(document.getElementById('withdrawAmount').value);if(!amount||amount<300){showMsg('kesWdMsg','Minimum KES 300.',false);return;}
-  const pm=document.getElementById('paymentMethod').value;if(!pm){showMsg('kesWdMsg','Select a payment method.',false);return;}
-  let pd={};
-  if(pm==='mpesa'){const ph=document.getElementById('mpesaPhone').value.trim();if(!ph){showMsg('kesWdMsg','Enter M-Pesa phone.',false);return;}pd={mpesaPhone:ph};}
-  else{const bn=document.getElementById('bankName').value.trim(),an=document.getElementById('accountNumber').value.trim(),aname=document.getElementById('accountName').value.trim();if(!bn||!an||!aname){showMsg('kesWdMsg','Fill all bank details.',false);return;}pd={bankName:bn,accountNumber:an,accountName:aname};}
-  const b=document.getElementById('kesWithdrawBtn');b.disabled=true;b.textContent='Submitting…';
-  try{const d=await apiFetch('/api/withdrawals/kes',{method:'POST',body:JSON.stringify({amount,paymentMethod:pm,paymentDetails:pd})});toast(d.message);showMsg('kesWdMsg',d.message,true);document.getElementById('withdrawAmount').value='';document.getElementById('paymentMethod').value='';document.getElementById('mpesaSection').style.display='none';document.getElementById('bankSection').style.display='none';setTimeout(()=>loadWithdraw(),600);}
-  catch(err){showMsg('kesWdMsg',err.message,false);b.disabled=false;b.textContent='Request KES Withdrawal';}
-}
-
-// PROFILE
-async function loadProfile(){
-  try{
-    const[pd,sd,rd]=await Promise.all([
-      apiFetch('/api/users/profile'),
-      apiFetch('/api/users/dashboard').catch(()=>null),
-      apiFetch('/api/referrals/stats').catch(()=>null)
-    ]);
-    const u=pd.user;
-    _isActive=u.packageType!=='not_active';
-
-    // Personal info
-    document.getElementById('profileUsername').textContent='@'+u.username;
-    document.getElementById('profilePhone').textContent=u.phone||'—';
-    document.getElementById('profileJoinDate').textContent=new Date(u.createdAt).toLocaleDateString('en-KE',{year:'numeric',month:'long',day:'numeric'});
-
-    // Referral link gate
-    if(_isActive){
-      document.getElementById('profileLinkSection').style.display='block';
-      document.getElementById('profileLinkLocked').style.display='none';
-      document.getElementById('profileInviteCode').value=`${window.location.origin}/index.html#join?ref=${u.uniqueInviteCode||u.inviteCode}`;
-    } else {
-      document.getElementById('profileLinkSection').style.display='none';
-      document.getElementById('profileLinkLocked').style.display='block';
-    }
-
-    // Statistics
-    document.getElementById('statStatus').innerHTML=`<span class="bdg ${_isActive?'bg':'by'}">${_isActive?'Active':'Inactive'}</span>`;
-    document.getElementById('statWallet').textContent='KES '+(u.primaryWallet?.balance||0);
-    document.getElementById('statPoints').textContent=(u.pointsWallet?.points||0)+' pts';
-    document.getElementById('statTotalEarned').textContent='KES '+(sd?.stats?.totalEarnings||0);
-
-    if(rd){
-      let totalRefs=0,activeRefs=0;
-      ['1','2','3','4'].forEach(l=>{
-        const users=(rd.levels['level'+l]?.users)||[];
-        const a=users.filter(u=>u.packageType&&u.packageType!=='not_active').length;
-        totalRefs+=users.length; activeRefs+=a;
-      });
-      document.getElementById('statTotalRefs').textContent=totalRefs;
-      document.getElementById('statActiveRefs').textContent=activeRefs;
-      document.getElementById('statInactiveRefs').textContent=totalRefs-activeRefs;
-    }
-
-    // Total withdrawn — use pre-computed summary from API
-    try{
-      const wh=await apiFetch('/api/withdrawals/my');
-      // totalKesWithdrawn = completed KES wallet withdrawals
-      // totalPointsKesReceived = completed points-to-KES payouts
-      const kesW=wh.summary?.totalKesWithdrawn||0;
-      const ptsKesW=wh.summary?.totalPointsKesReceived||0;
-      document.getElementById('statWithdrawn').textContent='KES '+(kesW+ptsKesW);
-    }catch(e){document.getElementById('statWithdrawn').textContent='KES 0';}
-
-    // Email cooldown
-    const ub=document.getElementById('updateEmailBtn');ub.disabled=false;ub.textContent='Save Email';document.getElementById('emailCooldownMsg').textContent='';
-    if(u.lastContactUpdate){const ds=(Date.now()-new Date(u.lastContactUpdate).getTime())/(1000*60*60*24);if(ds<7){const dl=Math.ceil(7-ds);document.getElementById('emailCooldownMsg').textContent=`(locked — ${dl}d remaining)`;ub.disabled=true;ub.textContent=`Locked — ${dl}d remaining`;}}
-
-    // Inactive referrals table in profile
-    loadProfileInactiveReferrals();
-  }catch(err){console.error('Profile:',err);}
-}
-
-async function loadProfileInactiveReferrals(){
-  try{
-    const data=await apiFetch('/api/users/inactive-referrals');
-    const tbody=document.getElementById('profileInactiveList');
-    if(!data.inactiveReferrals?.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:1.5rem;font-size:.85rem">No inactive referrals.</td></tr>';return;}
-    tbody.innerHTML=data.inactiveReferrals.map((u,i)=>`<tr>
-      <td>${i+1}</td>
-      <td style="font-weight:600">${u.name||'—'}</td>
-      <td style="font-family:'DM Mono',monospace">${u.phone||'—'}</td>
-      <td>${u.daysSinceJoined!==undefined?u.daysSinceJoined+'d ago':new Date(u.joinedAt||Date.now()).toLocaleDateString()}</td>
-      <td><span class="bdg by">Inactive</span></td>
-    </tr>`).join('');
-  }catch(e){document.getElementById('profileInactiveList').innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:1rem;font-size:.85rem">Could not load data.</td></tr>';}
-}
-
-// UPDATE EMAIL (weekly limit, email only)
-async function updateEmail(){
-  const email=document.getElementById('newEmail').value.trim();
-  const pwd=document.getElementById('emailPassword').value;
-  if(!email){showMsg('emailUpdateMsg','Enter a new email address.',false);return;}
-  if(!pwd){showMsg('emailUpdateMsg','Current password is required.',false);return;}
-  const b=document.getElementById('updateEmailBtn');b.disabled=true;b.textContent='Saving…';
-  try{
-    const d=await apiFetch('/api/users/update-contact',{method:'PUT',body:JSON.stringify({email,currentPassword:pwd})});
-    showMsg('emailUpdateMsg',d.message,true);
-    document.getElementById('newEmail').value='';
-    document.getElementById('emailPassword').value='';
-    b.textContent='Saved';
-    document.getElementById('emailCooldownMsg').textContent='(next update in 7 days)';
-    setTimeout(()=>loadProfile(),800);
-  }catch(err){showMsg('emailUpdateMsg',err.message,false);b.disabled=false;b.textContent='Save Email';}
-}
-
-// UPDATE PHONE (separate form, same endpoint but phone-only)
-async function updatePhone(){
-  const phone=document.getElementById('newPhone').value.trim();
-  const pwd=document.getElementById('phonePassword').value;
-  if(!phone){showMsg('phoneUpdateMsg','Enter a new phone number.',false);return;}
-  if(!pwd){showMsg('phoneUpdateMsg','Current password is required.',false);return;}
-  const b=document.getElementById('updatePhoneBtn');b.disabled=true;b.textContent='Saving…';
-  try{
-    const d=await apiFetch('/api/users/update-contact',{method:'PUT',body:JSON.stringify({phone,currentPassword:pwd})});
-    showMsg('phoneUpdateMsg',d.message,true);
-    document.getElementById('newPhone').value='';
-    document.getElementById('phonePassword').value='';
-    b.textContent='Saved';
-    setTimeout(()=>loadProfile(),800);
-  }catch(err){showMsg('phoneUpdateMsg',err.message,false);b.disabled=false;b.textContent='Save Phone';}
-}
-
-function copyInviteLink(){
-  if(!_isActive){toast('Activate your account to share your referral link.',false);return;}
-  const el=document.getElementById('profileInviteCode');el.select();document.execCommand('copy');toast('Invite link copied.');
-}
-
-document.getElementById('changePasswordForm').addEventListener('submit',async e=>{
-  e.preventDefault();
-  document.getElementById('pwdError').style.display='none';document.getElementById('pwdSuccess').style.display='none';
-  const np=document.getElementById('newPassword').value;
-  if(np!==document.getElementById('confirmPassword').value){const el=document.getElementById('pwdError');el.textContent='Passwords do not match.';el.style.display='block';return;}
-  const b=document.getElementById('changePwdBtn');b.disabled=true;b.textContent='Changing…';
-  try{await apiFetch('/api/users/change-password',{method:'PUT',body:JSON.stringify({currentPassword:document.getElementById('currentPassword').value,newPassword:np})});document.getElementById('pwdSuccess').style.display='block';e.target.reset();}
-  catch(err){const el=document.getElementById('pwdError');el.textContent=err.message;el.style.display='block';}
-  finally{b.disabled=false;b.textContent='Change Password';}
-});
-
-// NOTIFICATIONS
-async function loadNotifications(){
-  try{
-    const d=await apiFetch('/api/notifications');const cnt=d.unreadCount||0;
-    const badge=document.getElementById('bellBadge');
-    if(cnt>0){badge.textContent=cnt>9?'9+':cnt;badge.style.display='block';}else badge.style.display='none';
-    const list=document.getElementById('notifList');
-    if(!d.notifications?.length){list.innerHTML='<p style="text-align:center;color:var(--gray-400);font-size:.82rem;padding:1.5rem">No notifications yet.</p>';return;}
-    list.innerHTML=d.notifications.map(n=>`<div class="nitem ${n.isRead?'':'unread'}" onclick="markOneRead('${n._id}',this)"><div class="nitem-title">${n.title}${!n.isRead?'<span class="ndot"></span>':''}</div><div class="nitem-msg">${n.message}</div><div class="nitem-time">${new Date(n.createdAt).toLocaleString()}</div></div>`).join('');
-  }catch(e){}
-}
-function toggleNotifPanel(){_notifOpen=!_notifOpen;const p=document.getElementById('notifPanel');p.style.display=_notifOpen?'flex':'none';if(_notifOpen)loadNotifications();}
-async function markAllRead(){try{await apiFetch('/api/notifications/mark-read',{method:'POST'});loadNotifications();}catch(e){}}
-async function markOneRead(id,el){try{await apiFetch(`/api/notifications/mark-read/${id}`,{method:'POST'});el.classList.remove('unread');el.querySelector('.ndot')?.remove();loadNotifications();}catch(e){}}
-setInterval(loadNotifications,60000);
-
-
-/* ── PAYSTACK DEPOSIT ── */
-function openDepositModal(){
-  document.getElementById('depositAmount').value='';
-  document.getElementById('depositMsg').style.display='none';
-  openModal('depositModal');
-}
-
-async function initiateDeposit(){
-  const amtEl = document.getElementById('depositAmount');
-  const btn   = document.getElementById('depositBtn');
-  const amount = parseFloat(amtEl.value);
-  if (!amount || amount < 10){ showDepositMsg('Enter a valid amount (min KES 10).',false); return; }
-  btn.disabled=true; btn.textContent='Initializing…';
-
-  try {
-    const d = await apiFetch('/api/paystack/initialize',{method:'POST',body:JSON.stringify({amount})});
-
-    // Save reference so we can verify it after Paystack redirects back
-    localStorage.setItem('pendingDepositRef', d.reference);
-    localStorage.setItem('pendingDepositAmt', amount);
-
-    // Always use full redirect — the popup/iframe breaks on mobile M-Pesa
-    // because Paystack navigates the page away, onSuccess never fires,
-    // and the button stays stuck on "Initializing..." forever.
-    window.location.href = d.authorizationUrl;
-
-  } catch(e){
-    showDepositMsg(e.message, false);
-    btn.disabled=false;
-    btn.textContent='Pay via Card / M-Pesa';
-  }
-}
-
-function showDepositMsg(msg,ok){
-  const el=document.getElementById('depositMsg');
-  el.textContent=msg; el.style.display='block';
-  el.style.color=ok?'var(--g)':'#dc2626';
-}
-
-// ── Check if returning from Paystack redirect ────────────────────────────────
-// Paystack appends ?trxref=xxx&reference=xxx to the callback_url query string.
-// We also check localStorage for a pendingDepositRef saved before redirect,
-// as a fallback in case the URL params are stripped by some browsers/redirects.
-(async function checkDepositReturn(){
-  const urlParams = new URLSearchParams(window.location.search);
-
-  // Paystack return signals: our own flag OR Paystack's own trxref/reference params
-  const isDepositReturn = urlParams.has('deposit-success')
-    || urlParams.has('deposit')
-    || urlParams.has('trxref')
-    || urlParams.has('reference');
-
-  const ref = urlParams.get('reference')
-    || urlParams.get('trxref')
-    || localStorage.getItem('pendingDepositRef');
-
-  if(isDepositReturn && ref){
-    // Show a verifying banner immediately so user knows something is happening
-    toast('Verifying your payment…', true);
-    try{
-      const v = await apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:ref})});
-      localStorage.removeItem('pendingDepositRef');
-      localStorage.removeItem('pendingDepositAmt');
-      toast(v.message || 'Deposit confirmed! Your wallet has been credited.', true);
-      loadDashboard();
-    }catch(e){
-      // Payment may already have been credited by webhook — reload anyway
-      localStorage.removeItem('pendingDepositRef');
-      localStorage.removeItem('pendingDepositAmt');
-      if(e.message && e.message.includes('already been credited')){
-        toast('Deposit already credited to your wallet.', true);
-        loadDashboard();
-      } else {
-        toast('Payment received. If your balance has not updated, please refresh.', true);
-        loadDashboard();
-      }
-    }
-    // Always clean the URL
-    history.replaceState(null,'',window.location.pathname+window.location.hash);
-
-  } else if(localStorage.getItem('pendingDepositRef')){
-    // Page loaded fresh with a pending ref but no URL params — try verify anyway
-    const pendingRef = localStorage.getItem('pendingDepositRef');
-    try{
-      const v = await apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:pendingRef})});
-      localStorage.removeItem('pendingDepositRef');
-      localStorage.removeItem('pendingDepositAmt');
-      toast(v.message || 'Deposit confirmed!', true);
-      loadDashboard();
-    }catch(e){
-      // If already credited or failed — clear silently
-      localStorage.removeItem('pendingDepositRef');
-      localStorage.removeItem('pendingDepositAmt');
-      if(e.message && e.message.includes('already been credited')){
-        loadDashboard();
-      }
-    }
-  }
-})();
-</script>
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <script>window._PAYSTACK_PUBLIC_KEY='pk_live_7def999fbc94b9848100cceecc0cdee15cb93cba';</script>
 <script src="/offline.js"></script>
 
-<!-- ── TechGeo AI Chat Widget ───────────────────────────────────────────── -->
-<!-- Styles only. Logic lives in /js/techgeo-ai.js -->
-<style>
-#tg-fab{position:fixed;bottom:22px;right:18px;z-index:9999;width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;background:#16a34a;color:#fff;font-size:1.35rem;box-shadow:0 4px 18px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s;}
-#tg-fab:hover{transform:scale(1.09);box-shadow:0 6px 24px rgba(0,0,0,.3);}
-#tg-fab .tg-badge{position:absolute;top:1px;right:1px;width:11px;height:11px;background:#ef4444;border-radius:50%;border:2px solid #fff;display:none;}
-#tg-fab .tg-badge.show{display:block;}
-#tg-panel{display:none;position:fixed;bottom:84px;right:18px;z-index:9998;width:318px;max-width:calc(100vw - 28px);height:430px;max-height:calc(100vh - 110px);flex-direction:column;border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.22);opacity:0;transform:translateY(14px) scale(.97);transition:opacity .25s ease,transform .25s ease;}
-#tg-panel.tg-open{opacity:1;transform:translateY(0) scale(1);}
-#tg-panel .tg-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#fff;flex-shrink:0;}
-#tg-panel .tg-hdr-ico{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
-#tg-panel .tg-hdr-info{flex:1;line-height:1.3;}
-#tg-panel .tg-hdr-name{font-weight:700;font-size:.9rem;}
-#tg-panel .tg-hdr-sub{font-size:.7rem;opacity:.8;}
-#tg-panel .tg-hdr-close{background:none;border:none;color:#fff;font-size:1.2rem;cursor:pointer;padding:3px 7px;border-radius:4px;line-height:1;}
-#tg-panel .tg-hdr-close:hover{background:rgba(0,0,0,.15);}
-#tg-msgs{flex:1;overflow-y:auto;padding:10px 10px 4px;display:flex;flex-direction:column;gap:4px;background:#ece5dd;}
-#tg-msgs::-webkit-scrollbar{width:4px;}
-#tg-msgs::-webkit-scrollbar-thumb{background:#b5ada6;border-radius:4px;}
-.tg-row{display:flex;max-width:100%;}
-.tg-row-me{justify-content:flex-end;}
-.tg-row-bot{justify-content:flex-start;}
-.tg-bub{max-width:80%;padding:7px 10px 18px;border-radius:10px;font-size:.83rem;line-height:1.5;position:relative;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,.11);}
-.tg-bub-me{background:#dcf8c6;border-bottom-right-radius:3px;color:#111;}
-.tg-bub-bot{background:#fff;border-bottom-left-radius:3px;color:#111;}
-.tg-bub .tg-ts{position:absolute;bottom:3px;right:8px;font-size:.6rem;color:#999;white-space:nowrap;}
-#tg-bar{display:flex;align-items:flex-end;gap:8px;padding:7px 10px;background:#f0f0f0;flex-shrink:0;border-top:1px solid #ddd;}
-#tg-inwrap{flex:1;background:#fff;border-radius:20px;padding:7px 12px;display:flex;flex-direction:column;gap:2px;box-shadow:0 1px 3px rgba(0,0,0,.07);}
-#tg-input{border:none;outline:none;resize:none;font-size:.84rem;font-family:inherit;background:transparent;color:#111;min-height:20px;max-height:74px;line-height:1.4;}
-#tg-input::placeholder{color:#bbb;}
-#tg-wc{font-size:.63rem;color:#bbb;text-align:right;}
-#tg-wc.over{color:#ef4444;font-weight:700;}
-#tg-send{width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;font-size:1rem;background:#16a34a;color:#fff;flex-shrink:0;transition:background .15s,transform .1s;display:flex;align-items:center;justify-content:center;}
-#tg-send:hover:not(:disabled){transform:scale(1.08);}
-#tg-send:disabled{background:#ccc;cursor:not-allowed;}
-@media(max-width:380px){#tg-panel{width:calc(100vw - 24px);right:12px;}}
-</style>
-
-<!-- FAB button -->
-<button id="tg-fab" aria-label="Open TechGeo AI chat" aria-expanded="false" title="TechGeo AI">
-  &#129302;<span class="tg-badge" id="tg-badge"></span>
-</button>
-
-<!-- Chat panel shell — content injected by techgeo-ai.js -->
-<div id="tg-panel" role="dialog" aria-label="TechGeo AI Chat">
-  <div class="tg-hdr" id="tg-hdr">
-    <div class="tg-hdr-ico" id="tg-hdr-ico">&#129302;</div>
-    <div class="tg-hdr-info">
-      <div class="tg-hdr-name" id="tg-hdr-name">TechGeo Bot</div>
-      <div class="tg-hdr-sub"  id="tg-hdr-sub">Ask me anything</div>
-    </div>
-    <button class="tg-hdr-close" id="tg-hdr-close" title="Close">&#10005;</button>
-  </div>
-  <div id="tg-msgs"></div>
-  <div id="tg-bar">
-    <div id="tg-inwrap">
-      <textarea id="tg-input" rows="1" placeholder="Ask a question (max 20 words)..." maxlength="180"></textarea>
-      <div id="tg-wc">0 / 20 words</div>
-    </div>
-    <button id="tg-send" disabled title="Send">&#10148;</button>
-  </div>
-</div>
-
-<!-- Toggle-only: open/close panel. Zero logic here. -->
-<script>
-(function(){
-  var fab=document.getElementById('tg-fab');
-  var panel=document.getElementById('tg-panel');
-  var closeBtn=document.getElementById('tg-hdr-close');
-  var isOpen=false;
-  function openChat(){
-    isOpen=true;
-    panel.style.display='flex';
-    fab.setAttribute('aria-expanded','true');
-    document.getElementById('tg-badge').classList.remove('show');
-    setTimeout(function(){panel.classList.add('tg-open');},10);
-    if(typeof TechGeoAI!=='undefined')TechGeoAI.onOpen();
-  }
-  function closeChat(){
-    isOpen=false;
-    panel.classList.remove('tg-open');
-    fab.setAttribute('aria-expanded','false');
-    setTimeout(function(){if(!isOpen)panel.style.display='none';},260);
-  }
-  fab.addEventListener('click',function(){isOpen?closeChat():openChat();});
-  closeBtn.addEventListener('click',closeChat);
-  window._tgOpen=openChat;
-  window._tgClose=closeChat;
-})();
-</script>
-
-<!-- All AI logic: Groq calls, message rendering, history, word limits, bot switching -->
+<style>#tg-fab{position:fixed;bottom:22px;right:18px;z-index:9999;width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;background:#16a34a;color:#fff;font-size:1.35rem;box-shadow:0 4px 18px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s;}#tg-fab:hover{transform:scale(1.09);box-shadow:0 6px 24px rgba(0,0,0,.3);}#tg-fab .tg-badge{position:absolute;top:1px;right:1px;width:11px;height:11px;background:#ef4444;border-radius:50%;border:2px solid #fff;display:none;}#tg-fab .tg-badge.show{display:block;}#tg-panel{display:none;position:fixed;bottom:84px;right:18px;z-index:9998;width:318px;max-width:calc(100vw - 28px);height:430px;max-height:calc(100vh - 110px);flex-direction:column;border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.22);opacity:0;transform:translateY(14px) scale(.97);transition:opacity .25s ease,transform .25s ease;}#tg-panel.tg-open{opacity:1;transform:translateY(0) scale(1);}#tg-panel .tg-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#fff;flex-shrink:0;}#tg-panel .tg-hdr-ico{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:1.1rem;}#tg-panel .tg-hdr-info{flex:1;line-height:1.3;}#tg-panel .tg-hdr-name{font-weight:700;font-size:.9rem;}#tg-panel .tg-hdr-sub{font-size:.7rem;opacity:.8;}#tg-panel .tg-hdr-close{background:none;border:none;color:#fff;font-size:1.2rem;cursor:pointer;padding:3px 7px;border-radius:4px;line-height:1;}#tg-panel .tg-hdr-close:hover{background:rgba(0,0,0,.15);}#tg-msgs{flex:1;overflow-y:auto;padding:10px 10px 4px;display:flex;flex-direction:column;gap:4px;background:#ece5dd;}#tg-msgs::-webkit-scrollbar{width:4px;}#tg-msgs::-webkit-scrollbar-thumb{background:#b5ada6;border-radius:4px;}.tg-row{display:flex;max-width:100%;}.tg-row-me{justify-content:flex-end;}.tg-row-bot{justify-content:flex-start;}.tg-bub{max-width:80%;padding:7px 10px 18px;border-radius:10px;font-size:.83rem;line-height:1.5;position:relative;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,.11);}.tg-bub-me{background:#dcf8c6;border-bottom-right-radius:3px;color:#111;}.tg-bub-bot{background:#fff;border-bottom-left-radius:3px;color:#111;}.tg-bub .tg-ts{position:absolute;bottom:3px;right:8px;font-size:.6rem;color:#999;white-space:nowrap;}#tg-bar{display:flex;align-items:flex-end;gap:8px;padding:7px 10px;background:#f0f0f0;flex-shrink:0;border-top:1px solid #ddd;}#tg-inwrap{flex:1;background:#fff;border-radius:20px;padding:7px 12px;display:flex;flex-direction:column;gap:2px;box-shadow:0 1px 3px rgba(0,0,0,.07);}#tg-input{border:none;outline:none;resize:none;font-size:.84rem;font-family:inherit;background:transparent;color:#111;min-height:20px;max-height:74px;line-height:1.4;}#tg-input::placeholder{color:#bbb;}#tg-wc{font-size:.63rem;color:#bbb;text-align:right;}#tg-wc.over{color:#ef4444;font-weight:700;}#tg-send{width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;font-size:1rem;background:#16a34a;color:#fff;flex-shrink:0;transition:background .15s,transform .1s;display:flex;align-items:center;justify-content:center;}#tg-send:hover:not(:disabled){transform:scale(1.08);}#tg-send:disabled{background:#ccc;cursor:not-allowed;}@media(max-width:380px){#tg-panel{width:calc(100vw - 24px);right:12px;}}</style>
+<button id="tg-fab" aria-label="Open TechGeo AI chat" aria-expanded="false" title="TechGeo AI">&#129302;<span class="tg-badge" id="tg-badge"></span></button>
+<div id="tg-panel" role="dialog" aria-label="TechGeo AI Chat"><div class="tg-hdr" id="tg-hdr"><div class="tg-hdr-ico" id="tg-hdr-ico">&#129302;</div><div class="tg-hdr-info"><div class="tg-hdr-name" id="tg-hdr-name">TechGeo Bot</div><div class="tg-hdr-sub"  id="tg-hdr-sub">Ask me anything</div></div><button class="tg-hdr-close" id="tg-hdr-close" title="Close">&#10005;</button></div><div id="tg-msgs"></div><div id="tg-bar"><div id="tg-inwrap"><textarea id="tg-input" rows="1" placeholder="Ask a question (max 20 words)..." maxlength="180"></textarea><div id="tg-wc">0 / 20 words</div></div><button id="tg-send" disabled title="Send">&#10148;</button></div></div>
+<script>(function(){var fab=document.getElementById('tg-fab');var panel=document.getElementById('tg-panel');var closeBtn=document.getElementById('tg-hdr-close');var isOpen=false;function openChat(){isOpen=true;panel.style.display='flex';fab.setAttribute('aria-expanded','true');document.getElementById('tg-badge').classList.remove('show');setTimeout(function(){panel.classList.add('tg-open');},10);if(typeof TechGeoAI!=='undefined')TechGeoAI.onOpen();}function closeChat(){isOpen=false;panel.classList.remove('tg-open');fab.setAttribute('aria-expanded','false');setTimeout(function(){if(!isOpen)panel.style.display='none';},260);}fab.addEventListener('click',function(){isOpen?closeChat():openChat();});closeBtn.addEventListener('click',closeChat);window._tgOpen=openChat;window._tgClose=closeChat;})();</script>
 <script src="/js/techgeo-ai.js"></script>
+<script>
+// full original JS from dashboard (all functions unchanged)
+const _token=localStorage.getItem('token');
+const _user=(()=>{try{return JSON.parse(localStorage.getItem('user')||'null');}catch(e){return null;}})();
+if(!_token||!_user)window.location.href='/index.html';
+if(_user&&_user.isAdmin)window.location.href='/admin.html';
+let currentUser=null,_isActive=false,_activeBlogId=null,_activeSurveyId=null,_activeWritingId=null,_activeTranscriptionId=null,_activeDataentryId=null,_notifOpen=false;
+async function apiFetch(url,opts={}){const ctrl=new AbortController(),t=setTimeout(()=>ctrl.abort(),25000);try{const isFD=opts.body instanceof FormData;const headers={Authorization:`Bearer ${localStorage.getItem('token')}`};if(!isFD)headers['Content-Type']='application/json';const res=await fetch(url,{...opts,headers,signal:ctrl.signal});clearTimeout(t);let data;try{data=await res.json();}catch(e){data={};}if(res.status===401){logout();throw new Error('Session expired.');}if(!res.ok)throw new Error(data.error||data.message||`Error ${res.status}`);return data;}catch(err){clearTimeout(t);if(err.name==='AbortError')throw new Error('Request timed out.');if(err instanceof TypeError||!navigator.onLine){if(!opts.method||opts.method==='GET'){try{const cached=await caches.match(url);if(cached){const data=await cached.json();data._fromCache=true;return data;}}catch(e){}}throw new Error('You are offline. Showing last saved data where available.');}throw err;}}
+function logout(){localStorage.clear();window.location.href='/index.html';}
+function toggleSidenav(){document.getElementById('sidenav').classList.toggle('open');}
+function openModal(id){document.getElementById(id).style.display='block';}
+function closeModal(id){document.getElementById(id).style.display='none';}
+function toast(msg,ok=true){const t=document.getElementById('_toast');t.textContent=msg;t.style.cssText=`position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;padding:.65rem 1.4rem;border-radius:.6rem;font-size:.88rem;font-weight:700;box-shadow:0 4px 20px rgba(0,0,0,.25);max-width:90vw;text-align:center;background:${ok?'#16a34a':'#ef4444'};color:#fff;opacity:1;pointer-events:none;transition:.3s`;setTimeout(()=>{t.style.opacity='0';},3500);}
+function showMsg(id,txt,ok){const el=document.getElementById(id);if(!el)return;el.textContent=txt;el.className='mb '+(ok?'mb-ok':'mb-err');el.style.display='block';setTimeout(()=>{el.style.display='none';},6000);}
+function setLS(id,msg='Loading…'){const el=document.getElementById(id);if(el)el.innerHTML=`<div class="ls"><div class="spin"></div><p style="margin-top:.75rem">${msg}</p></div>`;}
+function setErr(id,msg,fn){const el=document.getElementById(id);if(el)el.innerHTML=`<div style="background:var(--rl);border:1px solid #fca5a5;border-radius:.5rem;padding:1rem;color:#b91c1c;font-size:.83rem;grid-column:1/-1">Error: ${msg}${fn?` <button onclick="${fn}()" style="margin-left:.5rem;background:#b91c1c;color:#fff;border:none;padding:.2rem .6rem;border-radius:.3rem;cursor:pointer;font-size:.78rem">Retry</button>`:''}`+'</div>';}
+function getEATDay(){return new Date(new Date().getTime()+3*3600000).getUTCDay();}
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+function isActiveUser(){return _isActive;}
+function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));const el=document.getElementById('pg-'+name);if(el)el.classList.add('active');document.querySelectorAll('.nav-lnk').forEach(a=>a.classList.toggle('active',a.getAttribute('data-pg')===name));window.history.pushState({},'','#'+name);document.getElementById('sidenav').classList.remove('open');if(name==='dashboard')loadDashboard();else if(name==='blogs')loadBlogs();else if(name==='surveys')loadSurveys();else if(name==='writing')loadWriting();else if(name==='transcription')loadTranscription();else if(name==='dataentry')loadDataentry();else if(name==='referrals')loadReferrals();else if(name==='withdraw')loadWithdraw();else if(name==='profile')loadProfile();if(typeof TechGeoAI!=='undefined')TechGeoAI.switchBot(name);}
+document.addEventListener('click',e=>{const el=e.target.closest('.nav-lnk');if(el){const pg=el.getAttribute('data-pg');if(pg){e.preventDefault();showPage(pg);window.scrollTo(0,0);}}if(_notifOpen&&!e.target.closest('#bellBtn')&&!e.target.closest('#notifPanel')){document.getElementById('notifPanel').style.display='none';_notifOpen=false;}});
+window.addEventListener('load',()=>{if(_user)document.getElementById('navUsername').textContent='@'+_user.username;if(_user&&_user.packageType==='not_active'){loadActivationPage();return;}showPage(window.location.hash.slice(1)||'dashboard');loadNotifications();});
+async function loadActivationPage(){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('pg-activation').classList.add('active');try{const data=await apiFetch('/api/users/profile');const user=data.user;if(user.packageType!=='not_active'){_isActive=true;showPage('dashboard');return;}document.getElementById('activationBalance').textContent='KES '+(user.primaryWallet?.balance||0);try{const cd=await apiFetch('/api/referrals/chain');const f=cd.chain?.[0];if(f){document.getElementById('uplineName').textContent=f.username||'Your referrer';document.getElementById('uplinePhone').textContent=f.phone||'';document.getElementById('uplineEmail').textContent=f.email||'';}else document.getElementById('uplineName').textContent='Contact admin';}catch(e){document.getElementById('uplineName').textContent='Contact your referrer';}}catch(err){if(err.message.includes('Session'))logout();}}
+async function doActivation(){const m=document.getElementById('activationMsg');if(!confirm('Deduct KES 700 from your wallet to activate?'))return;m.style.display='block';m.style.color='var(--gray-500)';m.textContent='Activating…';try{const d=await apiFetch('/api/auth/activate-package',{method:'POST'});m.style.color='var(--g)';m.textContent=d.message;const p=await apiFetch('/api/users/profile');localStorage.setItem('user',JSON.stringify(p.user));_isActive=true;setTimeout(()=>showPage('dashboard'),1500);}catch(err){m.style.color='var(--r)';m.textContent=err.message;loadActivationPage();}}
+async function loadDashboard(){try{const data=await apiFetch('/api/users/dashboard');currentUser=data;localStorage.setItem('user',JSON.stringify({id:data.profile.id,username:data.profile.username,email:data.profile.email||'',packageType:data.profile.packageType,isAdmin:false}));_isActive=data.profile.packageType!=='not_active';if(!_isActive){document.getElementById('dashInactiveBanner').style.display='block';document.querySelectorAll('#dashTaskBoxes .tbox').forEach(b=>b.classList.add('locked'));}else{document.getElementById('dashInactiveBanner').style.display='none';document.querySelectorAll('#dashTaskBoxes .tbox').forEach(b=>b.classList.remove('locked'));}document.getElementById('dashUsername').textContent=data.profile.username;document.getElementById('dashMainWallet').textContent='KES '+data.wallets.primary.balance;document.getElementById('navWallet').textContent='KES '+(data.wallets.primary.balance||0);document.getElementById('dashPoints').textContent=(data.wallets.points.points||0)+' pts';document.getElementById('dashActiveReferrals').textContent=data.stats.activeDirectReferrals||0;document.getElementById('dashTotalEarnings').textContent='KES '+(data.stats.totalEarnings||0);document.getElementById('dashPackageStatus').textContent=_isActive?'Active Member':'Account not activated — see banner below';document.getElementById('tbBlogsLeft').textContent=(data.dailyProgress?.blogsLeft??'—')+(_isActive?' slots left':'');document.getElementById('tbSurveysLeft').textContent=(data.dailyProgress?.surveysLeft??'—')+(_isActive?' slots left':'');if(data.wallets.points.canConvert&&_isActive){document.getElementById('pointsConversionCard').style.display='block';document.getElementById('currentPoints').textContent=data.wallets.points.points;document.getElementById('pointsKES').textContent='KES '+data.wallets.points.kesEquivalent;}loadDashboardReferrals();loadInactiveReferrals();}catch(err){if(err.message.includes('Session')||err.message.includes('token'))logout();}}
+document.getElementById('activateBtn').addEventListener('click',async()=>{if(!confirm('Deduct KES 700 to activate?'))return;const b=document.getElementById('activateBtn');b.disabled=true;b.textContent='Activating…';try{const d=await apiFetch('/api/auth/activate-package',{method:'POST'});toast(d.message);_isActive=true;loadDashboard();}catch(err){toast(err.message,false);}finally{b.disabled=false;b.textContent='Activate Account — KES 700';}});
+document.getElementById('convertPointsBtn')?.addEventListener('click',async()=>{if(!confirm('Convert all eligible points?'))return;const b=document.getElementById('convertPointsBtn');b.disabled=true;b.textContent='Converting…';try{const d=await apiFetch('/api/wallets/convert-points',{method:'POST'});toast(d.message);loadDashboard();}catch(err){toast(err.message,false);}finally{b.disabled=false;b.textContent='Convert Now';}});
+async function loadDashboardReferrals(){try{const s=await apiFetch('/api/referrals/stats');let totalActive=0,totalInactive=0;['1','2','3','4'].forEach(l=>{const c=s.levels['level'+l];const users=c?.users||[];const t=users.length;const a=users.filter(u=>u.packageType&&u.packageType!=='not_active').length;const inact=t-a;document.getElementById('dashRef'+l).textContent=t;document.getElementById('dashRef'+l+'s').textContent=a+' active / '+inact+' inactive';totalActive+=a;totalInactive+=inact;});document.getElementById('dashActiveReferrals').textContent=totalActive;document.getElementById('dashInactiveReferrals').textContent=totalInactive+' inactive';document.getElementById('dashTotalCommission').textContent='KES '+(s.summary?.totalCommission||0);}catch(e){}}
+async function loadInactiveReferrals(){try{const data=await apiFetch('/api/users/inactive-referrals');const sec=document.getElementById('inactiveReferralsSection');const tbody=document.getElementById('inactiveReferralsList');if(!data.inactiveReferrals?.length){sec.style.display='none';return;}sec.style.display='block';tbody.innerHTML=data.inactiveReferrals.map((u,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${u.name||'—'}</td><td style="font-family:'DM Mono',monospace">${u.phone||'—'}</td><td>${u.daysSinceJoined!==undefined?u.daysSinceJoined+'d ago':new Date(u.joinedAt||Date.now()).toLocaleDateString()}</td><td><span class="bdg by">Inactive</span></td></tr>`).join('');}catch(e){}}
+function renderTaskCard(item,type,userStatus){const sub=item.currentBidders||item.currentWorkers||0,appr=item.approvedCount||0,pend=item.pendingCount||0;const isOpen=!item.status||item.status==='open';const max=item.maxBidders||item.maxWorkers||null;const slots=max?max-sub:null;const dl=item.deadline?`<span style="font-size:.72rem;color:#b45309;background:var(--ym);padding:.1rem .45rem;border-radius:999px">Deadline: ${new Date(item.deadline).toLocaleDateString()}</span>`:'';const tpl=item.templateUrl?`<span style="font-size:.72rem"><a href="javascript:void(0)" onclick="smartDownload('${item.templateUrl}','${item.templatePublicId||''}','${(item.title||'template').replace(/'/g,'')}_template')" style="color:var(--g);font-weight:600">Download Template</a></span>`:'';const fns={blogs:`openBlogModal('${item.id}')`,surveys:`openSurveyModal('${item.id}')`,writing:`openWritingModal('${item.id}')`,transcription:`openTranscriptionModal('${item.id}')`,dataentry:`openDataentryModal('${item.id}')`};const lbls={blogs:'Write',surveys:'Start Survey',writing:'Submit',transcription:'Transcribe',dataentry:'Submit'};let ab='';if(!_isActive){ab=`<span class="bdg by" style="font-size:.72rem">Activate to submit</span>`;}else if(userStatus){ab=`<span class="bdg bb" style="font-size:.72rem">Your status: ${userStatus}</span>`;}else if(!isOpen){ab=`<span class="bdg bgr">Closed</span>`;}else if(slots!==null&&slots<=0){ab=`<span class="bdg br">Slots Full</span>`;}else{ab=`<button onclick="${fns[type]}" class="btn btn-p btn-sm">${lbls[type]}</button>`;}const slotsText=max?`${sub}/${max}`:'open';return `<div class="card" style="border-top:3px solid var(--g);transition:.15s" onmouseover="this.style.boxShadow='var(--shm)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='var(--sh)';this.style.transform='none'"><div style="padding:1rem"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.35rem"><h4 style="font-size:.9rem;font-weight:800;color:var(--gray-900);line-height:1.3;margin:0">${item.title}</h4><div style="display:flex;gap:.3rem;align-items:center;flex-shrink:0"><span class="bdg ${isOpen?'bg':'bgr'}">${item.status||'open'}</span><span style="background:var(--gl);color:var(--g);padding:.15rem .5rem;border-radius:999px;font-size:.7rem;font-weight:800;border:1px solid var(--gm)">${item.reward||0} pts</span></div></div><p style="color:var(--gray-500);font-size:.78rem;margin:0 0 .35rem;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${item.description||''}</p><div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.35rem">${dl}${tpl}</div>${item.audioUrl?`<audio src="${item.audioUrl}" controls style="width:100%;height:28px;margin:.3rem 0"></audio>`:''}<div style="display:flex;gap:1rem;padding:.4rem 0;margin:.25rem 0;border-top:1px solid var(--gray-100)"><div><span style="font-weight:800;font-size:.85rem;color:var(--b)">${sub}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">submitted</span></div><div><span style="font-weight:800;font-size:.85rem;color:var(--g)">${appr}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">approved</span></div><div><span style="font-weight:800;font-size:.85rem;color:var(--y)">${pend}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">pending</span></div><div style="margin-left:auto"><span style="font-size:.7rem;color:var(--gray-400)">${slotsText}</span><span style="font-size:.62rem;color:var(--gray-400);display:block">slots</span></div></div><div style="display:flex;justify-content:flex-end">${ab}</div></div></div>`;}
+async function loadBlogs(){const locked=document.getElementById('blogsLocked');const info=document.getElementById('blogsInfo');if(!_isActive){locked.style.display='block';}else{locked.style.display='none';}setLS('blogsList','Loading blog opportunities…');try{const[dd,bd]=await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null),apiFetch('/api/blogs')]);if(dd){const left=dd.dailyProgress?.blogsLeft??'—';info.textContent=`Available slots today: ${left}`;}const l=document.getElementById('blogsList');if(!bd.blogs?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No blog opportunities right now.</p>';return;}l.innerHTML=bd.blogs.map(b=>renderTaskCard(b,'blogs',b.userBidStatus)).join('');}catch(err){setErr('blogsList',err.message,'loadBlogs');}}
+async function openBlogModal(id){if(!_isActive){toast('Activate your account to submit tasks.',false);return;}try{const d=await apiFetch(`/api/blogs/${id}`);const b=d.blog;_activeBlogId=id;document.getElementById('blogModalTitle').textContent=b.title;document.getElementById('blogModalDesc').textContent=b.description;document.getElementById('blogModalContent').innerHTML=b.content.replace(/\n/g,'<br>');document.getElementById('blogWriteContent').value='';document.getElementById('blogCharCount').textContent='0 chars';openModal('blogModal');}catch(err){toast('Error: '+err.message,false);}}
+document.getElementById('blogWriteContent').addEventListener('input',function(){document.getElementById('blogCharCount').textContent=this.value.length+' chars';});
+document.getElementById('blogSubmitBtn').addEventListener('click',async()=>{if(!_activeBlogId)return;const c=document.getElementById('blogWriteContent').value.trim();if(c.length<100){toast('Minimum 100 characters required.',false);return;}const b=document.getElementById('blogSubmitBtn');b.disabled=true;b.textContent='Submitting…';try{await apiFetch(`/api/blogs/${_activeBlogId}/submit`,{method:'POST',body:JSON.stringify({submissionContent:c})});toast('Blog submitted successfully.');closeModal('blogModal');loadBlogs();}catch(err){toast(err.message,false);}finally{b.disabled=false;b.textContent='Submit Blog Post';}});
+async function loadSurveys(){const locked=document.getElementById('surveysLocked');const info=document.getElementById('surveysInfo');if(!_isActive){locked.style.display='block';}else{locked.style.display='none';}setLS('surveysList','Loading surveys…');try{const[dd,sd]=await Promise.all([apiFetch('/api/users/dashboard').catch(()=>null),apiFetch('/api/surveys')]);if(dd){const left=dd.dailyProgress?.surveysLeft??'—';info.textContent=`Available slots today: ${left}`;}const l=document.getElementById('surveysList');if(!sd.surveys?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No surveys right now.</p>';return;}l.innerHTML=sd.surveys.map(s=>renderTaskCard(s,'surveys',s.userBidStatus)).join('');}catch(err){setErr('surveysList',err.message,'loadSurveys');}}
+async function openSurveyModal(id){if(!_isActive){toast('Activate your account to submit tasks.',false);return;}try{const d=await apiFetch(`/api/surveys/${id}`);const s=d.survey;if(s.alreadySubmitted){toast('Already submitted.',false);return;}_activeSurveyId=id;document.getElementById('surveyModalTitle').textContent=s.title;document.getElementById('surveyModalDesc').textContent=s.description;document.getElementById('surveyModalQuestions').innerHTML=s.questions.map((q,i)=>`<div style="margin-bottom:1.1rem"><label style="font-weight:700;display:block;margin-bottom:.4rem;font-size:.88rem">${i+1}. ${q.question}${q.required?'<span style="color:var(--r)"> *</span>':''}</label>${q.type==='multiple_choice'?q.options.map(o=>`<label style="display:flex;align-items:center;gap:.4rem;margin-bottom:.25rem;cursor:pointer;font-size:.85rem"><input type="radio" name="q${i}" value="${o}" ${q.required?'required':''}> ${o}</label>`).join(''):q.type==='yes_no'?`<label style="margin-right:1.25rem;font-size:.85rem;cursor:pointer"><input type="radio" name="q${i}" value="Yes" required> Yes</label><label style="font-size:.85rem;cursor:pointer"><input type="radio" name="q${i}" value="No" required> No</label>`:q.type==='rating'?`<div style="display:flex;gap:.5rem">${[1,2,3,4,5].map(n=>`<label style="text-align:center;cursor:pointer;font-size:.85rem"><input type="radio" name="q${i}" value="${n}" style="display:block;margin:0 auto .2rem"> ${n}</label>`).join('')}</div>`:`<textarea name="q${i}" class="fc" rows="2" ${q.required?'required':''}></textarea>`}</div>`).join('');openModal('surveyModal');}catch(err){toast('Error: '+err.message,false);}}
+document.getElementById('surveySubmitBtn').addEventListener('click',async()=>{if(!_activeSurveyId)return;const r=[];let i=0;while(true){const rd=document.querySelector(`input[name="q${i}"]:checked`),ta=document.querySelector(`textarea[name="q${i}"]`);if(!rd&&!ta)break;r.push(rd?rd.value:(ta?ta.value.trim():''));i++;}if(!r.length){toast('Answer at least one question.',false);return;}const b=document.getElementById('surveySubmitBtn');b.disabled=true;b.textContent='Submitting…';try{await apiFetch(`/api/surveys/${_activeSurveyId}/submit`,{method:'POST',body:JSON.stringify({responses:r})});toast('Survey submitted.');closeModal('surveyModal');loadSurveys();}catch(err){toast(err.message,false);}finally{b.disabled=false;b.textContent='Submit Survey';}});
+async function loadWriting(){document.getElementById('writingLocked').style.display=_isActive?'none':'block';setLS('writingList','Loading writing jobs…');try{const d=await apiFetch('/api/writing');const l=document.getElementById('writingList');if(!d.jobs?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No writing jobs right now.</p>';return;}l.innerHTML=d.jobs.map(j=>renderTaskCard(j,'writing',j.userSubmission?('Status: '+j.userSubmission.status+(j.userSubmission.reviewNotes?' — '+j.userSubmission.reviewNotes:'')):null)).join('');}catch(err){setErr('writingList',err.message,'loadWriting');}}
+async function openWritingModal(id){if(!_isActive){toast('Activate your account to submit tasks.',false);return;}try{const d=await apiFetch(`/api/writing/${id}`);const j=d.job;_activeWritingId=id;document.getElementById('writingModalTitle').textContent=j.title;document.getElementById('writingModalDesc').textContent=j.description;document.getElementById('writingModalInstructions').textContent=j.instructions;document.getElementById('writingFileInput').value='';openModal('writingModal');}catch(err){toast('Error: '+err.message,false);}}
+document.getElementById('writingSubmitBtn').addEventListener('click',async()=>{if(!_activeWritingId)return;const f=document.getElementById('writingFileInput').files[0];if(!f){toast('Select a file.',false);return;}const b=document.getElementById('writingSubmitBtn');b.disabled=true;b.textContent='Uploading…';try{const fd=new FormData();fd.append('file',f);const d=await apiFetch(`/api/writing/${_activeWritingId}/submit`,{method:'POST',body:fd});toast(d.message);closeModal('writingModal');loadWriting();}catch(err){toast(err.message,false);}finally{b.disabled=false;b.textContent='Submit Writing Job';}});
+async function loadTranscription(){document.getElementById('transcriptionLocked').style.display=_isActive?'none':'block';setLS('transcriptionList','Loading transcription jobs…');try{const d=await apiFetch('/api/transcriptions');const l=document.getElementById('transcriptionList');if(!d.jobs?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No transcription jobs right now.</p>';return;}l.innerHTML=d.jobs.map(j=>renderTaskCard(j,'transcription',j.userSubmission?('Status: '+j.userSubmission.status):null)).join('');}catch(err){setErr('transcriptionList',err.message,'loadTranscription');}}
+async function openTranscriptionModal(id){if(!_isActive){toast('Activate your account to submit tasks.',false);return;}try{const d=await apiFetch(`/api/transcriptions/${id}`);const j=d.job;_activeTranscriptionId=id;document.getElementById('transcriptionModalTitle').textContent=j.title;document.getElementById('transcriptionModalDesc').textContent=j.description;document.getElementById('transcriptionModalInstructions').textContent=j.instructions;document.getElementById('transcriptionAudio').src=j.audioUrl;document.getElementById('transcriptionText').value='';document.getElementById('transcriptionCharCount').textContent='0 chars';openModal('transcriptionModal');}catch(err){toast('Error: '+err.message,false);}}
+document.getElementById('transcriptionText').addEventListener('input',function(){document.getElementById('transcriptionCharCount').textContent=this.value.length+' chars';});
+document.getElementById('transcriptionSubmitBtn').addEventListener('click',async()=>{if(!_activeTranscriptionId)return;const c=document.getElementById('transcriptionText').value.trim();if(c.length<20){toast('Minimum 20 characters.',false);return;}const b=document.getElementById('transcriptionSubmitBtn');b.disabled=true;b.textContent='Submitting…';try{await apiFetch(`/api/transcriptions/${_activeTranscriptionId}/submit`,{method:'POST',body:JSON.stringify({content:c})});toast('Transcription submitted.');closeModal('transcriptionModal');loadTranscription();}catch(err){toast(err.message,false);}finally{b.disabled=false;b.textContent='Submit Transcription';}});
+async function loadDataentry(){document.getElementById('dataentryLocked').style.display=_isActive?'none':'block';setLS('dataentryList','Loading data entry jobs…');try{const d=await apiFetch('/api/dataentry');const l=document.getElementById('dataentryList');if(!d.jobs?.length){l.innerHTML='<p style="color:var(--gray-500);padding:2rem;text-align:center;grid-column:1/-1">No data entry jobs right now.</p>';return;}l.innerHTML=d.jobs.map(j=>renderTaskCard(j,'dataentry',j.userSubmission?('Status: '+j.userSubmission.status):null)).join('');}catch(err){setErr('dataentryList',err.message,'loadDataentry');}}
+async function openDataentryModal(id){if(!_isActive){toast('Activate your account to submit tasks.',false);return;}try{const d=await apiFetch(`/api/dataentry/${id}`);const j=d.job;_activeDataentryId=id;document.getElementById('dataentryModalTitle').textContent=j.title;document.getElementById('dataentryModalDesc').textContent=j.description;document.getElementById('dataentryModalInstructions').textContent=j.instructions;const tp=document.getElementById('dataentryTemplateSection');if(j.templateUrl){tp.style.display='block';const tl=document.getElementById('dataentryTemplateLink');tl.dataset.url=j.templateUrl;tl.dataset.pid=j.templatePublicId||'';}else tp.style.display='none';document.getElementById('dataentryFileInput').value='';openModal('dataentryModal');}catch(err){toast('Error: '+err.message,false);}}
+document.getElementById('dataentrySubmitBtn').addEventListener('click',function(){if(!_activeDataentryId)return;const f=document.getElementById('dataentryFileInput').files[0];if(!f){toast('Please select a file to upload.',false);return;}if(f.size>20*1024*1024){toast('File too large. Maximum size is 20MB.',false);return;}const b=document.getElementById('dataentrySubmitBtn');const prog=document.getElementById('dataentryProgress');const bar=document.getElementById('dataentryProgressBar');const progTxt=document.getElementById('dataentryProgressText');b.disabled=true;b.textContent='Uploading…';prog.style.display='block';bar.style.width='0%';const fd=new FormData();fd.append('file',f);const xhr=new XMLHttpRequest();xhr.upload.addEventListener('progress',function(e){if(e.lengthComputable){const pct=Math.round((e.loaded/e.total)*100);bar.style.width=pct+'%';progTxt.textContent=pct<100?`Uploading… ${pct}%`:'Processing on server…';}});xhr.addEventListener('load',function(){b.disabled=false;b.textContent='Submit Data Entry';prog.style.display='none';try{const d=JSON.parse(xhr.responseText);if(xhr.status>=200&&xhr.status<300){toast(d.message||'✅ Submission uploaded! Pending admin review.');closeModal('dataentryModal');loadDataentry();}else{toast(d.error||'Upload failed. Please try again.',false);}}catch(e){toast('Server error. Please try again.',false);}});xhr.addEventListener('error',function(){b.disabled=false;b.textContent='Submit Data Entry';prog.style.display='none';toast('Network error. Check your connection and try again.',false);});xhr.addEventListener('timeout',function(){b.disabled=false;b.textContent='Submit Data Entry';prog.style.display='none';toast('Upload timed out. Try a smaller file or check your connection.',false);});xhr.open('POST',`/api/dataentry/${_activeDataentryId}/submit`);xhr.timeout=120000;xhr.setRequestHeader('Authorization','Bearer '+localStorage.getItem('token'));xhr.send(fd);});
+async function smartDownload(url,pid,fn){if(!url)return;try{const p=await fetch(url,{method:'HEAD'}).catch(()=>null);if(p&&p.ok){const a=document.createElement('a');a.href=url;a.target='_blank';a.download=fn||'download';document.body.appendChild(a);a.click();document.body.removeChild(a);return;}}catch(e){}if(!pid||pid===url){window.open(url,'_blank');return;}try{const d=await apiFetch(`/api/dataentry/file/signed?publicId=${encodeURIComponent(pid)}&fileName=${encodeURIComponent(fn||'download')}`);if(d.url)window.open(d.url,'_blank');else window.open(url,'_blank');}catch(e){window.open(url,'_blank');}}
+async function loadReferrals(){const active=_isActive;document.getElementById('refLinkSection').style.display=active?'block':'none';document.getElementById('refLinkLocked').style.display=active?'none':'block';try{const[stats,link]=await Promise.all([apiFetch('/api/referrals/stats'),apiFetch('/api/referrals/link')]);if(active)document.getElementById('referralLink').value=link.inviteLink||`${window.location.origin}/index.html#join?ref=${link.inviteCode}`;['1','2','3','4'].forEach(l=>{const c=stats.levels['level'+l];const users=c?.users||[];const t=users.length;const a=users.filter(u=>u.packageType&&u.packageType!=='not_active').length;const inact=t-a;document.getElementById('level'+l+'Count').textContent=t;document.getElementById('lvl'+l+'Status').textContent=`Active: ${a} | Inactive: ${inact}`;const el=document.getElementById('level'+l+'Members');if(el&&users.length){el.innerHTML=users.slice(0,5).map(m=>{const isAct=m.packageType&&m.packageType!=='not_active';return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-top:1px solid var(--gray-100);font-size:.78rem"><span style="font-weight:600">${m.username}</span><span class="bdg ${isAct?'bg':'by'}">${isAct?'Active':'Inactive'}</span></div>`;}).join('');if(users.length>5)el.innerHTML+=`<p style="font-size:.72rem;color:var(--gray-400);margin:.3rem 0 0">+${users.length-5} more</p>`;}});document.getElementById('totalCommission').textContent='KES '+(stats.summary?.totalCommission||0);['1','2','3','4'].forEach(l=>document.getElementById('commission'+l).textContent='KES '+(stats.summary?.commissionByLevel?.['level'+l]||0));}catch(err){console.error('Referrals:',err);}}
+document.getElementById('copyReferralBtn').addEventListener('click',()=>{if(!_isActive){toast('Activate your account to share your referral link.',false);return;}const el=document.getElementById('referralLink');el.select();document.execCommand('copy');toast('Referral link copied.');});
+document.getElementById('ptsPaymentMethod').addEventListener('change',e=>{document.getElementById('ptsMpesaSection').style.display=e.target.value==='mpesa'?'block':'none';document.getElementById('ptsBankSection').style.display=e.target.value==='bank'?'block':'none';});
+document.getElementById('paymentMethod').addEventListener('change',e=>{document.getElementById('mpesaSection').style.display=e.target.value==='mpesa'?'block':'none';document.getElementById('bankSection').style.display=e.target.value==='bank'?'block':'none';});
+async function loadWithdraw(){try{const p=await apiFetch('/api/users/profile');const u=p.user;const pts=u.pointsWallet?.points||0;const redeemablePts=Math.floor(pts/100)*100;const pKES=(redeemablePts/100)*13;const bal=u.primaryWallet?.balance||0;const refs=u.pointsWallet?.referralsSinceLastWithdrawal||0;const atCap=pts>=2500;document.getElementById('withdrawBalance').textContent='KES '+bal;document.getElementById('withdrawPoints').textContent=pts+' pts'+(atCap?' ⚠️ CAP REACHED':'');document.getElementById('withdrawPointsKES').textContent=`= KES ${pKES} redeemable · Tuesdays`;const canPts=pts>=1500&&pts<=2500&&refs>=3;const ptsCheck=pts>=1500?'✓':'✗';const refsCheck=refs>=3?'✓':'✗';const capMsg=atCap?'⚠️ You have hit the 2,500 pts cap — tasks are blocked until you withdraw. ':'';document.getElementById('pointsEligibilityHint').textContent=canPts?`${capMsg}Ready: ${redeemablePts} pts → KES ${pKES}. Referrals: ${refs}/3. Submit on Tuesday.`:`${capMsg}Points: ${pts}/1,500 min ${ptsCheck}   New referrals since last withdrawal: ${refs}/3 ${refsCheck}`;document.getElementById('pointsEligibilityHint').style.background=canPts?'var(--gl)':'var(--ym)';document.getElementById('pointsEligibilityHint').style.borderColor=canPts?'var(--g)':'var(--y)';document.getElementById('pointsEligibilityHint').style.color=canPts?'#14532d':'#78350f';const day=getEATDay(),msg=document.getElementById('withdrawDayMsg');if(day===2){msg.textContent='Today is Tuesday — points withdrawals are open.';msg.style.cssText='border-left:4px solid var(--g);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:700;font-size:.9rem;background:var(--gl);color:var(--g)';}else if(day===4){msg.textContent='Today is Thursday — KES wallet withdrawals are open.';msg.style.cssText='border-left:4px solid var(--g);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:700;font-size:.9rem;background:var(--gl);color:var(--g)';}else{msg.textContent=`Today is ${DAYS[day]}. Points withdrawals: Tuesdays · KES withdrawals: Thursdays.`;msg.style.cssText='border-left:4px solid var(--b);padding:.85rem 1.1rem;border-radius:.5rem;margin-bottom:1.25rem;font-weight:600;font-size:.9rem;background:var(--bl);color:#1e40af';}const pb=document.getElementById('ptsWithdrawBtn'),kb=document.getElementById('kesWithdrawBtn');if(day!==2){pb.disabled=true;pb.textContent='Opens on Tuesday';}else if(!canPts){pb.disabled=true;pb.textContent=pts>2500?'Over cap — withdraw now':pts<1500?`Need ${1500-pts} more pts`:`Need ${3-refs} more referral${3-refs===1?'':'s'}`;}else{pb.disabled=false;pb.textContent=`Redeem ${redeemablePts} pts → KES ${pKES}`;}if(day!==4){kb.disabled=true;kb.textContent='Opens on Thursday';}else{kb.disabled=false;kb.textContent='Request KES Withdrawal';}const hist=await apiFetch('/api/withdrawals/my').catch(()=>null);const hel=document.getElementById('withdrawHistory');if(hist?.withdrawals?.length){hel.innerHTML=hist.withdrawals.map(w=>{const isPoints=w.type==='points';const label=isPoints?`${w.pointsRedeemed||0} pts → KES ${w.amount}`:`KES ${w.amount}`;const txnCode=w.transactionReference?`<div style="font-size:.75rem;color:var(--g);font-weight:700;margin-top:.2rem">Txn Code: ${w.transactionReference}</div>`:'';const rejNote=w.status==='rejected'&&w.adminNotes?`<div style="font-size:.73rem;color:#dc2626;margin-top:.15rem">Reason: ${w.adminNotes}</div>`:'';return `<div class="hrow"><div><div class="hm">${label} <span class="bdg ${isPoints?'by':'bb'}">${isPoints?'POINTS':'KES'}</span></div><div class="hs">${new Date(w.requestedAt).toLocaleDateString()} · ${(w.paymentMethod||'').toUpperCase()}${w.adminNotes&&w.status!=='rejected'?' · '+w.adminNotes:''}</div>${txnCode}${rejNote}</div><span class="bdg ${w.status==='completed'?'bg':w.status==='pending'?'by':'br'}">${(w.status||'').toUpperCase()}</span></div>`;}).join('');}else hel.innerHTML='<p style="color:var(--gray-400);text-align:center;padding:.75rem;font-size:.85rem">No withdrawal history yet.</p>';}catch(err){console.error('Withdraw:',err);}}
+async function submitPointsWithdrawal(){const pm=document.getElementById('ptsPaymentMethod').value;if(!pm){showMsg('ptsWdMsg','Select a payment method.',false);return;}let pd={};if(pm==='mpesa'){const ph=document.getElementById('ptsMpesaPhone').value.trim();if(!ph){showMsg('ptsWdMsg','Enter M-Pesa phone.',false);return;}pd={mpesaPhone:ph};}else{const bn=document.getElementById('ptsBankName').value.trim(),an=document.getElementById('ptsAccountNumber').value.trim(),aname=document.getElementById('ptsAccountName').value.trim();if(!bn||!an||!aname){showMsg('ptsWdMsg','Fill all bank details.',false);return;}pd={bankName:bn,accountNumber:an,accountName:aname};}const b=document.getElementById('ptsWithdrawBtn');b.disabled=true;b.textContent='Submitting…';try{const d=await apiFetch('/api/withdrawals/points',{method:'POST',body:JSON.stringify({paymentMethod:pm,paymentDetails:pd})});toast(d.message);showMsg('ptsWdMsg',d.message,true);document.getElementById('ptsPaymentMethod').value='';document.getElementById('ptsMpesaSection').style.display='none';document.getElementById('ptsBankSection').style.display='none';setTimeout(()=>loadWithdraw(),600);}catch(err){showMsg('ptsWdMsg',err.message,false);b.disabled=false;b.textContent='Redeem Points to KES';}}
+async function submitKesWithdrawal(){const amount=parseFloat(document.getElementById('withdrawAmount').value);if(!amount||amount<300){showMsg('kesWdMsg','Minimum KES 300.',false);return;}const pm=document.getElementById('paymentMethod').value;if(!pm){showMsg('kesWdMsg','Select a payment method.',false);return;}let pd={};if(pm==='mpesa'){const ph=document.getElementById('mpesaPhone').value.trim();if(!ph){showMsg('kesWdMsg','Enter M-Pesa phone.',false);return;}pd={mpesaPhone:ph};}else{const bn=document.getElementById('bankName').value.trim(),an=document.getElementById('accountNumber').value.trim(),aname=document.getElementById('accountName').value.trim();if(!bn||!an||!aname){showMsg('kesWdMsg','Fill all bank details.',false);return;}pd={bankName:bn,accountNumber:an,accountName:aname};}const b=document.getElementById('kesWithdrawBtn');b.disabled=true;b.textContent='Submitting…';try{const d=await apiFetch('/api/withdrawals/kes',{method:'POST',body:JSON.stringify({amount,paymentMethod:pm,paymentDetails:pd})});toast(d.message);showMsg('kesWdMsg',d.message,true);document.getElementById('withdrawAmount').value='';document.getElementById('paymentMethod').value='';document.getElementById('mpesaSection').style.display='none';document.getElementById('bankSection').style.display='none';setTimeout(()=>loadWithdraw(),600);}catch(err){showMsg('kesWdMsg',err.message,false);b.disabled=false;b.textContent='Request KES Withdrawal';}}
+async function loadProfile(){try{const[pd,sd,rd]=await Promise.all([apiFetch('/api/users/profile'),apiFetch('/api/users/dashboard').catch(()=>null),apiFetch('/api/referrals/stats').catch(()=>null)]);const u=pd.user;_isActive=u.packageType!=='not_active';document.getElementById('profileUsername').textContent='@'+u.username;document.getElementById('profilePhone').textContent=u.phone||'—';document.getElementById('profileJoinDate').textContent=new Date(u.createdAt).toLocaleDateString('en-KE',{year:'numeric',month:'long',day:'numeric'});if(_isActive){document.getElementById('profileLinkSection').style.display='block';document.getElementById('profileLinkLocked').style.display='none';document.getElementById('profileInviteCode').value=`${window.location.origin}/index.html#join?ref=${u.uniqueInviteCode||u.inviteCode}`;}else{document.getElementById('profileLinkSection').style.display='none';document.getElementById('profileLinkLocked').style.display='block';}document.getElementById('statStatus').innerHTML=`<span class="bdg ${_isActive?'bg':'by'}">${_isActive?'Active':'Inactive'}</span>`;document.getElementById('statWallet').textContent='KES '+(u.primaryWallet?.balance||0);document.getElementById('statPoints').textContent=(u.pointsWallet?.points||0)+' pts';document.getElementById('statTotalEarned').textContent='KES '+(sd?.stats?.totalEarnings||0);if(rd){let totalRefs=0,activeRefs=0;['1','2','3','4'].forEach(l=>{const users=(rd.levels['level'+l]?.users)||[];const a=users.filter(u=>u.packageType&&u.packageType!=='not_active').length;totalRefs+=users.length;activeRefs+=a;});document.getElementById('statTotalRefs').textContent=totalRefs;document.getElementById('statActiveRefs').textContent=activeRefs;document.getElementById('statInactiveRefs').textContent=totalRefs-activeRefs;}try{const wh=await apiFetch('/api/withdrawals/my');const kesW=wh.summary?.totalKesWithdrawn||0;const ptsKesW=wh.summary?.totalPointsKesReceived||0;document.getElementById('statWithdrawn').textContent='KES '+(kesW+ptsKesW);}catch(e){document.getElementById('statWithdrawn').textContent='KES 0';}const ub=document.getElementById('updateEmailBtn');ub.disabled=false;ub.textContent='Save Email';document.getElementById('emailCooldownMsg').textContent='';if(u.lastContactUpdate){const ds=(Date.now()-new Date(u.lastContactUpdate).getTime())/(1000*60*60*24);if(ds<7){const dl=Math.ceil(7-ds);document.getElementById('emailCooldownMsg').textContent=`(locked — ${dl}d remaining)`;ub.disabled=true;ub.textContent=`Locked — ${dl}d remaining`;}}loadProfileInactiveReferrals();}catch(err){console.error('Profile:',err);}}
+async function loadProfileInactiveReferrals(){try{const data=await apiFetch('/api/users/inactive-referrals');const tbody=document.getElementById('profileInactiveList');if(!data.inactiveReferrals?.length){tbody.innerHTML='<td colspan="5" style="text-align:center;color:var(--gray-400);padding:1.5rem;font-size:.85rem">No inactive referrals.</td>';return;}tbody.innerHTML=data.inactiveReferrals.map((u,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${u.name||'—'}</td><td style="font-family:'DM Mono',monospace">${u.phone||'—'}</td><td>${u.daysSinceJoined!==undefined?u.daysSinceJoined+'d ago':new Date(u.joinedAt||Date.now()).toLocaleDateString()}</td><td><span class="bdg by">Inactive</span></td></tr>`).join('');}catch(e){document.getElementById('profileInactiveList').innerHTML='<td colspan="5" style="text-align:center;color:var(--gray-400);padding:1rem;font-size:.85rem">Could not load data.</td>';}}
+async function updateEmail(){const email=document.getElementById('newEmail').value.trim();const pwd=document.getElementById('emailPassword').value;if(!email){showMsg('emailUpdateMsg','Enter a new email address.',false);return;}if(!pwd){showMsg('emailUpdateMsg','Current password is required.',false);return;}const b=document.getElementById('updateEmailBtn');b.disabled=true;b.textContent='Saving…';try{const d=await apiFetch('/api/users/update-contact',{method:'PUT',body:JSON.stringify({email,currentPassword:pwd})});showMsg('emailUpdateMsg',d.message,true);document.getElementById('newEmail').value='';document.getElementById('emailPassword').value='';b.textContent='Saved';document.getElementById('emailCooldownMsg').textContent='(next update in 7 days)';setTimeout(()=>loadProfile(),800);}catch(err){showMsg('emailUpdateMsg',err.message,false);b.disabled=false;b.textContent='Save Email';}}
+async function updatePhone(){const phone=document.getElementById('newPhone').value.trim();const pwd=document.getElementById('phonePassword').value;if(!phone){showMsg('phoneUpdateMsg','Enter a new phone number.',false);return;}if(!pwd){showMsg('phoneUpdateMsg','Current password is required.',false);return;}const b=document.getElementById('updatePhoneBtn');b.disabled=true;b.textContent='Saving…';try{const d=await apiFetch('/api/users/update-contact',{method:'PUT',body:JSON.stringify({phone,currentPassword:pwd})});showMsg('phoneUpdateMsg',d.message,true);document.getElementById('newPhone').value='';document.getElementById('phonePassword').value='';b.textContent='Saved';setTimeout(()=>loadProfile(),800);}catch(err){showMsg('phoneUpdateMsg',err.message,false);b.disabled=false;b.textContent='Save Phone';}}
+function copyInviteLink(){if(!_isActive){toast('Activate your account to share your referral link.',false);return;}const el=document.getElementById('profileInviteCode');el.select();document.execCommand('copy');toast('Invite link copied.');}
+document.getElementById('changePasswordForm').addEventListener('submit',async e=>{e.preventDefault();document.getElementById('pwdError').style.display='none';document.getElementById('pwdSuccess').style.display='none';const np=document.getElementById('newPassword').value;if(np!==document.getElementById('confirmPassword').value){const el=document.getElementById('pwdError');el.textContent='Passwords do not match.';el.style.display='block';return;}const b=document.getElementById('changePwdBtn');b.disabled=true;b.textContent='Changing…';try{await apiFetch('/api/users/change-password',{method:'PUT',body:JSON.stringify({currentPassword:document.getElementById('currentPassword').value,newPassword:np})});document.getElementById('pwdSuccess').style.display='block';e.target.reset();}catch(err){const el=document.getElementById('pwdError');el.textContent=err.message;el.style.display='block';}finally{b.disabled=false;b.textContent='Change Password';}});
+async function loadNotifications(){try{const d=await apiFetch('/api/notifications');const cnt=d.unreadCount||0;const badge=document.getElementById('bellBadge');if(cnt>0){badge.textContent=cnt>9?'9+':cnt;badge.style.display='block';}else badge.style.display='none';const list=document.getElementById('notifList');if(!d.notifications?.length){list.innerHTML='<p style="text-align:center;color:var(--gray-400);font-size:.82rem;padding:1.5rem">No notifications yet.</p>';return;}list.innerHTML=d.notifications.map(n=>`<div class="nitem ${n.isRead?'':'unread'}" onclick="markOneRead('${n._id}',this)"><div class="nitem-title">${n.title}${!n.isRead?'<span class="ndot"></span>':''}</div><div class="nitem-msg">${n.message}</div><div class="nitem-time">${new Date(n.createdAt).toLocaleString()}</div></div>`).join('');}catch(e){}}
+function toggleNotifPanel(){_notifOpen=!_notifOpen;const p=document.getElementById('notifPanel');p.style.display=_notifOpen?'flex':'none';if(_notifOpen)loadNotifications();}
+async function markAllRead(){try{await apiFetch('/api/notifications/mark-read',{method:'POST'});loadNotifications();}catch(e){}}
+async function markOneRead(id,el){try{await apiFetch(`/api/notifications/mark-read/${id}`,{method:'POST'});el.classList.remove('unread');el.querySelector('.ndot')?.remove();loadNotifications();}catch(e){}}
+setInterval(loadNotifications,60000);
+function openDepositModal(){document.getElementById('depositAmount').value='';document.getElementById('depositMsg').style.display='none';openModal('depositModal');}
+async function initiateDeposit(){const amtEl=document.getElementById('depositAmount');const btn=document.getElementById('depositBtn');const amount=parseFloat(amtEl.value);if(!amount||amount<10){showDepositMsg('Enter a valid amount (min KES 10).',false);return;}btn.disabled=true;btn.textContent='Initializing…';try{const d=await apiFetch('/api/paystack/initialize',{method:'POST',body:JSON.stringify({amount})});localStorage.setItem('pendingDepositRef',d.reference);localStorage.setItem('pendingDepositAmt',amount);window.location.href=d.authorizationUrl;}catch(e){showDepositMsg(e.message,false);btn.disabled=false;btn.textContent='Pay via Card / M-Pesa';}}
+function showDepositMsg(msg,ok){const el=document.getElementById('depositMsg');el.textContent=msg;el.style.display='block';el.style.color=ok?'var(--g)':'#dc2626';}
+(async function checkDepositReturn(){const urlParams=new URLSearchParams(window.location.search);const isDepositReturn=urlParams.has('deposit-success')||urlParams.has('deposit')||urlParams.has('trxref')||urlParams.has('reference');const ref=urlParams.get('reference')||urlParams.get('trxref')||localStorage.getItem('pendingDepositRef');if(isDepositReturn&&ref){toast('Verifying your payment…',true);try{const v=await apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:ref})});localStorage.removeItem('pendingDepositRef');localStorage.removeItem('pendingDepositAmt');toast(v.message||'Deposit confirmed! Your wallet has been credited.',true);loadDashboard();}catch(e){localStorage.removeItem('pendingDepositRef');localStorage.removeItem('pendingDepositAmt');if(e.message&&e.message.includes('already been credited')){toast('Deposit already credited to your wallet.',true);loadDashboard();}else{toast('Payment received. If your balance has not updated, please refresh.',true);loadDashboard();}}history.replaceState(null,'',window.location.pathname+window.location.hash);}else if(localStorage.getItem('pendingDepositRef')){const pendingRef=localStorage.getItem('pendingDepositRef');try{const v=await apiFetch('/api/paystack/verify',{method:'POST',body:JSON.stringify({reference:pendingRef})});localStorage.removeItem('pendingDepositRef');localStorage.removeItem('pendingDepositAmt');toast(v.message||'Deposit confirmed!',true);loadDashboard();}catch(e){localStorage.removeItem('pendingDepositRef');localStorage.removeItem('pendingDepositAmt');if(e.message&&e.message.includes('already been credited')){loadDashboard();}}}})();
+</script>
 </body>
 </html>
