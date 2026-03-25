@@ -135,9 +135,169 @@ table.ref-table tr:hover td{background:var(--gray-50)}
   .rlg{grid-template-columns:1fr 1fr}.sg{grid-template-columns:1fr 1fr}
 }
 @media(max-width:400px){.rlg{grid-template-columns:1fr}.sg{grid-template-columns:1fr}.wdg{grid-template-columns:1fr}}
+
+/* ══════════════════════════════════════════
+   EASTER OFFER BANNER
+══════════════════════════════════════════ */
+.easter-banner{
+  position:relative;top:auto;z-index:5;
+  background:linear-gradient(120deg,#7c3aed 0%,#a855f7 30%,#ec4899 65%,#f97316 100%);
+  background-size:300% 300%;
+  animation:easterGradMove 5s ease infinite;
+  color:#fff;padding:0;overflow:hidden;
+  border-radius:var(--radius);
+  margin-bottom:1.25rem;
+  border:2px solid rgba(255,255,255,.18);
+  box-shadow:0 4px 24px rgba(124,58,237,.35);
+}
+@keyframes easterGradMove{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+.easter-inner{
+  max-width:1280px;margin:0 auto;
+  display:flex;align-items:center;justify-content:center;
+  gap:.65rem;flex-wrap:wrap;text-align:center;
+  padding:.6rem 2.5rem .6rem 1.25rem;
+  position:relative;z-index:2;
+}
+.easter-text{font-size:.875rem;font-weight:700;line-height:1.5;letter-spacing:.01em;}
+.easter-text strong{font-weight:900;font-size:.95rem;}
+.easter-pill{
+  background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.38);
+  backdrop-filter:blur(6px);padding:.2rem .75rem;border-radius:999px;
+  font-size:.72rem;font-weight:800;letter-spacing:.04em;white-space:nowrap;flex-shrink:0;
+  animation:easterPillPulse 2.2s ease-in-out infinite;
+}
+@keyframes easterPillPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.3)}
+  50%{box-shadow:0 0 0 6px rgba(255,255,255,0)}
+}
+.easter-close{
+  position:absolute;right:.75rem;top:50%;transform:translateY(-50%);
+  background:rgba(0,0,0,.15);border:none;color:#fff;
+  width:22px;height:22px;border-radius:50%;font-size:.75rem;
+  cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;
+  transition:.15s;
+}
+.easter-close:hover{background:rgba(0,0,0,.35);}
+
+/* Bouncing egg emojis in banner */
+.e-egg{display:inline-block;animation:eggWobble 1.1s ease-in-out infinite;}
+.e-egg:nth-child(1){animation-delay:0s}
+.e-egg:nth-child(2){animation-delay:.18s}
+.e-egg:nth-child(3){animation-delay:.36s}
+@keyframes eggWobble{
+  0%,100%{transform:translateY(0) rotate(-10deg) scale(1)}
+  50%{transform:translateY(-6px) rotate(10deg) scale(1.18)}
+}
+
+/* ══════════════════════════════════════════
+   DASHBOARD EMOJI CELEBRATION ANIMATIONS
+══════════════════════════════════════════ */
+
+/* Floating emoji particles */
+@keyframes floatParticle{
+  0%{transform:translateY(0) translateX(0) rotate(0deg) scale(1);opacity:1}
+  80%{opacity:.8}
+  100%{transform:translateY(-110px) translateX(var(--dx,0px)) rotate(var(--rot,180deg)) scale(.7);opacity:0}
+}
+.emo-particle{
+  position:absolute;pointer-events:none;z-index:20;
+  font-size:1.3rem;
+  animation:floatParticle var(--dur,1.8s) ease-out var(--delay,0s) forwards;
+}
+
+/* Hero banner floating emojis (continuous) */
+@keyframes heroFloat{
+  0%{transform:translateY(0) scale(1) rotate(var(--r0,0deg));opacity:.85}
+  50%{transform:translateY(-18px) scale(1.15) rotate(var(--r1,15deg));opacity:1}
+  100%{transform:translateY(0) scale(1) rotate(var(--r0,0deg));opacity:.85}
+}
+.hero-emo{
+  position:absolute;font-size:1.6rem;pointer-events:none;
+  animation:heroFloat var(--hd,3s) ease-in-out var(--hdelay,0s) infinite;
+}
+
+/* Stat card emoji pulse */
+@keyframes statEmoPop{
+  0%,100%{transform:scale(1) rotate(0deg)}
+  30%{transform:scale(1.35) rotate(-12deg)}
+  60%{transform:scale(1.2) rotate(8deg)}
+}
+.stat-emo{
+  font-size:1.35rem;display:block;margin-bottom:.2rem;
+  animation:statEmoPop 3s ease-in-out infinite;
+  transform-origin:center;
+}
+.sc:nth-child(1) .stat-emo{animation-delay:0s}
+.sc:nth-child(2) .stat-emo{animation-delay:.4s}
+.sc:nth-child(3) .stat-emo{animation-delay:.8s}
+.sc:nth-child(4) .stat-emo{animation-delay:1.2s}
+
+/* Username pop-in */
+@keyframes usernamePop{
+  0%{transform:scale(.6) translateY(8px);opacity:0}
+  70%{transform:scale(1.1) translateY(-2px);opacity:1}
+  100%{transform:scale(1) translateY(0);opacity:1}
+}
+#dashUsername{display:inline-block;animation:usernamePop .7s cubic-bezier(.34,1.56,.64,1) .2s both;}
+
+/* Referral level card hover */
+.ref-lvl-card{transition:transform .2s,box-shadow .2s;cursor:default;}
+.ref-lvl-card:hover{transform:scale(1.05) translateY(-4px);box-shadow:0 8px 28px rgba(22,163,74,.3);}
+
+/* Confetti burst on load */
+@keyframes confettiFall{
+  0%{transform:translateY(-20px) rotate(0deg) scale(1);opacity:1}
+  100%{transform:translateY(100vh) rotate(var(--cr,360deg)) scale(.5);opacity:0}
+}
+.confetti-bit{
+  position:fixed;top:-10px;pointer-events:none;z-index:9985;font-size:1.4rem;
+  animation:confettiFall var(--cd,3s) ease-in var(--cdelay,0s) forwards;
+}
+
+/* Task box emoji bounce */
+.tbox div:first-child{
+  display:block;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.tbox:hover div:first-child{
+  transform:scale(1.4) rotate(-10deg);
+}
+
+/* Ambient emoji rain — continuous background float */
+@keyframes ambientRise{
+  0%{transform:translateY(0) rotate(var(--ar0,0deg)) scale(1);opacity:0}
+  10%{opacity:.55}
+  90%{opacity:.35}
+  100%{transform:translateY(-320px) rotate(var(--ar1,180deg)) scale(.6);opacity:0}
+}
+.amb-emo{
+  position:absolute;pointer-events:none;z-index:1;
+  font-size:var(--afs,1.2rem);
+  animation:ambientRise var(--ad,6s) ease-in var(--adelay,0s) infinite;
+}
+#ambientEmojis{
+  position:fixed;bottom:0;left:215px;right:0;height:100vh;
+  pointer-events:none;z-index:1;overflow:hidden;
+}
+@media(max-width:768px){#ambientEmojis{left:0;}}
+
+/* Card header emojis */
+.ch-emo{margin-right:.35rem;}
+
+/* Points conversion card emoji */
+.pts-conv-emo{font-size:1.5rem;margin-right:.5rem;}
+
+/* Inactive referrals section emoji */
+.pending-emo{font-size:1rem;margin-right:.3rem;}
 </style>
 </head>
 <body>
+
+<div id="ambientEmojis"></div>
 
 <nav class="topnav">
   <div class="tnin">
@@ -207,10 +367,41 @@ table.ref-table tr:hover td{background:var(--gray-50)}
 
 <!-- DASHBOARD -->
 <div id="pg-dashboard" class="page">
-  <div style="background:linear-gradient(135deg,var(--g) 0%,#15803d 100%);color:#fff;border-radius:var(--radius);padding:1.5rem 1.75rem;margin-bottom:1.5rem;position:relative;overflow:hidden">
+
+  <!-- Confetti container -->
+  <div id="confettiContainer" style="position:fixed;inset:0;pointer-events:none;z-index:9984;overflow:hidden"></div>
+
+  <!-- ══ EASTER OFFER BANNER ══ -->
+  <div class="easter-banner" id="easterBanner">
+    <div class="easter-inner">
+      <span class="e-egg">🐣</span>
+      <span class="e-egg">🥚</span>
+      <span class="e-egg">🌷</span>
+      <span class="e-egg">🐰</span>
+      <div class="easter-text">
+        <strong>🎉 Easter Special Offer!</strong>
+        &nbsp;Points withdrawal criteria is now just <strong>1 referral</strong> — withdraw <strong>ALL</strong> your points till Easter Monday!
+        &nbsp;Refer friends &amp; earn big this festive season ✨🌸
+      </div>
+      <span class="easter-pill">🌸 Till Easter Monday</span>
+      <button class="easter-close" onclick="document.getElementById('easterBanner').style.display='none'" title="Dismiss">✕</button>
+    </div>
+  </div>
+
+  <div id="dashWelcomeHero" style="background:linear-gradient(135deg,var(--g) 0%,#15803d 100%);color:#fff;border-radius:var(--radius);padding:1.5rem 1.75rem;margin-bottom:1.5rem;position:relative;overflow:hidden">
     <div style="position:absolute;right:-20px;top:-30px;width:140px;height:140px;background:rgba(255,255,255,.06);border-radius:50%"></div>
-    <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:.15rem">Welcome back, <span id="dashUsername">User</span></h2>
-    <p id="dashPackageStatus" style="opacity:.85;margin:0;font-size:.88rem"></p>
+    <!-- Floating emoji decorations — spread all over hero -->
+    <span class="hero-emo" style="left:70%;top:8%;--hd:3.1s;--hdelay:0s;--r0:-8deg;--r1:12deg;font-size:1.5rem;">🎉</span>
+    <span class="hero-emo" style="left:80%;top:50%;--hd:2.7s;--hdelay:.4s;--r0:5deg;--r1:-10deg;font-size:1.3rem;">💰</span>
+    <span class="hero-emo" style="left:88%;top:15%;--hd:3.5s;--hdelay:.8s;--r0:-5deg;--r1:15deg;font-size:1.4rem;">⭐</span>
+    <span class="hero-emo" style="left:75%;top:70%;--hd:2.9s;--hdelay:.2s;--r0:10deg;--r1:-8deg;font-size:1.2rem;">🚀</span>
+    <span class="hero-emo" style="left:92%;top:60%;--hd:3.3s;--hdelay:1.1s;--r0:-12deg;--r1:6deg;font-size:1.3rem;">🏆</span>
+    <span class="hero-emo" style="left:65%;top:40%;--hd:4s;--hdelay:.6s;--r0:8deg;--r1:-15deg;font-size:1.1rem;">✨</span>
+    <span class="hero-emo" style="left:84%;top:82%;--hd:2.5s;--hdelay:1.4s;--r0:-6deg;--r1:12deg;font-size:1.2rem;">💎</span>
+    <span class="hero-emo" style="left:95%;top:30%;--hd:3.8s;--hdelay:.3s;--r0:4deg;--r1:-8deg;font-size:1rem;">🔥</span>
+    <span class="hero-emo" style="left:60%;top:15%;--hd:3.2s;--hdelay:.9s;--r0:-10deg;--r1:10deg;font-size:1rem;">🌟</span>
+    <h2 style="font-size:1.45rem;font-weight:800;margin-bottom:.15rem;position:relative;z-index:1">Welcome back, <span id="dashUsername">User</span> 👋</h2>
+    <p id="dashPackageStatus" style="opacity:.85;margin:0;font-size:.88rem;position:relative;z-index:1"></p>
   </div>
 
   <!-- Inactive account banner on dashboard -->
@@ -221,10 +412,10 @@ table.ref-table tr:hover td{background:var(--gray-50)}
   </div>
 
   <div class="sg">
-    <div class="sc"><div class="slbl">KES Wallet</div><div class="sval" id="dashMainWallet">0</div></div>
-    <div class="sc"><div class="slbl">Points</div><div class="sval" id="dashPoints">0</div></div>
-    <div class="sc"><div class="slbl">Active Referrals</div><div class="sval" id="dashActiveReferrals">0</div><div class="ssub" id="dashInactiveReferrals">0 inactive</div></div>
-    <div class="sc"><div class="slbl">Total Earned</div><div class="sval" id="dashTotalEarnings">0</div></div>
+    <div class="sc"><span class="stat-emo">💰</span><div class="slbl">KES Wallet</div><div class="sval" id="dashMainWallet">0</div></div>
+    <div class="sc"><span class="stat-emo">⭐</span><div class="slbl">Points</div><div class="sval" id="dashPoints">0</div></div>
+    <div class="sc"><span class="stat-emo">👥</span><div class="slbl">Active Referrals</div><div class="sval" id="dashActiveReferrals">0</div><div class="ssub" id="dashInactiveReferrals">0 inactive</div></div>
+    <div class="sc"><span class="stat-emo">📈</span><div class="slbl">Total Earned</div><div class="sval" id="dashTotalEarnings">0</div></div>
   </div>
 
   <!-- Deposit button — visible to ALL users -->
@@ -242,36 +433,36 @@ table.ref-table tr:hover td{background:var(--gray-50)}
   </div>
 
   <div class="card" style="margin-bottom:1.5rem">
-    <div class="ch">Available Tasks <span style="font-size:.75rem;font-weight:500;color:var(--gray-400)">Click to open</span></div>
+    <div class="ch">🎯 Available Tasks <span style="font-size:.75rem;font-weight:500;color:var(--gray-400)">Click to open</span></div>
     <div style="padding:1.25rem">
       <div class="tboxes" id="dashTaskBoxes">
-        <a href="#blogs" class="tbox nav-lnk" data-pg="blogs"><div class="tbn">Blog Writing</div><div class="tbp">100 pts</div><div class="tbl" id="tbBlogsLeft">—</div></a>
-        <a href="#surveys" class="tbox nav-lnk" data-pg="surveys"><div class="tbn">Surveys</div><div class="tbp">100 pts</div><div class="tbl" id="tbSurveysLeft">—</div></a>
-        <a href="#writing" class="tbox nav-lnk" data-pg="writing"><div class="tbn">Writing Jobs</div><div class="tbp">Varies</div><div class="tbl">Upload file</div></a>
-        <a href="#transcription" class="tbox nav-lnk" data-pg="transcription"><div class="tbn">Transcription</div><div class="tbp">50 pts</div><div class="tbl">Type audio</div></a>
-        <a href="#dataentry" class="tbox nav-lnk" data-pg="dataentry"><div class="tbn">Data Entry</div><div class="tbp">75 pts</div><div class="tbl">Upload file</div></a>
+        <a href="#blogs" class="tbox nav-lnk" data-pg="blogs"><div style="font-size:1.5rem;margin-bottom:.2rem">✍️</div><div class="tbn">Blog Writing</div><div class="tbp">100 pts</div><div class="tbl" id="tbBlogsLeft">—</div></a>
+        <a href="#surveys" class="tbox nav-lnk" data-pg="surveys"><div style="font-size:1.5rem;margin-bottom:.2rem">📊</div><div class="tbn">Surveys</div><div class="tbp">100 pts</div><div class="tbl" id="tbSurveysLeft">—</div></a>
+        <a href="#writing" class="tbox nav-lnk" data-pg="writing"><div style="font-size:1.5rem;margin-bottom:.2rem">📝</div><div class="tbn">Writing Jobs</div><div class="tbp">Varies</div><div class="tbl">Upload file</div></a>
+        <a href="#transcription" class="tbox nav-lnk" data-pg="transcription"><div style="font-size:1.5rem;margin-bottom:.2rem">🎧</div><div class="tbn">Transcription</div><div class="tbp">50 pts</div><div class="tbl">Type audio</div></a>
+        <a href="#dataentry" class="tbox nav-lnk" data-pg="dataentry"><div style="font-size:1.5rem;margin-bottom:.2rem">🗂️</div><div class="tbn">Data Entry</div><div class="tbp">75 pts</div><div class="tbl">Upload file</div></a>
       </div>
       <p style="font-size:.75rem;color:var(--gray-400);margin-top:.85rem">100 pts = KES 13 &middot; Redeem on Tuesdays (min 1,500 pts + 3 referrals · cap 2,500 pts)</p>
     </div>
   </div>
 
   <div class="card" style="margin-bottom:1.5rem">
-    <div class="ch">Referral Network <a href="#referrals" class="nav-lnk btn btn-p btn-sm" data-pg="referrals" style="font-size:.75rem">View All</a></div>
+    <div class="ch">🤝 Referral Network <a href="#referrals" class="nav-lnk btn btn-p btn-sm" data-pg="referrals" style="font-size:.75rem">View All</a></div>
     <div style="padding:1.25rem">
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:.85rem">
-        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,var(--g),#15803d);color:#fff"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef1">0</div><div style="font-size:.7rem;opacity:.85">L1 &middot; KES 200</div><div style="font-size:.65rem;opacity:.7;margin-top:.1rem" id="dashRef1s">0 active</div></div>
-        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#22c55e,var(--g));color:#fff"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef2">0</div><div style="font-size:.7rem;opacity:.85">L2 &middot; KES 150</div><div style="font-size:.65rem;opacity:.7;margin-top:.1rem" id="dashRef2s">0 active</div></div>
-        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#4ade80,#22c55e);color:#14532d"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef3">0</div><div style="font-size:.7rem;opacity:.75">L3 &middot; KES 75</div><div style="font-size:.65rem;opacity:.65;margin-top:.1rem" id="dashRef3s">0 active</div></div>
-        <div style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#86efac,#4ade80);color:#14532d"><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef4">0</div><div style="font-size:.7rem;opacity:.75">L4 &middot; KES 25</div><div style="font-size:.65rem;opacity:.65;margin-top:.1rem" id="dashRef4s">0 active</div></div>
+        <div class="ref-lvl-card" style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,var(--g),#15803d);color:#fff"><div style="font-size:1.4rem;margin-bottom:.15rem">🥇</div><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef1">0</div><div style="font-size:.7rem;opacity:.85">L1 &middot; KES 200</div><div style="font-size:.65rem;opacity:.7;margin-top:.1rem" id="dashRef1s">0 active</div></div>
+        <div class="ref-lvl-card" style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#22c55e,var(--g));color:#fff"><div style="font-size:1.4rem;margin-bottom:.15rem">🥈</div><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef2">0</div><div style="font-size:.7rem;opacity:.85">L2 &middot; KES 150</div><div style="font-size:.65rem;opacity:.7;margin-top:.1rem" id="dashRef2s">0 active</div></div>
+        <div class="ref-lvl-card" style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#4ade80,#22c55e);color:#14532d"><div style="font-size:1.4rem;margin-bottom:.15rem">🥉</div><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef3">0</div><div style="font-size:.7rem;opacity:.75">L3 &middot; KES 75</div><div style="font-size:.65rem;opacity:.65;margin-top:.1rem" id="dashRef3s">0 active</div></div>
+        <div class="ref-lvl-card" style="text-align:center;padding:.75rem;border-radius:.5rem;background:linear-gradient(135deg,#86efac,#4ade80);color:#14532d"><div style="font-size:1.4rem;margin-bottom:.15rem">🎖️</div><div style="font-size:1.5rem;font-weight:800;font-family:'DM Mono',monospace" id="dashRef4">0</div><div style="font-size:.7rem;opacity:.75">L4 &middot; KES 25</div><div style="font-size:.65rem;opacity:.65;margin-top:.1rem" id="dashRef4s">0 active</div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;background:var(--gl);border-radius:.5rem;padding:.75rem 1rem"><span style="font-weight:700;font-size:.88rem">Total Commission Earned</span><span style="font-size:1.2rem;font-weight:800;color:var(--g);font-family:'DM Mono',monospace" id="dashTotalCommission">KES 0</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;background:var(--gl);border-radius:.5rem;padding:.75rem 1rem"><span style="font-weight:700;font-size:.88rem">💸 Total Commission Earned</span><span style="font-size:1.2rem;font-weight:800;color:var(--g);font-family:'DM Mono',monospace" id="dashTotalCommission">KES 0</span></div>
     </div>
   </div>
 
   <!-- Inactive referrals table on dashboard -->
   <div id="inactiveReferralsSection" style="display:none;margin-bottom:1.5rem">
     <div class="card">
-      <div class="ch">Pending Activations <span style="font-size:.75rem;font-weight:500;color:var(--gray-400)">Invited users who have not activated</span></div>
+      <div class="ch">⏳ Pending Activations <span style="font-size:.75rem;font-weight:500;color:var(--gray-400)">Invited users who have not activated</span></div>
       <div class="tbl-wrap">
         <table class="ref-table">
           <thead><tr><th>#</th><th>Username</th><th>Phone</th><th>Joined</th><th>Status</th></tr></thead>
@@ -626,8 +817,104 @@ async function doActivation(){
   catch(err){m.style.color='var(--r)';m.textContent=err.message;loadActivationPage();}
 }
 
+/* ── EMOJI CELEBRATION ANIMATIONS ── */
+const CELEB_EMOJIS = ['🎉','🥳','✨','💰','⭐','🏆','🚀','🎊','💎','🔥','🌟','💸'];
+const EASTER_EMOJIS = ['🐣','🥚','🌷','🐰','🌸','🎀','🍬','🌈'];
+
+let _confettiFired = false;
+function fireConfetti(){
+  if(_confettiFired) return;
+  _confettiFired = true;
+  const c = document.getElementById('confettiContainer');
+  if(!c) return;
+  // Mix celebration + easter emojis
+  const pool = [...CELEB_EMOJIS, ...EASTER_EMOJIS];
+  const count = 28;
+  for(let i = 0; i < count; i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-bit';
+    el.textContent = pool[Math.floor(Math.random() * pool.length)];
+    const left = Math.random() * 100;
+    const dur  = 2.2 + Math.random() * 2.2;
+    const delay = Math.random() * 1.8;
+    const rot  = (Math.random() > .5 ? 1 : -1) * (180 + Math.random() * 360);
+    el.style.cssText = `left:${left}%;--cd:${dur}s;--cdelay:${delay}s;--cr:${rot}deg;`;
+    c.appendChild(el);
+    // Clean up after animation
+    setTimeout(() => el.remove(), (dur + delay + .5) * 1000);
+  }
+}
+
+function spawnFloatParticles(anchorEl, emojis = CELEB_EMOJIS, count = 5){
+  const rect = anchorEl.getBoundingClientRect();
+  for(let i = 0; i < count; i++){
+    const el = document.createElement('div');
+    el.className = 'emo-particle';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    const dx = (Math.random() - .5) * 80;
+    const rot = (Math.random() - .5) * 360;
+    const dur = 1.2 + Math.random() * .8;
+    const delay = Math.random() * .4;
+    el.style.cssText = `
+      left:${rect.left + rect.width/2 + window.scrollX + (Math.random()-0.5)*40}px;
+      top:${rect.top + rect.height/2 + window.scrollY}px;
+      position:fixed;
+      --dx:${dx}px;--rot:${rot}deg;--dur:${dur}s;--delay:${delay}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), (dur + delay + .2) * 1000);
+  }
+}
+
+// Attach particle burst to stat cards on click
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.sc').forEach((sc, i) => {
+    sc.style.cursor = 'pointer';
+    sc.addEventListener('click', () => {
+      const emos = [EASTER_EMOJIS, CELEB_EMOJIS, ['👥','🤝','💪','🙌'], ['📈','💸','💰','🏅']];
+      spawnFloatParticles(sc, emos[i % emos.length], 6);
+    });
+  });
+
+  // Ambient emoji rain — continuous drifting emojis in background
+  const ambPool = ['🎉','✨','⭐','💰','🚀','🏆','💎','🔥','🌟','💸','🥳','🎊','🐣','🥚','🌷','🐰','🌸'];
+  const ambContainer = document.getElementById('ambientEmojis');
+  if(ambContainer){
+    function spawnAmbient(){
+      const el = document.createElement('div');
+      el.className = 'amb-emo';
+      el.textContent = ambPool[Math.floor(Math.random() * ambPool.length)];
+      const left = Math.random() * 100;
+      const dur  = 5 + Math.random() * 6;
+      const delay = Math.random() * 2;
+      const r0   = (Math.random()-0.5)*20;
+      const r1   = r0 + (Math.random()-0.5)*360;
+      const fs   = (0.8 + Math.random() * 0.8).toFixed(2);
+      el.style.cssText = `left:${left}%;bottom:0;--ad:${dur}s;--adelay:${delay}s;--ar0:${r0}deg;--ar1:${r1}deg;--afs:${fs}rem;`;
+      ambContainer.appendChild(el);
+      setTimeout(() => el.remove(), (dur + delay + 1) * 1000);
+    }
+    // Spawn initial batch
+    for(let i = 0; i < 9; i++) setTimeout(spawnAmbient, i * 600);
+    // Keep spawning continuously
+    setInterval(spawnAmbient, 1100);
+  }
+
+  // Hero glow pulse
+  const hero = document.getElementById('dashWelcomeHero');
+  if(hero){
+    hero.style.transition = 'box-shadow .5s ease';
+    setInterval(() => {
+      hero.style.boxShadow = '0 8px 40px rgba(22,163,74,.55), 0 0 60px rgba(22,163,74,.2)';
+      setTimeout(() => { hero.style.boxShadow = '0 4px 20px rgba(22,163,74,.3)'; }, 1400);
+    }, 2800);
+  }
+});
+
 // DASHBOARD
 async function loadDashboard(){
+  // 🎉 Fire celebration confetti on dashboard load
+  fireConfetti();
   try{
     const data=await apiFetch('/api/users/dashboard');currentUser=data;
     localStorage.setItem('user',JSON.stringify({id:data.profile.id,username:data.profile.username,email:data.profile.email||'',packageType:data.profile.packageType,isAdmin:false}));
